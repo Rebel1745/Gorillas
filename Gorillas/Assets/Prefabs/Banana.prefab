@@ -111,6 +111,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df60f10d5981ee645b75e671251c05b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _whatIsGround:
+    serializedVersion: 2
+    m_Bits: 64
+  _explosionSpriteMask: {fileID: 8651222053518026346, guid: 1dc752fe344f36746921e251fe5d7303, type: 3}
 --- !u!1 &2602004527939944288
 GameObject:
   m_ObjectHideFlags: 0

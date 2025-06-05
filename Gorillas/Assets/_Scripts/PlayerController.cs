@@ -7,6 +7,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private GameObject _projectilePrefab;
     [SerializeField] private Transform _projectileLaunchPoint;
     [SerializeField] private float _defaultForceMultiplier = 10f;
+    private Transform _explosionMaskParent;
 
     // UI Stuff
     [SerializeField] private TMP_Text _powerText;
@@ -18,6 +19,8 @@ public class PlayerController : MonoBehaviour
     {
         _powerText.text = _powerSlider.value.ToString("F1");
         _angleText.text = _angleSlider.value.ToString("F1");
+
+        _explosionMaskParent = GameObject.Find("ExplosionMasks").transform;
     }
 
     public void LaunchProjectile()
@@ -26,7 +29,8 @@ public class PlayerController : MonoBehaviour
         _projectileLaunchPoint.rotation = launchAngle;
 
         GameObject projectile = Instantiate(_projectilePrefab, _projectileLaunchPoint.position, Quaternion.identity);
-        projectile.GetComponent<Rigidbody2D>().AddForce(_projectileLaunchPoint.right * _powerSlider.value * _defaultForceMultiplier, ForceMode2D.Force);
+        projectile.GetComponent<Rigidbody2D>().AddForce(_defaultForceMultiplier * _powerSlider.value * _projectileLaunchPoint.right, ForceMode2D.Force);
+        projectile.GetComponent<IProjectile>().SetProjectileExplosionMaskParent(_explosionMaskParent);
     }
 
     public void UpdatePowerText(float power)
