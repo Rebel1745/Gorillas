@@ -25,7 +25,7 @@ public class PlayerController : MonoBehaviour
 
     public void LaunchProjectile()
     {
-        Quaternion launchAngle = Quaternion.Euler(0, 0, _angleSlider.value);
+        Quaternion launchAngle = Quaternion.Euler(0, _projectileLaunchPoint.rotation.eulerAngles.y, _angleSlider.value);
         _projectileLaunchPoint.rotation = launchAngle;
 
         GameObject projectile = Instantiate(_projectilePrefab, _projectileLaunchPoint.position, Quaternion.identity);

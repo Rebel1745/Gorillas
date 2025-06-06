@@ -114,6 +114,9 @@ MonoBehaviour:
   _whatIsGround:
     serializedVersion: 2
     m_Bits: 64
+  _whatIsPlayer:
+    serializedVersion: 2
+    m_Bits: 256
   _explosionSpriteMask: {fileID: 8651222053518026346, guid: 1dc752fe344f36746921e251fe5d7303, type: 3}
 --- !u!1 &2602004527939944288
 GameObject:
