@@ -32,6 +32,9 @@ public class Banana : MonoBehaviour, IProjectile
             // we directly hit a player!!
             Destroy(hit.transform.gameObject);
             CreateExplosionAndDestroy();
+
+            // Game over?
+            GameManager.Instance.UpdateGameState(GameState.GameOver);
         }
         else
         {
@@ -46,6 +49,9 @@ public class Banana : MonoBehaviour, IProjectile
                     // the explosion hit a player!
                     Destroy(hits[0].gameObject);
                     CreateExplosionAndDestroy();
+
+                    // Game over?
+                    GameManager.Instance.UpdateGameState(GameState.GameOver);
                 }
                 else
                 {
@@ -56,7 +62,13 @@ public class Banana : MonoBehaviour, IProjectile
                         if (h.CompareTag("ExplosionMask")) createExplosionMask = false;
                     }
 
-                    if (createExplosionMask) CreateExplosionAndDestroy();
+                    if (createExplosionMask)
+                    {
+                        CreateExplosionAndDestroy();
+
+                        // Next Players turn
+                        GameManager.Instance.UpdateGameState(GameState.NextTurn);
+                    }
                 }
             }
         }

@@ -14,6 +14,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Slider _powerSlider;
     [SerializeField] private TMP_Text _angleText;
     [SerializeField] private Slider _angleSlider;
+    [SerializeField] private Button _launchButton;
 
     private void Start()
     {
@@ -25,12 +26,20 @@ public class PlayerController : MonoBehaviour
 
     public void LaunchProjectile()
     {
+        SetLaunchButtonActive(false);
         Quaternion launchAngle = Quaternion.Euler(0, _projectileLaunchPoint.rotation.eulerAngles.y, _angleSlider.value);
         _projectileLaunchPoint.rotation = launchAngle;
 
         GameObject projectile = Instantiate(_projectilePrefab, _projectileLaunchPoint.position, Quaternion.identity);
         projectile.GetComponent<Rigidbody2D>().AddForce(_defaultForceMultiplier * _powerSlider.value * _projectileLaunchPoint.right, ForceMode2D.Force);
         projectile.GetComponent<IProjectile>().SetProjectileExplosionMaskParent(_explosionMaskParent);
+
+        GameManager.Instance.UpdateGameState(GameState.WaitingForDetonation);
+    }
+
+    public void SetLaunchButtonActive(bool active)
+    {
+        _launchButton.enabled = active;
     }
 
     public void UpdatePowerText(float power)
