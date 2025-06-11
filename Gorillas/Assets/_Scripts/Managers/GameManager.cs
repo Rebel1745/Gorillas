@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -19,7 +20,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        UpdateGameState(GameState.SetupGame);
+        UpdateGameState(GameState.BuildLevel);
     }
 
     public void UpdateGameState(GameState newState, float delay = 0f)
@@ -29,6 +30,12 @@ public class GameManager : MonoBehaviour
 
         switch (newState)
         {
+            case GameState.BuildLevel:
+                BuildLevel();
+                break;
+            case GameState.SetupPlayers:
+                SetupPlayers();
+                break;
             case GameState.SetupGame:
                 SetupGame();
                 break;
@@ -42,6 +49,16 @@ public class GameManager : MonoBehaviour
             case GameState.GameOver:
                 break;
         }
+    }
+
+    private void SetupPlayers()
+    {
+        PlayerManager.Instance.SetupPlayers();
+    }
+
+    private void BuildLevel()
+    {
+        LevelManager.Instance.BuildLevel();
     }
 
     void SetupGame()
@@ -82,7 +99,7 @@ public enum GameState
     SettingsScreen,
     PauseScreen,
     BuildLevel,
-    SelectPlayerDetails,
+    SetupPlayers,
     SetupGame,
     WaitingForLaunch,
     WaitingForDetonation,
