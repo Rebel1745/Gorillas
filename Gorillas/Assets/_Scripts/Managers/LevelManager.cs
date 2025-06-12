@@ -14,6 +14,8 @@ public class LevelManager : MonoBehaviour
     [SerializeField] private float _maxHeight;
     private List<LevelElementDetails> _levelElementDetailsList = new();
     private float _totalElementWidth = 0f;
+    public float TotalElementWidth { get { return _totalElementWidth; } }
+    private List<Vector3> _playerSpawnPointList = new();
 
     void Awake()
     {
@@ -35,13 +37,19 @@ public class LevelManager : MonoBehaviour
     {
         float startingXPos = -_totalElementWidth / 2.0f;
         float xOffset = 0f;
-        Vector3 newPos;
+        Vector3 newPos, spawnPointPos;
 
         foreach (LevelElementDetails led in _levelElementDetailsList)
         {
             newPos = new(startingXPos + xOffset + (led.ElementWidth / 2), led.ElementHeight, 0f);
             Instantiate(led.ElementPrefab, newPos, Quaternion.identity, _levelElementHolder);
             xOffset += led.ElementWidth;
+
+            foreach (Transform t in led.PlayerSpawnPoints)
+            {
+                spawnPointPos = newPos + t.position;
+                _playerSpawnPointList.Add(spawnPointPos);
+            }
         }
     }
 
@@ -51,18 +59,21 @@ public class LevelManager : MonoBehaviour
         GameObject prefab;
         float prefabWidth;
         float prefabHeight;
+        Transform[] playerSpawnPoints;
 
         for (int i = 0; i <= _numberOfLevelElements; i++)
         {
             prefab = _levelElements[UnityEngine.Random.Range(0, _levelElements.Length)];
             prefabWidth = prefab.GetComponentInChildren<SpriteRenderer>().transform.localScale.x;
             prefabHeight = UnityEngine.Random.Range(_minHeight, _maxHeight);
+            playerSpawnPoints = prefab.GetComponent<LevelElement>().PlayerSpawnPoints;
 
             newLevelElementDetails = new LevelElementDetails
             {
                 ElementPrefab = prefab,
                 ElementWidth = prefabWidth,
-                ElementHeight = prefabHeight
+                ElementHeight = prefabHeight,
+                PlayerSpawnPoints = playerSpawnPoints
             };
 
             _levelElementDetailsList.Add(newLevelElementDetails);
@@ -73,12 +84,18 @@ public class LevelManager : MonoBehaviour
     private void ClearCurrentLevel()
     {
         _levelElementDetailsList.Clear();
+        _playerSpawnPointList.Clear();
         _totalElementWidth = 0;
 
         for (int i = 0; i < _levelElementHolder.childCount; i++)
         {
             Destroy(_levelElementHolder.GetChild(i).gameObject);
         }
+    }
+
+    public Vector3 GetSpawnPointAtIndex(int index)
+    {
+        return _playerSpawnPointList[index];
     }
 }
 
@@ -87,4 +104,5 @@ public struct LevelElementDetails
     public GameObject ElementPrefab;
     public float ElementWidth;
     public float ElementHeight;
+    public Transform[] PlayerSpawnPoints;
 }

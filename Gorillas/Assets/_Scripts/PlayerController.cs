@@ -10,18 +10,32 @@ public class PlayerController : MonoBehaviour
     private Transform _explosionMaskParent;
 
     // UI Stuff
-    [SerializeField] private TMP_Text _powerText;
-    [SerializeField] private Slider _powerSlider;
-    [SerializeField] private TMP_Text _angleText;
-    [SerializeField] private Slider _angleSlider;
-    [SerializeField] private Button _launchButton;
+    private GameObject _uIGO;
+    private TMP_Text _powerText;
+    private Slider _powerSlider;
+    private TMP_Text _angleText;
+    private Slider _angleSlider;
+    private Button _launchButton;
 
     private void Start()
     {
+        _explosionMaskParent = GameObject.Find("ExplosionMasks").transform;
+    }
+
+    public void SetUIDetails(GameObject uIGO)
+    {
+        _uIGO = uIGO;
+        _powerText = _uIGO.transform.GetChild(1).GetComponent<TMP_Text>();
+        _powerSlider = _uIGO.transform.GetChild(2).GetComponent<Slider>();
+        _powerSlider.onValueChanged.AddListener(UpdatePowerText);
+        _angleText = _uIGO.transform.GetChild(4).GetComponent<TMP_Text>();
+        _angleSlider = _uIGO.transform.GetChild(5).GetComponent<Slider>();
+        _angleSlider.onValueChanged.AddListener(UpdateAngleText);
+        _launchButton = _uIGO.transform.GetChild(6).GetComponent<Button>();
+        _launchButton.onClick.AddListener(LaunchProjectile);
+
         _powerText.text = _powerSlider.value.ToString("F1");
         _angleText.text = _angleSlider.value.ToString("F1");
-
-        _explosionMaskParent = GameObject.Find("ExplosionMasks").transform;
     }
 
     public void LaunchProjectile()
