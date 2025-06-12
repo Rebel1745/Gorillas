@@ -71,12 +71,15 @@ public class GameManager : MonoBehaviour
     {
         // hide current players UI
         PlayerManager.Instance.Players[CurrentPlayerId].PlayerUI.SetActive(false);
+        // reset their animation
+        PlayerManager.Instance.SetPlayerAnimation(CurrentPlayerId, "Idle");
 
         // update current player details
         CurrentPlayerId = newPlayerId;
         IsCurrentPlayerCPU = PlayerManager.Instance.Players[CurrentPlayerId].IsCPU;
         PlayerManager.Instance.Players[CurrentPlayerId].PlayerUI.SetActive(true);
         PlayerManager.Instance.Players[CurrentPlayerId].PlayerController.SetLaunchButtonActive(true);
+        PlayerManager.Instance.SetPlayerAnimation(CurrentPlayerId, "Idle");
 
         UpdateGameState(GameState.WaitingForLaunch);
     }

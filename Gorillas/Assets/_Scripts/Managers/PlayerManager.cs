@@ -11,6 +11,9 @@ public class PlayerManager : MonoBehaviour
     [SerializeField, Range(0f, 1f)] private float _player1XPositionPercent = 0.2f;
     [SerializeField, Range(0f, 1f)] private float _player2XPositionPercent = 0.8f;
 
+    // test value (sorts out y placement)
+    [SerializeField] private float _spriteYOffset = -0.05f;
+
     void Awake()
     {
         if (Instance == null) Instance = this;
@@ -34,7 +37,7 @@ public class PlayerManager : MonoBehaviour
     {
         int spawnPointIndex = Mathf.FloorToInt(LevelManager.Instance.TotalElementWidth * _player1XPositionPercent);
         Vector3 spawnPos = LevelManager.Instance.GetSpawnPointAtIndex(spawnPointIndex);
-        spawnPos += new Vector3(0f, Players[0].PlayerPrefab.transform.localScale.y, 0f);
+        //spawnPos += new Vector3(0f, Players[0].PlayerPrefab.transform.localScale.y, 0f);
 
         // create player
         GameObject newPlayer = Instantiate(Players[0].PlayerPrefab, spawnPos, Quaternion.identity, _playerHolder);
@@ -42,20 +45,24 @@ public class PlayerManager : MonoBehaviour
         GameObject newUI = Instantiate(Players[0].PlayerUI, _uICanvas);
         newUI.SetActive(false);
         Players[0].PlayerController = newPlayer.GetComponent<PlayerController>();
-        Players[0].PlayerController.SetUIDetails(newUI);
+        Players[0].PlayerController.SetPlayerDetails(0, newUI);
         Players[0].PlayerUI = newUI;
+        Players[0].PlayerAnimator = newPlayer.GetComponent<Animator>();
 
         spawnPointIndex = Mathf.FloorToInt(LevelManager.Instance.TotalElementWidth * _player2XPositionPercent);
         spawnPos = LevelManager.Instance.GetSpawnPointAtIndex(spawnPointIndex);
-        spawnPos += new Vector3(0f, Players[1].PlayerPrefab.transform.localScale.y, 0f);
+        //spawnPos += new Vector3(0f, Players[1].PlayerPrefab.transform.localScale.y, 0f);
 
         newPlayer = Instantiate(Players[1].PlayerPrefab, spawnPos, Quaternion.identity, _playerHolder);
+        newPlayer.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
+
         // create player UI
         newUI = Instantiate(Players[1].PlayerUI, _uICanvas);
         newUI.SetActive(false);
         Players[1].PlayerController = newPlayer.GetComponent<PlayerController>();
-        Players[1].PlayerController.SetUIDetails(newUI);
+        Players[1].PlayerController.SetPlayerDetails(1, newUI);
         Players[1].PlayerUI = newUI;
+        Players[1].PlayerAnimator = newPlayer.GetComponent<Animator>();
     }
 
     private void RemovePlayers()
@@ -64,6 +71,11 @@ public class PlayerManager : MonoBehaviour
         {
             Destroy(_playerHolder.GetChild(i).gameObject);
         }
+    }
+
+    public void SetPlayerAnimation(int playerId, string animation)
+    {
+        Players[playerId].PlayerAnimator.Play(animation);
     }
 }
 
@@ -75,4 +87,5 @@ public struct PlayerDetails
     public GameObject PlayerUI;
     public PlayerController PlayerController;
     public GameObject PlayerPrefab;
+    public Animator PlayerAnimator;
 }

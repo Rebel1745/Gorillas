@@ -1,6 +1,8 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using System.Data.Common;
+using System.Collections;
 
 public class PlayerController : MonoBehaviour
 {
@@ -8,6 +10,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Transform _projectileLaunchPoint;
     [SerializeField] private float _defaultForceMultiplier = 10f;
     private Transform _explosionMaskParent;
+    private int _playerId;
+    [SerializeField] private float _delayBeforeAttackAnimationReset;
 
     // UI Stuff
     private GameObject _uIGO;
@@ -22,8 +26,9 @@ public class PlayerController : MonoBehaviour
         _explosionMaskParent = GameObject.Find("ExplosionMasks").transform;
     }
 
-    public void SetUIDetails(GameObject uIGO)
+    public void SetPlayerDetails(int id, GameObject uIGO)
     {
+        _playerId = id;
         _uIGO = uIGO;
         _powerText = _uIGO.transform.GetChild(1).GetComponent<TMP_Text>();
         _powerSlider = _uIGO.transform.GetChild(2).GetComponent<Slider>();
@@ -40,6 +45,10 @@ public class PlayerController : MonoBehaviour
 
     public void LaunchProjectile()
     {
+        // set animation and return to idle
+        PlayerManager.Instance.SetPlayerAnimation(_playerId, "Throw");
+        StartCoroutine(ResetAnimation(_delayBeforeAttackAnimationReset));
+
         SetLaunchButtonActive(false);
         Quaternion launchAngle = Quaternion.Euler(0, _projectileLaunchPoint.rotation.eulerAngles.y, _angleSlider.value);
         _projectileLaunchPoint.rotation = launchAngle;
@@ -49,6 +58,13 @@ public class PlayerController : MonoBehaviour
         projectile.GetComponent<IProjectile>().SetProjectileExplosionMaskParent(_explosionMaskParent);
 
         GameManager.Instance.UpdateGameState(GameState.WaitingForDetonation);
+    }
+
+    IEnumerator ResetAnimation(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        PlayerManager.Instance.SetPlayerAnimation(_playerId, "Idle");
     }
 
     public void SetLaunchButtonActive(bool active)

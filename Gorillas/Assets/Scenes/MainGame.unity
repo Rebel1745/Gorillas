@@ -763,13 +763,16 @@ MonoBehaviour:
     PlayerUI: {fileID: 2133004135439833127, guid: 7db25626254609b478cf56ddd0dce287, type: 3}
     PlayerController: {fileID: 0}
     PlayerPrefab: {fileID: 4972102006553089897, guid: 911cb63252e5ee34a8a77300dcefaa56, type: 3}
+    PlayerAnimator: {fileID: 0}
   - Name: Player 2
     IsCPU: 0
     PlayerUI: {fileID: 7541448060516564268, guid: 7813c7fbf9eb0814e928ecb2cb330d40, type: 3}
     PlayerController: {fileID: 0}
-    PlayerPrefab: {fileID: 4972102006553089897, guid: d7214ab5568927c499b30d00b879dd2f, type: 3}
+    PlayerPrefab: {fileID: 4972102006553089897, guid: 911cb63252e5ee34a8a77300dcefaa56, type: 3}
+    PlayerAnimator: {fileID: 0}
   _player1XPositionPercent: 0.4
   _player2XPositionPercent: 0.6
+  _spriteYOffset: 0
 --- !u!1 &1097609579
 GameObject:
   m_ObjectHideFlags: 0
