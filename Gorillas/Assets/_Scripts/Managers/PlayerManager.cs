@@ -8,21 +8,10 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] private Transform _playerHolder;
     [SerializeField] private Transform _uICanvas;
     public PlayerDetails[] Players;
-    [SerializeField, Range(0f, 1f)] private float _player1XPositionPercent = 0.2f;
-    [SerializeField, Range(0f, 1f)] private float _player2XPositionPercent = 0.8f;
-
-    // test value (sorts out y placement)
-    [SerializeField] private float _spriteYOffset = -0.05f;
 
     void Awake()
     {
         if (Instance == null) Instance = this;
-    }
-
-    private void Start()
-    {
-        if (_player2XPositionPercent <= _player1XPositionPercent)
-            Debug.LogError("Player 2 cannot be to the left of player 1!  Adjust the percentages.");
     }
 
     public void SetupPlayers()
@@ -35,12 +24,10 @@ public class PlayerManager : MonoBehaviour
 
     private void PlacePlayers()
     {
-        int spawnPointIndex = Mathf.FloorToInt(LevelManager.Instance.TotalElementWidth * _player1XPositionPercent);
-        Vector3 spawnPos = LevelManager.Instance.GetSpawnPointAtIndex(spawnPointIndex);
-        //spawnPos += new Vector3(0f, Players[0].PlayerPrefab.transform.localScale.y, 0f);
+        LevelManager.Instance.GetFirstAndLastSpawnPoints(out Vector3 firstSpawnPoint, out Vector3 lastSpawnPoint);
 
         // create player
-        GameObject newPlayer = Instantiate(Players[0].PlayerPrefab, spawnPos, Quaternion.identity, _playerHolder);
+        GameObject newPlayer = Instantiate(Players[0].PlayerPrefab, firstSpawnPoint, Quaternion.identity, _playerHolder);
         // create player UI
         GameObject newUI = Instantiate(Players[0].PlayerUI, _uICanvas);
         newUI.SetActive(false);
@@ -52,11 +39,7 @@ public class PlayerManager : MonoBehaviour
 
         CameraManager.Instance.AddTarget(newPlayer.transform);
 
-        spawnPointIndex = Mathf.FloorToInt(LevelManager.Instance.TotalElementWidth * _player2XPositionPercent);
-        spawnPos = LevelManager.Instance.GetSpawnPointAtIndex(spawnPointIndex);
-        //spawnPos += new Vector3(0f, Players[1].PlayerPrefab.transform.localScale.y, 0f);
-
-        newPlayer = Instantiate(Players[1].PlayerPrefab, spawnPos, Quaternion.identity, _playerHolder);
+        newPlayer = Instantiate(Players[1].PlayerPrefab, lastSpawnPoint, Quaternion.identity, _playerHolder);
         newPlayer.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
 
         // create player UI

@@ -242,10 +242,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3eb24616e6c5cf041b121e2976716a44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _cameraOffset: {x: 0, y: -1, z: -10}
+  _cameraOffset: {x: 0, y: -2, z: -10}
   _minZoom: 5
-  _maxZoom: 10
-  _distanceToZoomMultiplier: 0.5
+  _maxZoom: 20
+  _distanceToZoomMultiplierX: 0.3
+  _distanceToZoomMultiplierY: 0.8
 --- !u!1 &194250607
 GameObject:
   m_ObjectHideFlags: 0
@@ -295,7 +296,7 @@ MonoBehaviour:
   - {fileID: 8360718736665367453, guid: 896461fd47182e447953becb8e27d863, type: 3}
   - {fileID: 3428698004001174055, guid: 120a8a20de2ca1944a0946775a5beb7a, type: 3}
   - {fileID: 888761074352327741, guid: d6e19cfd04a2b964a955cfd996906167, type: 3}
-  _numberOfLevelElements: 20
+  _distanceBetweenPlayers: 15
   _minHeight: -12
   _maxHeight: -5
 --- !u!1 &374054833
@@ -820,9 +821,6 @@ MonoBehaviour:
     PlayerPrefab: {fileID: 4972102006553089897, guid: 911cb63252e5ee34a8a77300dcefaa56, type: 3}
     PlayerAnimator: {fileID: 0}
     PlayerGameObject: {fileID: 0}
-  _player1XPositionPercent: 0.4
-  _player2XPositionPercent: 0.6
-  _spriteYOffset: 0
 --- !u!1 &1097609579
 GameObject:
   m_ObjectHideFlags: 0

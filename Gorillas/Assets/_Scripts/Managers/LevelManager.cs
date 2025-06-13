@@ -9,15 +9,16 @@ public class LevelManager : MonoBehaviour
 
     [SerializeField] private Transform _levelElementHolder;
     [SerializeField] private GameObject[] _levelElements;
-    [SerializeField] private int _numberOfLevelElements = 18;
+    [SerializeField] private int _distanceBetweenPlayers = 10;
     [SerializeField] private float _minHeight;
     [SerializeField] private float _maxHeight;
     private List<LevelElementDetails> _levelElementDetailsList = new();
+    private int _numberOfLevelElements;
     private float _totalElementWidth = 0f;
     public float TotalElementWidth { get { return _totalElementWidth; } }
     private List<Vector3> _playerSpawnPointList = new();
 
-    void Awake()
+    private void Awake()
     {
         if (Instance == null) Instance = this;
     }
@@ -55,6 +56,7 @@ public class LevelManager : MonoBehaviour
 
     private void ChooseElements()
     {
+        _numberOfLevelElements = _distanceBetweenPlayers * 3;
         LevelElementDetails newLevelElementDetails;
         GameObject prefab;
         float prefabWidth;
@@ -96,6 +98,15 @@ public class LevelManager : MonoBehaviour
     public Vector3 GetSpawnPointAtIndex(int index)
     {
         return _playerSpawnPointList[index];
+    }
+
+    public void GetFirstAndLastSpawnPoints(out Vector3 firstSpawnPoint, out Vector3 lastSpawnPoint)
+    {
+        int firstIndex = (_playerSpawnPointList.Count / 2) - (_distanceBetweenPlayers / 2);
+        int lastIndex = (_playerSpawnPointList.Count / 2) + (_distanceBetweenPlayers / 2);
+
+        firstSpawnPoint = GetSpawnPointAtIndex(firstIndex);
+        lastSpawnPoint = GetSpawnPointAtIndex(lastIndex);
     }
 }
 

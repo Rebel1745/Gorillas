@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 public class CameraManager : MonoBehaviour
 {
@@ -13,12 +11,14 @@ public class CameraManager : MonoBehaviour
     [SerializeField] private Vector3 _cameraOffset;
     [SerializeField] private float _minZoom = 5f;
     [SerializeField] private float _maxZoom = 10f;
-    [SerializeField] private float _distanceToZoomMultiplier = 0.5f;
+    [SerializeField] private float _distanceToZoomMultiplierX = 0.3f;
+    [SerializeField] private float _distanceToZoomMultiplierY = 1f;
     private Vector3 _moveVelocity;
     private float _zoomVelocity;
-    private float _smoothTime = 0.5f;
+    private float _moveSmoothTime = 0.5f;
+    private float _zoomSmoothTime = 0.1f;
     private Bounds _cameraBounds;
-    private Vector3 _internalOffset;
+    private bool _initialCameraMovement;
 
     private void Awake()
     {
@@ -28,55 +28,75 @@ public class CameraManager : MonoBehaviour
     private void Start()
     {
         _camera = Camera.main;
+        _initialCameraMovement = true;
     }
 
     private void LateUpdate()
     {
         if (_cameraTargets.Count == 0) return;
 
-        MoveCamera();
-        ZoomCamera();
-    }
-
-    private void MoveCamera()
-    {
-        Vector3 centrePoint = GetCentrePoint();
-
-        Vector3 newPos = _cameraOffset + _internalOffset;
-
-        _camera.transform.position = Vector3.SmoothDamp(_camera.transform.position, newPos, ref _moveVelocity, _smoothTime);
-    }
-
-    private void ZoomCamera()
-    {
-        float zoom = Mathf.Clamp(GetGreatestDistance() * _distanceToZoomMultiplier, _minZoom, _maxZoom);
-
-        _camera.orthographicSize = Mathf.SmoothDamp(_camera.orthographicSize, zoom, ref _zoomVelocity, _smoothTime);
-    }
-
-    private void GetLowestPlayer()
-    {
-        _internalOffset.y = Mathf.Infinity;
-
-        for (int i = 0; i < _cameraTargets.Count; i++)
+        if (_initialCameraMovement)
         {
-            if (_cameraTargets[i].position.y < _internalOffset.y)
-                _internalOffset.y = _camera.orthographicSize + _cameraTargets[i].position.y;
+            SetBounds();
+            ZoomCamera(0f);
+            MoveCamera(0f);
+            _initialCameraMovement = false;
+            return;
         }
+
+        if (_cameraTargets.Count > 2)
+            SetBounds();
+
+        ZoomCamera(_zoomSmoothTime);
+        MoveCamera(_moveSmoothTime);
     }
 
-    private Vector3 GetCentrePoint()
+    private void MoveCamera(float smoothTime)
+    {
+        Vector3 lowest = new(GetCenterPoint().x, _camera.orthographicSize + GetLowestPlayer(), 0f);
+        Vector3 newPos = _cameraOffset + lowest;
+
+        _camera.transform.position = Vector3.SmoothDamp(_camera.transform.position, newPos, ref _moveVelocity, smoothTime);
+        //_camera.transform.position = newPos;
+    }
+
+    private void ZoomCamera(float smoothTime)
+    {
+        float zoom = Mathf.Max(GetBoundsSize().x * _distanceToZoomMultiplierX, GetBoundsSize().y * _distanceToZoomMultiplierY);
+        zoom = Mathf.Clamp(zoom, _minZoom, _maxZoom);
+
+        _camera.orthographicSize = Mathf.SmoothDamp(_camera.orthographicSize, zoom, ref _zoomVelocity, smoothTime);
+        //_camera.orthographicSize = zoom;
+    }
+
+    private Vector3 GetCenterPoint()
     {
         if (_cameraTargets.Count == 1) return _cameraTargets[0].position;
 
         return _cameraBounds.center;
     }
 
-    private float GetGreatestDistance()
+    private float GetLowestPlayer()
     {
-        if (_cameraTargets.Count == 1) return _minZoom;
+        if (_cameraTargets.Count == 0) return 0f;
+        if (_cameraTargets.Count == 1) return _cameraTargets[0].transform.position.y;
 
-        return _cameraBounds.size.x;
+        float _lowestTarget = Mathf.Infinity;
+
+        for (int i = 0; i < _cameraTargets.Count; i++)
+        {
+            if (_cameraTargets[i].position.y < _lowestTarget)
+                _lowestTarget = _cameraTargets[i].position.y;
+        }
+
+        return _lowestTarget;
+    }
+
+    private Vector3 GetBoundsSize()
+    {
+        if ((_cameraTargets.Count == 1)) return _cameraTargets[0].position;
+        Debug.Log(_cameraBounds.size);
+        return _cameraBounds.size;
     }
 
     private void SetBounds()
@@ -86,8 +106,6 @@ public class CameraManager : MonoBehaviour
         {
             _cameraBounds.Encapsulate(_cameraTargets[i].position);
         }
-
-        GetLowestPlayer();
     }
 
     public void AddTarget(Transform target)

@@ -6,11 +6,14 @@ public class Banana : MonoBehaviour, IProjectile
     [SerializeField] private LayerMask _whatIsGround;
     [SerializeField] private LayerMask _whatIsPlayer;
     [SerializeField] private GameObject _explosionSpriteMask;
+    [SerializeField] private float _maxDownwardYVelocity = -5;
     private float _explosionRadius;
     private Transform _explosionTransform;
+    private Rigidbody2D _rb;
 
     private void Start()
     {
+        _rb = GetComponent<Rigidbody2D>();
         _explosionRadius = _explosionSpriteMask.transform.localScale.x / 2;
     }
 
