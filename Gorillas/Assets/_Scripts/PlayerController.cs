@@ -57,6 +57,8 @@ public class PlayerController : MonoBehaviour
         projectile.GetComponent<Rigidbody2D>().AddForce(_defaultForceMultiplier * _powerSlider.value * _projectileLaunchPoint.right, ForceMode2D.Force);
         projectile.GetComponent<IProjectile>().SetProjectileExplosionMaskParent(_explosionMaskParent);
 
+        CameraManager.Instance.AddTarget(projectile.transform);
+
         GameManager.Instance.UpdateGameState(GameState.WaitingForDetonation);
     }
 

@@ -44,10 +44,13 @@ public class PlayerManager : MonoBehaviour
         // create player UI
         GameObject newUI = Instantiate(Players[0].PlayerUI, _uICanvas);
         newUI.SetActive(false);
+        Players[0].PlayerGameObject = newPlayer;
         Players[0].PlayerController = newPlayer.GetComponent<PlayerController>();
         Players[0].PlayerController.SetPlayerDetails(0, newUI);
         Players[0].PlayerUI = newUI;
         Players[0].PlayerAnimator = newPlayer.GetComponent<Animator>();
+
+        CameraManager.Instance.AddTarget(newPlayer.transform);
 
         spawnPointIndex = Mathf.FloorToInt(LevelManager.Instance.TotalElementWidth * _player2XPositionPercent);
         spawnPos = LevelManager.Instance.GetSpawnPointAtIndex(spawnPointIndex);
@@ -59,10 +62,13 @@ public class PlayerManager : MonoBehaviour
         // create player UI
         newUI = Instantiate(Players[1].PlayerUI, _uICanvas);
         newUI.SetActive(false);
+        Players[1].PlayerGameObject = newPlayer;
         Players[1].PlayerController = newPlayer.GetComponent<PlayerController>();
         Players[1].PlayerController.SetPlayerDetails(1, newUI);
         Players[1].PlayerUI = newUI;
         Players[1].PlayerAnimator = newPlayer.GetComponent<Animator>();
+
+        CameraManager.Instance.AddTarget(newPlayer.transform);
     }
 
     private void RemovePlayers()
@@ -88,4 +94,5 @@ public struct PlayerDetails
     public PlayerController PlayerController;
     public GameObject PlayerPrefab;
     public Animator PlayerAnimator;
+    public GameObject PlayerGameObject;
 }

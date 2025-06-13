@@ -29,6 +29,7 @@ public class Banana : MonoBehaviour, IProjectile
 
         if (hit)
         {
+            CameraManager.Instance.RemoveTarget(hit.transform);
             // we directly hit a player!!
             Destroy(hit.transform.gameObject);
             CreateExplosionAndDestroy();
@@ -47,6 +48,7 @@ public class Banana : MonoBehaviour, IProjectile
                 if (hits.Length > 0)
                 {
                     // the explosion hit a player!
+                    CameraManager.Instance.RemoveTarget(hits[0].transform);
                     Destroy(hits[0].gameObject);
                     CreateExplosionAndDestroy();
 
@@ -77,6 +79,7 @@ public class Banana : MonoBehaviour, IProjectile
     private void CreateExplosionAndDestroy()
     {
         Instantiate(_explosionSpriteMask, transform.position, Quaternion.identity, _explosionTransform);
+        CameraManager.Instance.RemoveTarget(transform);
         Destroy(gameObject);
     }
 
