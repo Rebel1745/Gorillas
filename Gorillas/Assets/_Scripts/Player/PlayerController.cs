@@ -9,9 +9,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private GameObject _projectilePrefab;
     [SerializeField] private Transform _projectileLaunchPoint;
     [SerializeField] private float _defaultForceMultiplier = 10f;
+    [SerializeField] private float _delayBeforeAttackAnimationReset;
     private Transform _explosionMaskParent;
     private int _playerId;
-    [SerializeField] private float _delayBeforeAttackAnimationReset;
+    [SerializeField] private TrajectoryLine _trajectoryLine;
 
     // UI Stuff
     private GameObject _uIGO;
@@ -24,6 +25,7 @@ public class PlayerController : MonoBehaviour
     private void Start()
     {
         _explosionMaskParent = GameObject.Find("ExplosionMasks").transform;
+        _trajectoryLine.SetSpawnPoint(_projectileLaunchPoint);
     }
 
     public void SetPlayerDetails(int id, GameObject uIGO)
@@ -32,15 +34,18 @@ public class PlayerController : MonoBehaviour
         _uIGO = uIGO;
         _powerText = _uIGO.transform.GetChild(1).GetComponent<TMP_Text>();
         _powerSlider = _uIGO.transform.GetChild(2).GetComponent<Slider>();
-        _powerSlider.onValueChanged.AddListener(UpdatePowerText);
+        _powerSlider.onValueChanged.AddListener(UpdatePower);
         _angleText = _uIGO.transform.GetChild(4).GetComponent<TMP_Text>();
         _angleSlider = _uIGO.transform.GetChild(5).GetComponent<Slider>();
-        _angleSlider.onValueChanged.AddListener(UpdateAngleText);
+        _angleSlider.onValueChanged.AddListener(UpdateAngle);
         _launchButton = _uIGO.transform.GetChild(6).GetComponent<Button>();
         _launchButton.onClick.AddListener(LaunchProjectile);
 
         _powerText.text = _powerSlider.value.ToString("F1");
         _angleText.text = _angleSlider.value.ToString("F1");
+        UpdateLaunchPointAngle(_angleSlider.value);
+        //UpdatePower(_powerSlider.value);
+        //UpdateAngle(_angleSlider.value);
     }
 
     public void LaunchProjectile()
@@ -50,11 +55,10 @@ public class PlayerController : MonoBehaviour
         StartCoroutine(ResetAnimation(_delayBeforeAttackAnimationReset));
 
         SetLaunchButtonActive(false);
-        Quaternion launchAngle = Quaternion.Euler(0, _projectileLaunchPoint.rotation.eulerAngles.y, _angleSlider.value);
-        _projectileLaunchPoint.rotation = launchAngle;
 
         GameObject projectile = Instantiate(_projectilePrefab, _projectileLaunchPoint.position, Quaternion.identity);
-        projectile.GetComponent<Rigidbody2D>().AddForce(_defaultForceMultiplier * _powerSlider.value * _projectileLaunchPoint.right, ForceMode2D.Force);
+
+        projectile.GetComponent<Rigidbody2D>().linearVelocity = _defaultForceMultiplier * _powerSlider.value * _projectileLaunchPoint.right;
         projectile.GetComponent<IProjectile>().SetProjectileExplosionMaskParent(_explosionMaskParent);
 
         CameraManager.Instance.AddTarget(projectile.transform);
@@ -74,13 +78,24 @@ public class PlayerController : MonoBehaviour
         _launchButton.enabled = active;
     }
 
-    public void UpdatePowerText(float power)
+    public void UpdatePower(float power)
     {
+        _trajectoryLine.SetPower(_defaultForceMultiplier * power);
+
         _powerText.text = power.ToString("F1");
     }
 
-    public void UpdateAngleText(float angle)
+    public void UpdateAngle(float angle)
     {
+        UpdateLaunchPointAngle(angle);
+        _trajectoryLine.SetPower(_defaultForceMultiplier * _powerSlider.value);
+
         _angleText.text = angle.ToString("F1");
+    }
+
+    private void UpdateLaunchPointAngle(float angle)
+    {
+        Quaternion launchAngle = Quaternion.Euler(0f, 0f, angle);
+        _projectileLaunchPoint.rotation = launchAngle;
     }
 }

@@ -95,7 +95,7 @@ public class CameraManager : MonoBehaviour
     private Vector3 GetBoundsSize()
     {
         if ((_cameraTargets.Count == 1)) return _cameraTargets[0].position;
-        Debug.Log(_cameraBounds.size);
+        //Debug.Log(_cameraBounds.size);
         return _cameraBounds.size;
     }
 

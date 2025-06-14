@@ -296,7 +296,7 @@ MonoBehaviour:
   - {fileID: 8360718736665367453, guid: 896461fd47182e447953becb8e27d863, type: 3}
   - {fileID: 3428698004001174055, guid: 120a8a20de2ca1944a0946775a5beb7a, type: 3}
   - {fileID: 888761074352327741, guid: d6e19cfd04a2b964a955cfd996906167, type: 3}
-  _distanceBetweenPlayers: 15
+  _distanceBetweenPlayers: 40
   _minHeight: -12
   _maxHeight: -5
 --- !u!1 &374054833
@@ -814,6 +814,7 @@ MonoBehaviour:
     PlayerPrefab: {fileID: 4972102006553089897, guid: 911cb63252e5ee34a8a77300dcefaa56, type: 3}
     PlayerAnimator: {fileID: 0}
     PlayerGameObject: {fileID: 0}
+    PlayerLineRenderer: {fileID: 0}
   - Name: Player 2
     IsCPU: 0
     PlayerUI: {fileID: 7541448060516564268, guid: 7813c7fbf9eb0814e928ecb2cb330d40, type: 3}
@@ -821,6 +822,7 @@ MonoBehaviour:
     PlayerPrefab: {fileID: 4972102006553089897, guid: 911cb63252e5ee34a8a77300dcefaa56, type: 3}
     PlayerAnimator: {fileID: 0}
     PlayerGameObject: {fileID: 0}
+    PlayerLineRenderer: {fileID: 0}
 --- !u!1 &1097609579
 GameObject:
   m_ObjectHideFlags: 0
