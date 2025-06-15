@@ -33,12 +33,12 @@ public class PlayerManager : MonoBehaviour
         newUI.SetActive(false);
         Players[0].PlayerGameObject = newPlayer;
         Players[0].PlayerController = newPlayer.GetComponent<PlayerController>();
-        Players[0].PlayerController.SetPlayerDetails(0, newUI);
         Players[0].PlayerUI = newUI;
         Players[0].PlayerAnimator = newPlayer.GetComponent<Animator>();
         Players[0].PlayerLineRenderer = newPlayer.GetComponent<LineRenderer>();
+        Players[0].PlayerController.SetPlayerDetails(0, newUI, Players[0]);
 
-        CameraManager.Instance.AddTarget(newPlayer.transform);
+        CameraManager.Instance.AddPlayer(newPlayer.transform.position);
 
         newPlayer = Instantiate(Players[1].PlayerPrefab, lastSpawnPoint, Quaternion.identity, _playerHolder);
         newPlayer.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
@@ -48,12 +48,12 @@ public class PlayerManager : MonoBehaviour
         newUI.SetActive(false);
         Players[1].PlayerGameObject = newPlayer;
         Players[1].PlayerController = newPlayer.GetComponent<PlayerController>();
-        Players[1].PlayerController.SetPlayerDetails(1, newUI);
         Players[1].PlayerUI = newUI;
         Players[1].PlayerAnimator = newPlayer.GetComponent<Animator>();
         Players[1].PlayerLineRenderer = newPlayer.GetComponent<LineRenderer>();
+        Players[1].PlayerController.SetPlayerDetails(1, newUI, Players[1]);
 
-        CameraManager.Instance.AddTarget(newPlayer.transform);
+        CameraManager.Instance.AddPlayer(newPlayer.transform.position);
     }
 
     private void RemovePlayers()
@@ -67,6 +67,24 @@ public class PlayerManager : MonoBehaviour
     public void SetPlayerAnimation(int playerId, string animation)
     {
         Players[playerId].PlayerAnimator.Play(animation);
+    }
+
+    public void UpdatePreviousPlayer(int playerId)
+    {
+        // hide current players UI
+        Players[playerId].PlayerUI.SetActive(false);
+        Players[playerId].PlayerLineRenderer.enabled = false;
+        // reset their animation
+        SetPlayerAnimation(playerId, "Idle");
+    }
+
+    public void UpdateCurrentPlayer(int playerId)
+    {
+        Players[playerId].PlayerUI.SetActive(true);
+        Players[playerId].PlayerLineRenderer.enabled = true;
+        Players[playerId].PlayerController.SetLaunchButtonActive(true);
+        Players[playerId].PlayerController.ShowTrajectoryLine();
+        SetPlayerAnimation(playerId, "Idle");
     }
 }
 

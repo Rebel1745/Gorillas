@@ -10,9 +10,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Transform _projectileLaunchPoint;
     [SerializeField] private float _defaultForceMultiplier = 10f;
     [SerializeField] private float _delayBeforeAttackAnimationReset;
+    [SerializeField] private TrajectoryLine _trajectoryLine;
     private Transform _explosionMaskParent;
     private int _playerId;
-    [SerializeField] private TrajectoryLine _trajectoryLine;
+    private PlayerDetails _playerDetails;
+    private bool _initialTrajectoryLine = true;
 
     // UI Stuff
     private GameObject _uIGO;
@@ -26,11 +28,13 @@ public class PlayerController : MonoBehaviour
     {
         _explosionMaskParent = GameObject.Find("ExplosionMasks").transform;
         _trajectoryLine.SetSpawnPoint(_projectileLaunchPoint);
+        _initialTrajectoryLine = true;
     }
 
-    public void SetPlayerDetails(int id, GameObject uIGO)
+    public void SetPlayerDetails(int id, GameObject uIGO, PlayerDetails playerDetails)
     {
         _playerId = id;
+        _playerDetails = playerDetails;
         _uIGO = uIGO;
         _powerText = _uIGO.transform.GetChild(1).GetComponent<TMP_Text>();
         _powerSlider = _uIGO.transform.GetChild(2).GetComponent<Slider>();
@@ -44,8 +48,6 @@ public class PlayerController : MonoBehaviour
         _powerText.text = _powerSlider.value.ToString("F1");
         _angleText.text = _angleSlider.value.ToString("F1");
         UpdateLaunchPointAngle(_angleSlider.value);
-        //UpdatePower(_powerSlider.value);
-        //UpdateAngle(_angleSlider.value);
     }
 
     public void LaunchProjectile()
@@ -61,7 +63,10 @@ public class PlayerController : MonoBehaviour
         projectile.GetComponent<Rigidbody2D>().linearVelocity = _defaultForceMultiplier * _powerSlider.value * _projectileLaunchPoint.right;
         projectile.GetComponent<IProjectile>().SetProjectileExplosionMaskParent(_explosionMaskParent);
 
-        CameraManager.Instance.AddTarget(projectile.transform);
+        //CameraManager.Instance.AddTarget(projectile.transform.position);
+        CameraManager.Instance.UpdateCameraForProjectile();
+
+        _playerDetails.PlayerLineRenderer.enabled = false;
 
         GameManager.Instance.UpdateGameState(GameState.WaitingForDetonation);
     }
@@ -78,8 +83,15 @@ public class PlayerController : MonoBehaviour
         _launchButton.enabled = active;
     }
 
+    public void ShowTrajectoryLine()
+    {
+        if (!_initialTrajectoryLine)
+            UpdatePower(_powerSlider.value);
+    }
+
     public void UpdatePower(float power)
     {
+        _initialTrajectoryLine = false;
         _trajectoryLine.SetPower(_defaultForceMultiplier * power);
 
         _powerText.text = power.ToString("F1");
@@ -87,6 +99,7 @@ public class PlayerController : MonoBehaviour
 
     public void UpdateAngle(float angle)
     {
+        _initialTrajectoryLine = false;
         UpdateLaunchPointAngle(angle);
         _trajectoryLine.SetPower(_defaultForceMultiplier * _powerSlider.value);
 

@@ -26,6 +26,7 @@ public class TrajectoryLine : MonoBehaviour
         Vector3 startPos = _spawnPoint.position;
         Vector3 previousPos = startPos;
         bool pathComplete = false;
+        Vector3 zenith = Vector3.zero;
 
         _segmentsList.Add(startPos);
 
@@ -36,15 +37,33 @@ public class TrajectoryLine : MonoBehaviour
             Vector3 gravityOffset = 0.5f * Mathf.Pow(timeOffset, 2) * Physics2D.gravity;
             Vector3 newPos = startPos + startVelocity * timeOffset + gravityOffset;
             Vector3 rayDir = previousPos - newPos;
+            float rayDistance = Vector3.Distance(previousPos, newPos);
 
-            foreach (var h in Physics2D.RaycastAll(newPos, rayDir, 0.1f))
+            foreach (var h in Physics2D.CircleCastAll(previousPos, 0.1f, rayDir, rayDistance))
             {
-                // if there is, bail
-                if (h.transform.CompareTag("Ground") || h.transform.CompareTag("Player"))
+                if (h.transform.CompareTag("ExplosionMask"))
                 {
+                    pathComplete = false;
+                    break;
+                }
+                // if there is, bail
+                else if (h.transform.CompareTag("Ground") || h.transform.CompareTag("Player"))
+                {
+                    newPos = h.point;
                     pathComplete = true;
                     break;
                 }
+            }
+
+            // if the point is at a higher Y-value than currently saved, update it so we can use it as the highest point for the camera to track
+            if (newPos.y > zenith.y)
+            {
+                // remove the old zenith
+                CameraManager.Instance.RemoveTarget(zenith);
+                zenith = newPos;
+                // add the new zenith
+                CameraManager.Instance.AddProjectileZenith(zenith);
+
             }
 
             previousPos = newPos;
