@@ -36,10 +36,10 @@ public class TrajectoryLine : MonoBehaviour
             float timeOffset = (i * Time.fixedDeltaTime * _curveLength);
             Vector3 gravityOffset = 0.5f * Mathf.Pow(timeOffset, 2) * Physics2D.gravity;
             Vector3 newPos = startPos + startVelocity * timeOffset + gravityOffset;
-            Vector3 rayDir = previousPos - newPos;
+            Vector3 rayDir = newPos - previousPos;
             float rayDistance = Vector3.Distance(previousPos, newPos);
 
-            foreach (var h in Physics2D.CircleCastAll(previousPos, 0.1f, rayDir, rayDistance))
+            foreach (var h in Physics2D.CircleCastAll(previousPos, 0.01f, rayDir, rayDistance))
             {
                 if (h.transform.CompareTag("ExplosionMask"))
                 {
@@ -58,12 +58,9 @@ public class TrajectoryLine : MonoBehaviour
             // if the point is at a higher Y-value than currently saved, update it so we can use it as the highest point for the camera to track
             if (newPos.y > zenith.y)
             {
-                // remove the old zenith
-                CameraManager.Instance.RemoveTarget(zenith);
                 zenith = newPos;
                 // add the new zenith
-                CameraManager.Instance.AddProjectileZenith(zenith);
-
+                CameraManager.Instance.SetProjectileZenith(zenith);
             }
 
             previousPos = newPos;

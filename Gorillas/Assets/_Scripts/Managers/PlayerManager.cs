@@ -83,7 +83,7 @@ public class PlayerManager : MonoBehaviour
         Players[playerId].PlayerUI.SetActive(true);
         Players[playerId].PlayerLineRenderer.enabled = true;
         Players[playerId].PlayerController.SetLaunchButtonActive(true);
-        Players[playerId].PlayerController.ShowTrajectoryLine();
+        StartCoroutine(Players[playerId].PlayerController.ShowTrajectoryLine());
         SetPlayerAnimation(playerId, "Idle");
     }
 }

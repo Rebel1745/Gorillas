@@ -1,7 +1,6 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
-using System.Data.Common;
 using System.Collections;
 
 public class PlayerController : MonoBehaviour
@@ -14,7 +13,6 @@ public class PlayerController : MonoBehaviour
     private Transform _explosionMaskParent;
     private int _playerId;
     private PlayerDetails _playerDetails;
-    private bool _initialTrajectoryLine = true;
 
     // UI Stuff
     private GameObject _uIGO;
@@ -27,8 +25,6 @@ public class PlayerController : MonoBehaviour
     private void Start()
     {
         _explosionMaskParent = GameObject.Find("ExplosionMasks").transform;
-        _trajectoryLine.SetSpawnPoint(_projectileLaunchPoint);
-        _initialTrajectoryLine = true;
     }
 
     public void SetPlayerDetails(int id, GameObject uIGO, PlayerDetails playerDetails)
@@ -44,6 +40,7 @@ public class PlayerController : MonoBehaviour
         _angleSlider.onValueChanged.AddListener(UpdateAngle);
         _launchButton = _uIGO.transform.GetChild(6).GetComponent<Button>();
         _launchButton.onClick.AddListener(LaunchProjectile);
+        _trajectoryLine.SetSpawnPoint(_projectileLaunchPoint);
 
         _powerText.text = _powerSlider.value.ToString("F1");
         _angleText.text = _angleSlider.value.ToString("F1");
@@ -63,7 +60,6 @@ public class PlayerController : MonoBehaviour
         projectile.GetComponent<Rigidbody2D>().linearVelocity = _defaultForceMultiplier * _powerSlider.value * _projectileLaunchPoint.right;
         projectile.GetComponent<IProjectile>().SetProjectileExplosionMaskParent(_explosionMaskParent);
 
-        //CameraManager.Instance.AddTarget(projectile.transform.position);
         CameraManager.Instance.UpdateCameraForProjectile();
 
         _playerDetails.PlayerLineRenderer.enabled = false;
@@ -83,15 +79,14 @@ public class PlayerController : MonoBehaviour
         _launchButton.enabled = active;
     }
 
-    public void ShowTrajectoryLine()
+    public IEnumerator ShowTrajectoryLine()
     {
-        if (!_initialTrajectoryLine)
-            UpdatePower(_powerSlider.value);
+        yield return new WaitForSeconds(0.5f);
+        UpdatePower(_powerSlider.value);
     }
 
     public void UpdatePower(float power)
     {
-        _initialTrajectoryLine = false;
         _trajectoryLine.SetPower(_defaultForceMultiplier * power);
 
         _powerText.text = power.ToString("F1");
@@ -99,7 +94,6 @@ public class PlayerController : MonoBehaviour
 
     public void UpdateAngle(float angle)
     {
-        _initialTrajectoryLine = false;
         UpdateLaunchPointAngle(angle);
         _trajectoryLine.SetPower(_defaultForceMultiplier * _powerSlider.value);
 

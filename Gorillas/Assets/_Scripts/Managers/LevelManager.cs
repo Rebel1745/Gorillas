@@ -81,6 +81,26 @@ public class LevelManager : MonoBehaviour
             _levelElementDetailsList.Add(newLevelElementDetails);
             _totalElementWidth += prefabWidth;
         }
+
+        // if the total width is even, add an extra single building
+        if (_totalElementWidth % 2 == 0)
+        {
+            prefab = _levelElements[0];
+            prefabWidth = prefab.GetComponentInChildren<SpriteRenderer>().transform.localScale.x;
+            prefabHeight = UnityEngine.Random.Range(_minHeight, _maxHeight);
+            playerSpawnPoints = prefab.GetComponent<LevelElement>().PlayerSpawnPoints;
+
+            newLevelElementDetails = new LevelElementDetails
+            {
+                ElementPrefab = prefab,
+                ElementWidth = prefabWidth,
+                ElementHeight = prefabHeight,
+                PlayerSpawnPoints = playerSpawnPoints
+            };
+
+            _levelElementDetailsList.Add(newLevelElementDetails);
+            _totalElementWidth += prefabWidth;
+        }
     }
 
     private void ClearCurrentLevel()

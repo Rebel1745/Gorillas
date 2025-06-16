@@ -6,7 +6,6 @@ public class Banana : MonoBehaviour, IProjectile
     [SerializeField] private LayerMask _whatIsGround;
     [SerializeField] private LayerMask _whatIsPlayer;
     [SerializeField] private GameObject _explosionSpriteMask;
-    [SerializeField] private float _maxDownwardYVelocity = -5;
     private float _explosionRadius;
     private Transform _explosionTransform;
     private Rigidbody2D _rb;
@@ -20,6 +19,13 @@ public class Banana : MonoBehaviour, IProjectile
     void Update()
     {
         CheckForGroundHit();
+
+        // if we are moving down, change the zoom
+        if (_rb.linearVelocityY < 0)
+        {
+            CameraManager.Instance.SetProjectileZenith(transform.position);
+            CameraManager.Instance.UpdateCameraForProjectile();
+        }
     }
 
     private void CheckForGroundHit()
@@ -32,7 +38,7 @@ public class Banana : MonoBehaviour, IProjectile
 
         if (hit)
         {
-            CameraManager.Instance.RemoveTarget(hit.transform.position);
+            CameraManager.Instance.RemovePlayer(hit.transform.position);
             // we directly hit a player!!
             Destroy(hit.transform.gameObject);
             CreateExplosionAndDestroy();
@@ -51,7 +57,7 @@ public class Banana : MonoBehaviour, IProjectile
                 if (hits.Length > 0)
                 {
                     // the explosion hit a player!
-                    CameraManager.Instance.RemoveTarget(hits[0].transform.position);
+                    CameraManager.Instance.RemovePlayer(hits[0].transform.position);
                     Destroy(hits[0].gameObject);
                     CreateExplosionAndDestroy();
 
@@ -82,7 +88,7 @@ public class Banana : MonoBehaviour, IProjectile
     private void CreateExplosionAndDestroy()
     {
         Instantiate(_explosionSpriteMask, transform.position, Quaternion.identity, _explosionTransform);
-        CameraManager.Instance.RemoveTarget(transform.position);
+        CameraManager.Instance.RemoveProjectile();
         Destroy(gameObject);
     }
 
