@@ -246,6 +246,7 @@ MonoBehaviour:
   _minZoom: 5
   _maxZoom: 20
   _zoomSmoothTime: 0.5
+  _moveSmoothTime: 0.5
 --- !u!1 &194250607
 GameObject:
   m_ObjectHideFlags: 0
@@ -292,10 +293,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _levelElementHolder: {fileID: 497281695}
   _levelElements:
-  - {fileID: 8360718736665367453, guid: 896461fd47182e447953becb8e27d863, type: 3}
-  - {fileID: 3428698004001174055, guid: 120a8a20de2ca1944a0946775a5beb7a, type: 3}
-  - {fileID: 888761074352327741, guid: d6e19cfd04a2b964a955cfd996906167, type: 3}
-  _distanceBetweenPlayers: 20
+  - {fileID: 6087501927232720569, guid: 1a0841428a691fd48ae79cba51603c2a, type: 3}
+  - {fileID: 7051889797630888576, guid: aa7bc64a2a8080948866be1235af4c53, type: 3}
+  - {fileID: 7151970457259300769, guid: 26de4744eca3bf44cb5f232428ac6b30, type: 3}
+  _distanceBetweenPlayers: 40
   _minHeight: -12
   _maxHeight: -5
 --- !u!1 &374054833

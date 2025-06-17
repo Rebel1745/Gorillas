@@ -14,7 +14,8 @@ public class CameraManager : MonoBehaviour
     [SerializeField] private float _maxZoom = 10f;
     private Vector3 _moveVelocity;
     private float _zoomVelocity;
-    [SerializeField] private float _zoomSmoothTime = 0.1f;
+    [SerializeField] private float _zoomSmoothTime = 0.5f;
+    [SerializeField] private float _moveSmoothTime = 0.5f;
     private Bounds _cameraBounds;
     private bool _moveCamera = false;
     private bool _instantCameraMovement;
@@ -38,10 +39,6 @@ public class CameraManager : MonoBehaviour
 
     private void LateUpdate()
     {
-        // initial movement (instant)
-        // launch banana (zoom speed)
-        // banana destroyed, zoom to players (zoom speed)
-
         // if there are no targets, bail
         if (_cameraTargets.Count == 0) return;
 
@@ -57,6 +54,8 @@ public class CameraManager : MonoBehaviour
         float zoom = Mathf.Max(GetBoundsSize().x / 2f / _screenHeightWidthRatio, (GetBoundsSize().y + _cameraOffset.y) / 2.0f + ADDITIONAL_Y_OFFSET);
         zoom = Mathf.Clamp(zoom, _minZoom, _maxZoom);
 
+        if (_cameraTargets.Count == 1) smoothTime *= 2;
+
         if (_instantCameraMovement)
         {
             _camera.orthographicSize = zoom;
@@ -69,9 +68,16 @@ public class CameraManager : MonoBehaviour
     // moving the camera doesn't need a smooth time becuase it should remain in the same Y position
     private void MoveCamera()
     {
-        Vector3 newPos = new(_camera.transform.position.x, _camera.orthographicSize + GetLowestPlayer() - _cameraOffset.y, _cameraOffset.z);
+        float camXPos = _camera.transform.position.x;
 
-        _camera.transform.position = newPos;
+        if (_cameraTargets.Count == 1) camXPos = GetCenterPoint().x;
+
+        Vector3 newPos = new(camXPos, _camera.orthographicSize + GetLowestPlayer() - _cameraOffset.y, _cameraOffset.z);
+
+        if (_cameraTargets.Count != 1)
+            _camera.transform.position = newPos;
+        else
+            _camera.transform.position = Vector3.SmoothDamp(_camera.transform.position, newPos, ref _moveVelocity, _moveSmoothTime);
     }
 
     private Vector3 GetCenterPoint()
@@ -158,8 +164,8 @@ public class CameraManager : MonoBehaviour
 
     public void RemoveProjectile()
     {
-        // players are 0 and 1, the projectile is 2, remove it
-        _cameraTargets.RemoveAt(2);
+        // the projectile is always the last element, remove it
+        _cameraTargets.RemoveAt(_cameraTargets.Count - 1);
 
         SetBounds();
         _moveCamera = true;

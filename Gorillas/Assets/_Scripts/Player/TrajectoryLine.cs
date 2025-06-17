@@ -26,6 +26,7 @@ public class TrajectoryLine : MonoBehaviour
         Vector3 startPos = _spawnPoint.position;
         Vector3 previousPos = startPos;
         bool pathComplete = false;
+        bool containsMask = false;
         Vector3 zenith = Vector3.zero;
 
         _segmentsList.Add(startPos);
@@ -38,20 +39,29 @@ public class TrajectoryLine : MonoBehaviour
             Vector3 newPos = startPos + startVelocity * timeOffset + gravityOffset;
             Vector3 rayDir = newPos - previousPos;
             float rayDistance = Vector3.Distance(previousPos, newPos);
+            RaycastHit2D[] hits = Physics2D.CircleCastAll(previousPos, 0.01f, rayDir, rayDistance);
+            containsMask = false;
 
-            foreach (var h in Physics2D.CircleCastAll(previousPos, 0.01f, rayDir, rayDistance))
+            foreach (var hit in hits)
             {
-                if (h.transform.CompareTag("ExplosionMask"))
+                // if we hit a mask, we can keep going and ignore any ground or player hits
+                if (hit.transform.CompareTag("ExplosionMask"))
                 {
-                    pathComplete = false;
+                    containsMask = true;
                     break;
                 }
-                // if there is, bail
-                else if (h.transform.CompareTag("Ground") || h.transform.CompareTag("Player"))
+            }
+
+            if (!containsMask)
+            {
+                foreach (var hit in hits)
                 {
-                    newPos = h.point;
-                    pathComplete = true;
-                    break;
+                    // if there is no mask, we can check for other hits
+                    if (hit.transform.CompareTag("Ground") || hit.transform.CompareTag("Player"))
+                    {
+                        pathComplete = true;
+                        //newPos = hit.point;
+                    }
                 }
             }
 

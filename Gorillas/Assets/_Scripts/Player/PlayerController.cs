@@ -13,6 +13,7 @@ public class PlayerController : MonoBehaviour
     private Transform _explosionMaskParent;
     private int _playerId;
     private PlayerDetails _playerDetails;
+    private bool _initialTrajectoryLine;
 
     // UI Stuff
     private GameObject _uIGO;
@@ -41,6 +42,9 @@ public class PlayerController : MonoBehaviour
         _launchButton = _uIGO.transform.GetChild(6).GetComponent<Button>();
         _launchButton.onClick.AddListener(LaunchProjectile);
         _trajectoryLine.SetSpawnPoint(_projectileLaunchPoint);
+        _initialTrajectoryLine = true;
+
+        SetLaunchButtonActive(false);
 
         _powerText.text = _powerSlider.value.ToString("F1");
         _angleText.text = _angleSlider.value.ToString("F1");
@@ -81,7 +85,13 @@ public class PlayerController : MonoBehaviour
 
     public IEnumerator ShowTrajectoryLine()
     {
-        yield return new WaitForSeconds(0.5f);
+        float start = Time.time;
+
+        if (_initialTrajectoryLine)
+            yield return new WaitForSeconds(0.5f);
+
+        _initialTrajectoryLine = false;
+        SetLaunchButtonActive(true);
         UpdatePower(_powerSlider.value);
     }
 
@@ -102,7 +112,7 @@ public class PlayerController : MonoBehaviour
 
     private void UpdateLaunchPointAngle(float angle)
     {
-        Quaternion launchAngle = Quaternion.Euler(0f, 0f, angle);
+        Quaternion launchAngle = Quaternion.Euler(0f, _projectileLaunchPoint.eulerAngles.y, angle);
         _projectileLaunchPoint.rotation = launchAngle;
     }
 }

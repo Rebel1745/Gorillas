@@ -18,14 +18,14 @@ public class Banana : MonoBehaviour, IProjectile
 
     void Update()
     {
-        CheckForGroundHit();
-
         // if we are moving down, change the zoom
         if (_rb.linearVelocityY < 0)
         {
             CameraManager.Instance.SetProjectileZenith(transform.position);
             CameraManager.Instance.UpdateCameraForProjectile();
         }
+
+        CheckForGroundHit();
     }
 
     private void CheckForGroundHit()

@@ -39,11 +39,15 @@ public class LevelManager : MonoBehaviour
         float startingXPos = -_totalElementWidth / 2.0f;
         float xOffset = 0f;
         Vector3 newPos, spawnPointPos;
+        GameObject newElement;
+        Color randomBuildingColour = Color.black;
 
         foreach (LevelElementDetails led in _levelElementDetailsList)
         {
             newPos = new(startingXPos + xOffset + (led.ElementWidth / 2), led.ElementHeight, 0f);
-            Instantiate(led.ElementPrefab, newPos, Quaternion.identity, _levelElementHolder);
+            newElement = Instantiate(led.ElementPrefab, newPos, Quaternion.identity, _levelElementHolder);
+            randomBuildingColour = new(UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f), 1f);
+            newElement.transform.GetChild(0).GetChild(1).GetComponent<SpriteRenderer>().color = randomBuildingColour;
             xOffset += led.ElementWidth;
 
             foreach (Transform t in led.PlayerSpawnPoints)
@@ -66,7 +70,7 @@ public class LevelManager : MonoBehaviour
         for (int i = 0; i <= _numberOfLevelElements; i++)
         {
             prefab = _levelElements[UnityEngine.Random.Range(0, _levelElements.Length)];
-            prefabWidth = prefab.GetComponentInChildren<SpriteRenderer>().transform.localScale.x;
+            prefabWidth = prefab.transform.GetChild(0).transform.localScale.x;
             prefabHeight = UnityEngine.Random.Range(_minHeight, _maxHeight);
             playerSpawnPoints = prefab.GetComponent<LevelElement>().PlayerSpawnPoints;
 

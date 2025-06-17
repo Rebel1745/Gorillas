@@ -41,7 +41,8 @@ public class PlayerManager : MonoBehaviour
         CameraManager.Instance.AddPlayer(newPlayer.transform.position);
 
         newPlayer = Instantiate(Players[1].PlayerPrefab, lastSpawnPoint, Quaternion.identity, _playerHolder);
-        newPlayer.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
+        newPlayer.GetComponentInChildren<SpriteRenderer>().transform.rotation = Quaternion.Euler(0f, 180f, 0f);
+        newPlayer.transform.GetChild(1).transform.rotation = Quaternion.Euler(0f, 180f, 0f);
 
         // create player UI
         newUI = Instantiate(Players[1].PlayerUI, _uICanvas);
@@ -82,8 +83,9 @@ public class PlayerManager : MonoBehaviour
     {
         Players[playerId].PlayerUI.SetActive(true);
         Players[playerId].PlayerLineRenderer.enabled = true;
-        Players[playerId].PlayerController.SetLaunchButtonActive(true);
         StartCoroutine(Players[playerId].PlayerController.ShowTrajectoryLine());
+        // the below line is now in the ShowTrajectoryLine function.  If that functionality is removed this may be re-enabled
+        //Players[playerId].PlayerController.SetLaunchButtonActive(true);
         SetPlayerAnimation(playerId, "Idle");
     }
 }
