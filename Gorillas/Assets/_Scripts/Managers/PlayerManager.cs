@@ -8,6 +8,8 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] private Transform _playerHolder;
     [SerializeField] private Transform _uICanvas;
     public PlayerDetails[] Players;
+    private int _currentPlayerId;
+    public int CurrentPlayerId { get { return _currentPlayerId; } }
 
     void Awake()
     {
@@ -73,17 +75,18 @@ public class PlayerManager : MonoBehaviour
     public void UpdatePreviousPlayer(int playerId)
     {
         // hide current players UI
-        Players[playerId].PlayerUI.SetActive(false);
-        Players[playerId].PlayerLineRenderer.enabled = false;
+        //Players[playerId].PlayerUI.SetActive(false);
+        //Players[playerId].PlayerLineRenderer.enabled = false;
         // reset their animation
         SetPlayerAnimation(playerId, "Idle");
     }
 
     public void UpdateCurrentPlayer(int playerId)
     {
+        _currentPlayerId = playerId;
         Players[playerId].PlayerUI.SetActive(true);
         Players[playerId].PlayerLineRenderer.enabled = true;
-        StartCoroutine(Players[playerId].PlayerController.ShowTrajectoryLine());
+        StartCoroutine(Players[playerId].PlayerController.CalculateTrajectoryLine());
         // the below line is now in the ShowTrajectoryLine function.  If that functionality is removed this may be re-enabled
         //Players[playerId].PlayerController.SetLaunchButtonActive(true);
         SetPlayerAnimation(playerId, "Idle");

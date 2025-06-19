@@ -7,6 +7,8 @@ TagManager:
   - Ground
   - ExplosionMask
   - Window
+  - pyramid
+  - plane
   layers:
   - Default
   - TransparentFX
@@ -41,6 +43,9 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Background
+    uniqueID: 2764999791
+    locked: 0
   - name: TrajectoryLine
     uniqueID: 1621374403
     locked: 0

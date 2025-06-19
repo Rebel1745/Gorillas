@@ -12,13 +12,16 @@ public class TrajectoryLine : MonoBehaviour
     private float _projectilePower;
     private Transform _spawnPoint;
 
+    [Header("Debug")]
+    [SerializeField] private bool _alwayShowTrajectory;
+
     private void Start()
     {
         _lineRenderer = GetComponent<LineRenderer>();
         _lineRenderer.positionCount = 0;
     }
 
-    private void GenerateLineSegments()
+    private void CalculateTrajectoryLine()
     {
         _segmentsList.Clear();
 
@@ -78,12 +81,15 @@ public class TrajectoryLine : MonoBehaviour
 
             if (pathComplete) break;
         }
+
+        if (_alwayShowTrajectory) ShowTrajectoryLine();
     }
 
     public void SetPower(float power)
     {
         _projectilePower = power;
-        GenerateLineSegments();
+        HideTrajectoryLine();
+        CalculateTrajectoryLine();
     }
 
     public void ShowTrajectoryLine()
@@ -91,6 +97,11 @@ public class TrajectoryLine : MonoBehaviour
         _segments = _segmentsList.ToArray();
         _lineRenderer.positionCount = _segments.Length;
         _lineRenderer.SetPositions(_segments);
+    }
+
+    private void HideTrajectoryLine()
+    {
+        _lineRenderer.positionCount = 0;
     }
 
     public void SetSpawnPoint(Transform spawnPoint)

@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 public class Banana : MonoBehaviour, IProjectile
@@ -7,6 +6,7 @@ public class Banana : MonoBehaviour, IProjectile
     [SerializeField] private LayerMask _whatIsPlayer;
     [SerializeField] private LayerMask _whatIsWindow;
     [SerializeField] private GameObject _explosionSpriteMask;
+    [SerializeField] private GameObject _explosionPrefab;
     [SerializeField] private GameObject[] _brokenWindowSprites;
     [SerializeField] private float _explosionRadiusDamageMultiplier = 2;
     [SerializeField] private float _destroyWhenDistanceOffscreen = -20f;
@@ -111,6 +111,7 @@ public class Banana : MonoBehaviour, IProjectile
             Instantiate(randomSprite, h.transform.position, randomRotation, h.transform);
         }
         CameraManager.Instance.RemoveProjectile();
+        GameObject explosion = Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
         Destroy(gameObject);
     }
 

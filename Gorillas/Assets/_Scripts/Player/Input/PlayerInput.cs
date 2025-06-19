@@ -35,6 +35,33 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Power"",
+                    ""type"": ""Value"",
+                    ""id"": ""c6ecf3f6-6449-490b-9bd5-d6faa207e94b"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Angle"",
+                    ""type"": ""Value"",
+                    ""id"": ""2bdd8fae-6424-48ac-ab09-4e462f0f9a78"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""LaunchProjectile"",
+                    ""type"": ""Button"",
+                    ""id"": ""ea89d871-d5db-43e4-955a-564d8b3999fb"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -48,6 +75,83 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""action"": ""ShowTrajectoryLine"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""1D Axis"",
+                    ""id"": ""89ea7e88-ee88-4dc1-b8dc-c4acb68ea989"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Power"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""91e8db5b-480f-4cc5-a0f5-d30a9abd8e69"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Power"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""69aa40a4-8acd-468d-97a6-2878a5f5e2f4"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Power"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""1D Axis"",
+                    ""id"": ""14d3052b-f50d-445a-90e0-984e4dd0e53c"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Angle"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""1ff7497f-4488-4302-83f5-dbfbf802a3a8"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Angle"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""b223cad2-4464-46e4-9194-6f647ceaa4fd"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Angle"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4b437401-7f52-4822-985d-09b21fd1c631"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""LaunchProjectile"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -57,6 +161,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         // Gameplay
         m_Gameplay = asset.FindActionMap("Gameplay", throwIfNotFound: true);
         m_Gameplay_ShowTrajectoryLine = m_Gameplay.FindAction("ShowTrajectoryLine", throwIfNotFound: true);
+        m_Gameplay_Power = m_Gameplay.FindAction("Power", throwIfNotFound: true);
+        m_Gameplay_Angle = m_Gameplay.FindAction("Angle", throwIfNotFound: true);
+        m_Gameplay_LaunchProjectile = m_Gameplay.FindAction("LaunchProjectile", throwIfNotFound: true);
     }
 
     ~@PlayerInput()
@@ -124,11 +231,17 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_Gameplay;
     private List<IGameplayActions> m_GameplayActionsCallbackInterfaces = new List<IGameplayActions>();
     private readonly InputAction m_Gameplay_ShowTrajectoryLine;
+    private readonly InputAction m_Gameplay_Power;
+    private readonly InputAction m_Gameplay_Angle;
+    private readonly InputAction m_Gameplay_LaunchProjectile;
     public struct GameplayActions
     {
         private @PlayerInput m_Wrapper;
         public GameplayActions(@PlayerInput wrapper) { m_Wrapper = wrapper; }
         public InputAction @ShowTrajectoryLine => m_Wrapper.m_Gameplay_ShowTrajectoryLine;
+        public InputAction @Power => m_Wrapper.m_Gameplay_Power;
+        public InputAction @Angle => m_Wrapper.m_Gameplay_Angle;
+        public InputAction @LaunchProjectile => m_Wrapper.m_Gameplay_LaunchProjectile;
         public InputActionMap Get() { return m_Wrapper.m_Gameplay; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -141,6 +254,15 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @ShowTrajectoryLine.started += instance.OnShowTrajectoryLine;
             @ShowTrajectoryLine.performed += instance.OnShowTrajectoryLine;
             @ShowTrajectoryLine.canceled += instance.OnShowTrajectoryLine;
+            @Power.started += instance.OnPower;
+            @Power.performed += instance.OnPower;
+            @Power.canceled += instance.OnPower;
+            @Angle.started += instance.OnAngle;
+            @Angle.performed += instance.OnAngle;
+            @Angle.canceled += instance.OnAngle;
+            @LaunchProjectile.started += instance.OnLaunchProjectile;
+            @LaunchProjectile.performed += instance.OnLaunchProjectile;
+            @LaunchProjectile.canceled += instance.OnLaunchProjectile;
         }
 
         private void UnregisterCallbacks(IGameplayActions instance)
@@ -148,6 +270,15 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @ShowTrajectoryLine.started -= instance.OnShowTrajectoryLine;
             @ShowTrajectoryLine.performed -= instance.OnShowTrajectoryLine;
             @ShowTrajectoryLine.canceled -= instance.OnShowTrajectoryLine;
+            @Power.started -= instance.OnPower;
+            @Power.performed -= instance.OnPower;
+            @Power.canceled -= instance.OnPower;
+            @Angle.started -= instance.OnAngle;
+            @Angle.performed -= instance.OnAngle;
+            @Angle.canceled -= instance.OnAngle;
+            @LaunchProjectile.started -= instance.OnLaunchProjectile;
+            @LaunchProjectile.performed -= instance.OnLaunchProjectile;
+            @LaunchProjectile.canceled -= instance.OnLaunchProjectile;
         }
 
         public void RemoveCallbacks(IGameplayActions instance)
@@ -168,5 +299,8 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
     public interface IGameplayActions
     {
         void OnShowTrajectoryLine(InputAction.CallbackContext context);
+        void OnPower(InputAction.CallbackContext context);
+        void OnAngle(InputAction.CallbackContext context);
+        void OnLaunchProjectile(InputAction.CallbackContext context);
     }
 }

@@ -121,11 +121,13 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 512
   _explosionSpriteMask: {fileID: 8651222053518026346, guid: 1dc752fe344f36746921e251fe5d7303, type: 3}
+  _explosionPrefab: {fileID: 9058155389148681563, guid: d9fab6afd88e04d4199a2e79b9a689d9, type: 3}
   _brokenWindowSprites:
   - {fileID: 8410285761981747652, guid: 980b321cff3b8b1498aae644db4297eb, type: 3}
   - {fileID: 5305344747958160552, guid: c8f5d3777d457fd48b289dc044e0512a, type: 3}
   - {fileID: 5903915594433524572, guid: 10821c731e8f52f40892ac054da30c53, type: 3}
   _explosionRadiusDamageMultiplier: 2
+  _destroyWhenDistanceOffscreen: -20
 --- !u!1 &2602004527939944288
 GameObject:
   m_ObjectHideFlags: 0
