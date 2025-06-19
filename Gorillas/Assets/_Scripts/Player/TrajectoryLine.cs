@@ -18,7 +18,7 @@ public class TrajectoryLine : MonoBehaviour
         _lineRenderer.positionCount = 0;
     }
 
-    void UpdateLineSegments()
+    private void GenerateLineSegments()
     {
         _segmentsList.Clear();
 
@@ -78,16 +78,19 @@ public class TrajectoryLine : MonoBehaviour
 
             if (pathComplete) break;
         }
-
-        _segments = _segmentsList.ToArray();
-        _lineRenderer.positionCount = _segments.Length;
-        _lineRenderer.SetPositions(_segments);
     }
 
     public void SetPower(float power)
     {
         _projectilePower = power;
-        UpdateLineSegments();
+        GenerateLineSegments();
+    }
+
+    public void ShowTrajectoryLine()
+    {
+        _segments = _segmentsList.ToArray();
+        _lineRenderer.positionCount = _segments.Length;
+        _lineRenderer.SetPositions(_segments);
     }
 
     public void SetSpawnPoint(Transform spawnPoint)

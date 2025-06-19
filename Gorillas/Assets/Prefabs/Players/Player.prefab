@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2608455679250897100}
   - component: {fileID: 7315598981503290815}
+  - component: {fileID: 7336818808349919670}
   m_Layer: 8
   m_Name: GFX
   m_TagString: Untagged
@@ -87,6 +88,28 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!95 &7336818808349919670
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2726593325541663037}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 46ffcfe7aef281049b12d1c4546f5eb3, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &4972102006553089897
 GameObject:
   m_ObjectHideFlags: 0
@@ -98,9 +121,9 @@ GameObject:
   - component: {fileID: 3176591028665275895}
   - component: {fileID: 4113509715146576754}
   - component: {fileID: 4088403232203255021}
-  - component: {fileID: 6009223325580773231}
   - component: {fileID: 838280491203144005}
   - component: {fileID: -3208810610942719868}
+  - component: {fileID: -1196743081588699787}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player
@@ -179,28 +202,6 @@ CapsuleCollider2D:
   m_Offset: {x: 0, y: 0.4}
   m_Size: {x: 0.80852556, y: 0.92764974}
   m_Direction: 0
---- !u!95 &6009223325580773231
-Animator:
-  serializedVersion: 7
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4972102006553089897}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 46ffcfe7aef281049b12d1c4546f5eb3, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!120 &838280491203144005
 LineRenderer:
   serializedVersion: 2
@@ -243,8 +244,8 @@ LineRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 1621374403
+  m_SortingLayer: -1
   m_SortingOrder: 0
   m_Positions: []
   m_Parameters:
@@ -320,6 +321,36 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _maxSegmentCount: 500
   _curveLength: 1
+--- !u!114 &-1196743081588699787
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4972102006553089897}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Actions: {fileID: -944628639613478452, guid: b95bd44148b1ade4388520479e7405ca, type: 3}
+  m_NotificationBehavior: 0
+  m_UIInputModule: {fileID: 0}
+  m_DeviceLostEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_DeviceRegainedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ControlsChangedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ActionEvents: []
+  m_NeverAutoSwitchControlSchemes: 0
+  m_DefaultControlScheme: 
+  m_DefaultActionMap: Gameplay
+  m_SplitScreenIndex: -1
+  m_Camera: {fileID: 0}
 --- !u!1 &5942257555307697222
 GameObject:
   m_ObjectHideFlags: 0

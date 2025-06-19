@@ -34,7 +34,7 @@ public class PlayerManager : MonoBehaviour
         Players[0].PlayerGameObject = newPlayer;
         Players[0].PlayerController = newPlayer.GetComponent<PlayerController>();
         Players[0].PlayerUI = newUI;
-        Players[0].PlayerAnimator = newPlayer.GetComponent<Animator>();
+        Players[0].PlayerAnimator = newPlayer.GetComponentInChildren<Animator>();
         Players[0].PlayerLineRenderer = newPlayer.GetComponent<LineRenderer>();
         Players[0].PlayerController.SetPlayerDetails(0, newUI, Players[0]);
 
@@ -50,7 +50,7 @@ public class PlayerManager : MonoBehaviour
         Players[1].PlayerGameObject = newPlayer;
         Players[1].PlayerController = newPlayer.GetComponent<PlayerController>();
         Players[1].PlayerUI = newUI;
-        Players[1].PlayerAnimator = newPlayer.GetComponent<Animator>();
+        Players[1].PlayerAnimator = newPlayer.GetComponentInChildren<Animator>();
         Players[1].PlayerLineRenderer = newPlayer.GetComponent<LineRenderer>();
         Players[1].PlayerController.SetPlayerDetails(1, newUI, Players[1]);
 

@@ -2,6 +2,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using System.Collections;
+using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
@@ -12,8 +13,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private TrajectoryLine _trajectoryLine;
     private Transform _explosionMaskParent;
     private int _playerId;
+    public int PlayerId { get { return _playerId; } }
     private PlayerDetails _playerDetails;
     private bool _initialTrajectoryLine;
+    //private InputAction _input;
 
     // UI Stuff
     private GameObject _uIGO;

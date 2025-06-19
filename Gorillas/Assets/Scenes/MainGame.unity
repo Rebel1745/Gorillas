@@ -295,10 +295,10 @@ MonoBehaviour:
   _levelElements:
   - {fileID: 6087501927232720569, guid: 1a0841428a691fd48ae79cba51603c2a, type: 3}
   - {fileID: 7051889797630888576, guid: aa7bc64a2a8080948866be1235af4c53, type: 3}
-  - {fileID: 7151970457259300769, guid: 26de4744eca3bf44cb5f232428ac6b30, type: 3}
-  _distanceBetweenPlayers: 40
+  - {fileID: 1143275907609811923, guid: 26de4744eca3bf44cb5f232428ac6b30, type: 3}
+  _distanceBetweenPlayers: 20
   _minHeight: -12
-  _maxHeight: -5
+  _maxHeight: -8
 --- !u!1 &374054833
 GameObject:
   m_ObjectHideFlags: 0
@@ -549,7 +549,7 @@ MonoBehaviour:
   m_Intensity: 1
   m_LightVolumeIntensity: 1
   m_LightVolumeEnabled: 0
-  m_ApplyToSortingLayers: 00000000
+  m_ApplyToSortingLayers: 00000000c335a460
   m_LightCookieSprite: {fileID: 0}
   m_DeprecatedPointLightCookieSprite: {fileID: 0}
   m_LightOrder: 0

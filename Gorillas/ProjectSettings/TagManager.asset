@@ -17,7 +17,7 @@ TagManager:
   - Ground
   - ExplosionMask
   - Player
-  - 
+  - Window
   - 
   - 
   - 
@@ -41,6 +41,9 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: TrajectoryLine
+    uniqueID: 1621374403
+    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0
