@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
@@ -12,6 +13,11 @@ public class GameManager : MonoBehaviour
     [Header("Current Player Info")]
     public int CurrentPlayerId { get; private set; }
     public bool IsCurrentPlayerCPU = false;
+    private int[] _playerScores;
+    [SerializeField] private TMP_Text _playerScoreText;
+    [SerializeField] private int _numberOfRounds = 3;
+    private int _currentRound;
+    [SerializeField] private float _timeBetweenRounds = 3f;
 
     private void Awake()
     {
@@ -21,6 +27,10 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         UpdateGameState(GameState.BuildLevel);
+        _playerScores = new int[2];
+        UpdateScoreboard();
+        _currentRound = 0;
+        CurrentPlayerId = 1;
     }
 
     public void UpdateGameState(GameState newState, float delay = 0f)
@@ -44,11 +54,28 @@ public class GameManager : MonoBehaviour
             case GameState.WaitingForDetonation:
                 break;
             case GameState.NextTurn:
-                StartCoroutine(nameof(NextTurn), 1f);
+                StartCoroutine(nameof(NextTurn), delay);
+                break;
+            case GameState.RoundComplete:
+                StartCoroutine(RoundComplete(_timeBetweenRounds));
                 break;
             case GameState.GameOver:
                 break;
         }
+    }
+
+    private IEnumerator RoundComplete(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        _currentRound++;
+
+        CameraManager.Instance.ResetCamera();
+
+        if (_currentRound == _numberOfRounds)
+            UpdateGameState(GameState.GameOver);
+        else
+            UpdateGameState(GameState.BuildLevel);
     }
 
     private void SetupPlayers()
@@ -61,13 +88,17 @@ public class GameManager : MonoBehaviour
         LevelManager.Instance.BuildLevel();
     }
 
-    void SetupGame()
+    private void SetupGame()
     {
-        CurrentPlayerId = 0;
-        UpdateCurrentPlayerDetails(CurrentPlayerId);
+        // if this is the first round, move on
+        if (_currentRound == 0)
+            UpdateCurrentPlayerDetails(CurrentPlayerId);
+
+        // if not, move to the next player immediately
+        UpdateGameState(GameState.NextTurn);
     }
 
-    void UpdateCurrentPlayerDetails(int newPlayerId)
+    private void UpdateCurrentPlayerDetails(int newPlayerId)
     {
         PlayerManager.Instance.UpdatePreviousPlayer(CurrentPlayerId);
 
@@ -79,7 +110,7 @@ public class GameManager : MonoBehaviour
         UpdateGameState(GameState.WaitingForLaunch);
     }
 
-    IEnumerator NextTurn(float delay)
+    private IEnumerator NextTurn(float delay)
     {
         yield return new WaitForSeconds(delay);
 
@@ -88,6 +119,17 @@ public class GameManager : MonoBehaviour
         UpdateCurrentPlayerDetails(newPlayerId);
 
         UpdateGameState(GameState.WaitingForLaunch);
+    }
+
+    public void UpdateScore(int playerId)
+    {
+        _playerScores[playerId]++;
+        UpdateScoreboard();
+    }
+
+    private void UpdateScoreboard()
+    {
+        _playerScoreText.text = _playerScores[0].ToString() + " - " + _playerScores[1].ToString();
     }
 }
 
@@ -102,5 +144,6 @@ public enum GameState
     WaitingForLaunch,
     WaitingForDetonation,
     NextTurn,
+    RoundComplete,
     GameOver
 }

@@ -57,9 +57,11 @@ public class PlayerController : MonoBehaviour
         _uIGO = uIGO;
         _powerText = _uIGO.transform.GetChild(1).GetComponent<TMP_Text>();
         _powerSlider = _uIGO.transform.GetChild(2).GetComponent<Slider>();
+        _powerSlider.value = 50f;
         _powerSlider.onValueChanged.AddListener(UpdatePower);
         _angleText = _uIGO.transform.GetChild(4).GetComponent<TMP_Text>();
         _angleSlider = _uIGO.transform.GetChild(5).GetComponent<Slider>();
+        _angleSlider.value = 45f;
         _angleSlider.onValueChanged.AddListener(UpdateAngle);
         _launchButton = _uIGO.transform.GetChild(6).GetComponent<Button>();
         _launchButton.onClick.AddListener(LaunchProjectile);

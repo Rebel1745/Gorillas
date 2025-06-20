@@ -8,6 +8,7 @@ public class LevelManager : MonoBehaviour
     public static LevelManager Instance;
 
     [SerializeField] private Transform _levelElementHolder;
+    [SerializeField] private Transform _explosionMaskHolder;
     [SerializeField] private GameObject[] _levelElements;
     [SerializeField] private int _distanceBetweenPlayers = 10;
     [SerializeField] private float _minHeight;
@@ -113,9 +114,16 @@ public class LevelManager : MonoBehaviour
         _playerSpawnPointList.Clear();
         _totalElementWidth = 0;
 
+        // destroy the level elements
         for (int i = 0; i < _levelElementHolder.childCount; i++)
         {
             Destroy(_levelElementHolder.GetChild(i).gameObject);
+        }
+
+        // destroy the explosion masks
+        for (int i = 0; i < _explosionMaskHolder.childCount; i++)
+        {
+            Destroy(_explosionMaskHolder.GetChild(i).gameObject);
         }
     }
 

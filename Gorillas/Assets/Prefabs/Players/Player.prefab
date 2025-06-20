@@ -324,7 +324,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _maxSegmentCount: 500
   _curveLength: 1
-  _alwayShowTrajectory: 0
+  _alwayShowTrajectory: 1
 --- !u!1 &5942257555307697222
 GameObject:
   m_ObjectHideFlags: 0

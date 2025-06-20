@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class CameraManager : MonoBehaviour
@@ -28,8 +29,15 @@ public class CameraManager : MonoBehaviour
 
     private void Start()
     {
+        ResetCamera();
+    }
+
+    public void ResetCamera()
+    {
         _camera = Camera.main;
         _screenHeightWidthRatio = (float)Screen.width / Screen.height;
+
+        _cameraTargets.Clear();
 
         // when we first start, don't move the camera, wait for both players to be loaded
         _moveCamera = false;
@@ -62,22 +70,35 @@ public class CameraManager : MonoBehaviour
             _instantCameraMovement = false;
         }
         else
+        {
             _camera.orthographicSize = Mathf.SmoothDamp(_camera.orthographicSize, zoom, ref _zoomVelocity, smoothTime);
+        }
+
+        // if we reach our prefered zoom, stop moving the camera
+        if (Mathf.Abs(_camera.orthographicSize - zoom) < 0.01f)
+        {
+            _moveCamera = false;
+            _zoomVelocity = 0F;
+        }
     }
 
     // moving the camera doesn't need a smooth time becuase it should remain in the same Y position
     private void MoveCamera()
     {
-        float camXPos = _camera.transform.position.x;
+        float camXPos = 0f;
 
         if (_cameraTargets.Count == 1) camXPos = GetCenterPoint().x;
 
         Vector3 newPos = new(camXPos, _camera.orthographicSize + GetLowestPlayer() - _cameraOffset.y, _cameraOffset.z);
 
         if (_cameraTargets.Count != 1)
+        {
             _camera.transform.position = newPos;
+        }
         else
+        {
             _camera.transform.position = Vector3.SmoothDamp(_camera.transform.position, newPos, ref _moveVelocity, _moveSmoothTime);
+        }
     }
 
     private Vector3 GetCenterPoint()
@@ -116,7 +137,7 @@ public class CameraManager : MonoBehaviour
 
     private void SetBounds()
     {
-        _cameraBounds = new Bounds(_cameraTargets[0], Vector3.zero);
+        _cameraBounds = new Bounds(_cameraTargets.First(), Vector3.zero);
         for (int i = 0; i < _cameraTargets.Count; i++)
         {
             _cameraBounds.Encapsulate(_cameraTargets[i]);
@@ -137,11 +158,10 @@ public class CameraManager : MonoBehaviour
         }
     }
 
-    public void RemovePlayer(Vector3 target)
+    public void RemovePlayer(int playerId)
     {
-        if (!_cameraTargets.Contains(target)) return;
-
-        _cameraTargets.Remove(target);
+        if (_cameraTargets.Count < 2) Debug.LogError("Both players aren't here, why are we trying to remove one?");
+        _cameraTargets.RemoveAt(playerId);
 
         SetBounds();
         _moveCamera = true;
@@ -151,7 +171,7 @@ public class CameraManager : MonoBehaviour
     {
         if (_cameraTargets.Count == 2)
             _cameraTargets.Add(target);
-        else
+        else if (_cameraTargets.Count == 3)
             _cameraTargets[2] = target;
     }
 

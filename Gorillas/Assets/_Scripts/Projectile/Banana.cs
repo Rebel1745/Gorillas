@@ -13,6 +13,7 @@ public class Banana : MonoBehaviour, IProjectile
     private float _explosionRadius;
     private Transform _explosionTransform;
     private Rigidbody2D _rb;
+    private bool _createExplosionMask;
 
     private void Start()
     {
@@ -22,22 +23,23 @@ public class Banana : MonoBehaviour, IProjectile
 
     void Update()
     {
-        // if we are moving down, change the zoom
-        if (_rb.linearVelocityY < 0)
-        {
-            CameraManager.Instance.SetProjectileZenith(transform.position);
-            CameraManager.Instance.UpdateCameraForProjectile();
-        }
-
         CheckForGroundHit();
 
         // if the banana goes too far offscreen, destroy it
-        if (transform.position.y < _destroyWhenDistanceOffscreen) CreateExplosionAndDestroy();
+        if (transform.position.y < _destroyWhenDistanceOffscreen)
+            CreateExplosionAndDestroy();
+
+        if (!_createExplosionMask && _rb.linearVelocityY < 0)
+        {
+            // if we are moving down, change the zoom
+            CameraManager.Instance.SetProjectileZenith(transform.position);
+            CameraManager.Instance.UpdateCameraForProjectile();
+        }
     }
 
     private void CheckForGroundHit()
     {
-        bool createExplosionMask = true;
+        _createExplosionMask = true;
 
         // check if we hit a player
         RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 0.01f, _whatIsPlayer);
@@ -45,16 +47,17 @@ public class Banana : MonoBehaviour, IProjectile
 
         if (hit)
         {
-            CameraManager.Instance.RemovePlayer(hit.transform.position);
             int playerHitId = hit.transform.GetComponent<PlayerController>().PlayerId;
             int otherPlayerId = (playerHitId + 1) % 2;
+            CameraManager.Instance.RemovePlayer(playerHitId);
+            GameManager.Instance.UpdateScore(otherPlayerId);
             PlayerManager.Instance.SetPlayerAnimation(otherPlayerId, "Celebrate");
             // we directly hit a player!!
             Destroy(hit.transform.gameObject);
             CreateExplosionAndDestroy();
 
             // Game over?
-            GameManager.Instance.UpdateGameState(GameState.GameOver);
+            GameManager.Instance.UpdateGameState(GameState.RoundComplete);
         }
         else
         {
@@ -66,17 +69,18 @@ public class Banana : MonoBehaviour, IProjectile
                 hits = Physics2D.OverlapCircleAll(transform.position, _explosionRadius, _whatIsPlayer);
                 if (hits.Length > 0)
                 {
-                    CameraManager.Instance.RemovePlayer(hits[0].transform.position);
+                    //CameraManager.Instance.RemovePlayer(hits[0].transform.position);
                     int playerHitId = hits[0].transform.GetComponent<PlayerController>().PlayerId;
                     int otherPlayerId = (playerHitId + 1) % 2;
                     PlayerManager.Instance.SetPlayerAnimation(otherPlayerId, "Celebrate");
                     // the explosion hit a player!
-                    CameraManager.Instance.RemovePlayer(hits[0].transform.position);
+                    CameraManager.Instance.RemovePlayer(playerHitId);
+                    GameManager.Instance.UpdateScore(playerHitId);
                     Destroy(hits[0].gameObject);
                     CreateExplosionAndDestroy();
 
                     // Game over?
-                    GameManager.Instance.UpdateGameState(GameState.GameOver);
+                    GameManager.Instance.UpdateGameState(GameState.RoundComplete);
                 }
                 else
                 {
@@ -84,15 +88,15 @@ public class Banana : MonoBehaviour, IProjectile
                     foreach (var h in Physics2D.OverlapPointAll(transform.position))
                     {
                         // if there is, bail
-                        if (h.CompareTag("ExplosionMask")) createExplosionMask = false;
+                        if (h.CompareTag("ExplosionMask")) _createExplosionMask = false;
                     }
 
-                    if (createExplosionMask)
+                    if (_createExplosionMask)
                     {
                         CreateExplosionAndDestroy();
 
                         // Next Players turn
-                        GameManager.Instance.UpdateGameState(GameState.NextTurn);
+                        GameManager.Instance.UpdateGameState(GameState.NextTurn, 1f);
                     }
                 }
             }
