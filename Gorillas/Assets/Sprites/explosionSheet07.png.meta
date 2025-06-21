@@ -1106,6 +1106,28 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: explosionSheet07_45
+      rect:
+        serializedVersion: 2
+        x: 1198
+        y: 30
+        width: 250
+        height: 250
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 40ef666288426e748a4d401a7ead3ead
+      internalID: 1785008179
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
@@ -1160,6 +1182,7 @@ TextureImporter:
       explosionSheet07_42: 515802877
       explosionSheet07_43: -422530724
       explosionSheet07_44: -1280726987
+      explosionSheet07_45: 1785008179
       explosionSheet07_5: 1923520873
       explosionSheet07_6: 1644282730
       explosionSheet07_7: -2096558927

@@ -53,8 +53,8 @@ public class Banana : MonoBehaviour, IProjectile
             GameManager.Instance.UpdateScore(otherPlayerId);
             PlayerManager.Instance.SetPlayerAnimation(otherPlayerId, "Celebrate");
             // we directly hit a player!!
-            Destroy(hit.transform.gameObject);
             CreateExplosionAndDestroy();
+            Destroy(hit.transform.gameObject);
 
             // Game over?
             GameManager.Instance.UpdateGameState(GameState.RoundComplete);
@@ -69,15 +69,14 @@ public class Banana : MonoBehaviour, IProjectile
                 hits = Physics2D.OverlapCircleAll(transform.position, _explosionRadius, _whatIsPlayer);
                 if (hits.Length > 0)
                 {
-                    //CameraManager.Instance.RemovePlayer(hits[0].transform.position);
                     int playerHitId = hits[0].transform.GetComponent<PlayerController>().PlayerId;
                     int otherPlayerId = (playerHitId + 1) % 2;
                     PlayerManager.Instance.SetPlayerAnimation(otherPlayerId, "Celebrate");
                     // the explosion hit a player!
                     CameraManager.Instance.RemovePlayer(playerHitId);
-                    GameManager.Instance.UpdateScore(playerHitId);
-                    Destroy(hits[0].gameObject);
+                    GameManager.Instance.UpdateScore(otherPlayerId);
                     CreateExplosionAndDestroy();
+                    Destroy(hits[0].gameObject);
 
                     // Game over?
                     GameManager.Instance.UpdateGameState(GameState.RoundComplete);

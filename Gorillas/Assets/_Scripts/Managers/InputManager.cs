@@ -68,4 +68,12 @@ public class InputManager : MonoBehaviour
     {
         PlayerManager.Instance.Players[PlayerManager.Instance.CurrentPlayerId].PlayerController.LaunchProjectile();
     }
+
+    public void EnableDisableControls(bool enabled)
+    {
+        if (enabled)
+            _inputActions.Gameplay.Enable();
+        else
+            _inputActions.Gameplay.Disable();
+    }
 }

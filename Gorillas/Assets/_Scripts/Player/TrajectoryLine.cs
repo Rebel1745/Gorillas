@@ -30,7 +30,7 @@ public class TrajectoryLine : MonoBehaviour
         Vector3 previousPos = startPos;
         bool pathComplete = false;
         bool containsMask = false;
-        Vector3 zenith = Vector3.zero;
+        Vector3 zenith = new(0f, -Mathf.Infinity, 0f);
 
         _segmentsList.Add(startPos);
 

@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using UnityEngine;
 using TMPro;
@@ -26,11 +25,11 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        UpdateGameState(GameState.BuildLevel);
+        UpdateGameState(GameState.StartScreen);
         _playerScores = new int[2];
         UpdateScoreboard();
         _currentRound = 0;
-        CurrentPlayerId = 1;
+        CurrentPlayerId = 0;
     }
 
     public void UpdateGameState(GameState newState, float delay = 0f)
@@ -40,6 +39,12 @@ public class GameManager : MonoBehaviour
 
         switch (newState)
         {
+            case GameState.StartScreen:
+                ShowStartScreen();
+                break;
+            case GameState.SettingsScreen:
+                ShowSettingsScreen();
+                break;
             case GameState.BuildLevel:
                 BuildLevel();
                 break;
@@ -62,6 +67,17 @@ public class GameManager : MonoBehaviour
             case GameState.GameOver:
                 break;
         }
+    }
+
+    private void ShowSettingsScreen()
+    {
+        UIManager.Instance.ShowHideUIElement(UIManager.Instance.SettingsScreenUI, true);
+    }
+
+    private void ShowStartScreen()
+    {
+        InputManager.Instance.EnableDisableControls(false);
+        UIManager.Instance.ShowHideUIElement(UIManager.Instance.StartScreenUI, true);
     }
 
     private IEnumerator RoundComplete(float delay)
@@ -93,9 +109,13 @@ public class GameManager : MonoBehaviour
         // if this is the first round, move on
         if (_currentRound == 0)
             UpdateCurrentPlayerDetails(CurrentPlayerId);
-
         // if not, move to the next player immediately
-        UpdateGameState(GameState.NextTurn);
+        else
+            UpdateGameState(GameState.NextTurn);
+
+        UIManager.Instance.ShowHideUIElement(UIManager.Instance.ScoreBoardUI, true);
+        InputManager.Instance.EnableDisableControls(true);
+
     }
 
     private void UpdateCurrentPlayerDetails(int newPlayerId)

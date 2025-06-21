@@ -2,6 +2,34 @@
     "name": "PlayerInput",
     "maps": [
         {
+            "name": "UI",
+            "id": "e9c02eca-e2de-4c7c-9d7c-c6afefda9579",
+            "actions": [
+                {
+                    "name": "New action",
+                    "type": "Button",
+                    "id": "7717422f-a9b9-423f-b5db-e3aaa1a2794d",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "c2c4f3e0-fdaa-4c41-bc77-8d6a428a3ad2",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "New action",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
             "name": "Gameplay",
             "id": "91b269f6-31ad-4b00-b406-cb391bb78170",
             "actions": [

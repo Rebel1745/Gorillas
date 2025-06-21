@@ -30,9 +30,12 @@ public class PlayerManager : MonoBehaviour
 
         // create player
         GameObject newPlayer = Instantiate(Players[0].PlayerPrefab, firstSpawnPoint, Quaternion.identity, _playerHolder);
+        PlayerConfig pc = Players[0].PlayerConfig.GetComponent<PlayerConfig>();
         // create player UI
         GameObject newUI = Instantiate(Players[0].PlayerUI, _uICanvas);
         newUI.SetActive(false);
+        Players[0].Name = pc.PlayerName;
+        Players[0].IsCPU = pc.isCPU;
         Players[0].PlayerGameObject = newPlayer;
         Players[0].PlayerController = newPlayer.GetComponent<PlayerController>();
         Players[0].PlayerUI = newUI;
@@ -40,21 +43,27 @@ public class PlayerManager : MonoBehaviour
         Players[0].PlayerLineRenderer = newPlayer.GetComponent<LineRenderer>();
         Players[0].PlayerController.SetPlayerDetails(0, newUI, Players[0]);
 
+        pc.SavePlayerDetails();
+
         CameraManager.Instance.AddPlayer(newPlayer.transform.position);
 
         newPlayer = Instantiate(Players[1].PlayerPrefab, lastSpawnPoint, Quaternion.identity, _playerHolder);
         newPlayer.GetComponentInChildren<SpriteRenderer>().transform.rotation = Quaternion.Euler(0f, 180f, 0f);
         newPlayer.transform.GetChild(1).transform.rotation = Quaternion.Euler(0f, 180f, 0f);
-
+        pc = Players[1].PlayerConfig.GetComponent<PlayerConfig>();
         // create player UI
         newUI = Instantiate(Players[1].PlayerUI, _uICanvas);
         newUI.SetActive(false);
+        Players[1].Name = pc.PlayerName;
+        Players[1].IsCPU = pc.isCPU;
         Players[1].PlayerGameObject = newPlayer;
         Players[1].PlayerController = newPlayer.GetComponent<PlayerController>();
         Players[1].PlayerUI = newUI;
         Players[1].PlayerAnimator = newPlayer.GetComponentInChildren<Animator>();
         Players[1].PlayerLineRenderer = newPlayer.GetComponent<LineRenderer>();
         Players[1].PlayerController.SetPlayerDetails(1, newUI, Players[1]);
+
+        pc.SavePlayerDetails();
 
         CameraManager.Instance.AddPlayer(newPlayer.transform.position);
     }
@@ -74,9 +83,6 @@ public class PlayerManager : MonoBehaviour
 
     public void UpdatePreviousPlayer(int playerId)
     {
-        // hide current players UI
-        //Players[playerId].PlayerUI.SetActive(false);
-        //Players[playerId].PlayerLineRenderer.enabled = false;
         // reset their animation
         SetPlayerAnimation(playerId, "Idle");
     }
@@ -84,11 +90,9 @@ public class PlayerManager : MonoBehaviour
     public void UpdateCurrentPlayer(int playerId)
     {
         _currentPlayerId = playerId;
-        Players[playerId].PlayerUI.SetActive(true);
+        UIManager.Instance.ShowHideUIElement(Players[playerId].PlayerUI, true);
         Players[playerId].PlayerLineRenderer.enabled = true;
         StartCoroutine(Players[playerId].PlayerController.CalculateTrajectoryLine());
-        // the below line is now in the ShowTrajectoryLine function.  If that functionality is removed this may be re-enabled
-        //Players[playerId].PlayerController.SetLaunchButtonActive(true);
         SetPlayerAnimation(playerId, "Idle");
     }
 }
@@ -96,6 +100,7 @@ public class PlayerManager : MonoBehaviour
 [System.Serializable]
 public struct PlayerDetails
 {
+    public GameObject PlayerConfig;
     public string Name;
     public bool IsCPU;
     public GameObject PlayerUI;

@@ -68,7 +68,7 @@ public class PlayerController : MonoBehaviour
         _trajectoryLine.SetSpawnPoint(_projectileLaunchPoint);
         _initialTrajectoryLine = true;
 
-        SetLaunchButtonActive(false);
+        UIManager.Instance.EnableDisableButton(_launchButton, false);
 
         _powerText.text = _powerSlider.value.ToString("F1");
         _angleText.text = _angleSlider.value.ToString("F1");
@@ -81,7 +81,7 @@ public class PlayerController : MonoBehaviour
         PlayerManager.Instance.SetPlayerAnimation(_playerId, "Throw");
         StartCoroutine(ResetAnimation(_delayBeforeAttackAnimationReset));
 
-        SetLaunchButtonActive(false);
+        UIManager.Instance.EnableDisableButton(_launchButton, false);
 
         GameObject projectile = Instantiate(_projectilePrefab, _projectileLaunchPoint.position, Quaternion.identity);
 
@@ -91,7 +91,7 @@ public class PlayerController : MonoBehaviour
         CameraManager.Instance.UpdateCameraForProjectile();
 
         _playerDetails.PlayerLineRenderer.enabled = false;
-        _playerDetails.PlayerUI.SetActive(false);
+        UIManager.Instance.ShowHideUIElement(_playerDetails.PlayerUI, false);
 
         GameManager.Instance.UpdateGameState(GameState.WaitingForDetonation);
     }
@@ -103,11 +103,6 @@ public class PlayerController : MonoBehaviour
         PlayerManager.Instance.SetPlayerAnimation(_playerId, "Idle");
     }
 
-    public void SetLaunchButtonActive(bool active)
-    {
-        _launchButton.enabled = active;
-    }
-
     public IEnumerator CalculateTrajectoryLine()
     {
         float start = Time.time;
@@ -116,7 +111,7 @@ public class PlayerController : MonoBehaviour
             yield return new WaitForSeconds(0.5f);
 
         _initialTrajectoryLine = false;
-        SetLaunchButtonActive(true);
+        UIManager.Instance.EnableDisableButton(_launchButton, true);
         UpdatePower(_powerSlider.value);
     }
 
