@@ -115,6 +115,10 @@ public class Banana : MonoBehaviour, IProjectile
         }
         CameraManager.Instance.RemoveProjectile();
         GameObject explosion = Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
+
+        // set the x position of the landing area for the AI to use
+        PlayerManager.Instance.Players[PlayerManager.Instance.CurrentPlayerId].PlayerController.LastProjectileLandingPositionX = transform.position.x;
+
         Destroy(gameObject);
     }
 

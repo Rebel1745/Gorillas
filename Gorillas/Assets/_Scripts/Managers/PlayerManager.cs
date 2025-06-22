@@ -10,6 +10,7 @@ public class PlayerManager : MonoBehaviour
     public PlayerDetails[] Players;
     private int _currentPlayerId;
     public int CurrentPlayerId { get { return _currentPlayerId; } }
+    public bool IsCurrentPlayerCPU;
 
     void Awake()
     {
@@ -42,6 +43,7 @@ public class PlayerManager : MonoBehaviour
         Players[0].PlayerAnimator = newPlayer.GetComponentInChildren<Animator>();
         Players[0].PlayerLineRenderer = newPlayer.GetComponent<LineRenderer>();
         Players[0].PlayerController.SetPlayerDetails(0, newUI, Players[0]);
+        Players[0].PlayerAIController = newPlayer.GetComponent<AIController>();
 
         pc.SavePlayerDetails();
 
@@ -62,6 +64,7 @@ public class PlayerManager : MonoBehaviour
         Players[1].PlayerAnimator = newPlayer.GetComponentInChildren<Animator>();
         Players[1].PlayerLineRenderer = newPlayer.GetComponent<LineRenderer>();
         Players[1].PlayerController.SetPlayerDetails(1, newUI, Players[1]);
+        Players[1].PlayerAIController = newPlayer.GetComponent<AIController>();
 
         pc.SavePlayerDetails();
 
@@ -91,9 +94,14 @@ public class PlayerManager : MonoBehaviour
     {
         _currentPlayerId = playerId;
         UIManager.Instance.ShowHideUIElement(Players[playerId].PlayerUI, true);
-        Players[playerId].PlayerLineRenderer.enabled = true;
+        IsCurrentPlayerCPU = Players[playerId].IsCPU;
         StartCoroutine(Players[playerId].PlayerController.CalculateTrajectoryLine());
         SetPlayerAnimation(playerId, "Idle");
+
+        if (!IsCurrentPlayerCPU)
+            Players[playerId].PlayerLineRenderer.enabled = true;
+        else
+            StartCoroutine(Players[playerId].PlayerAIController.DoAI(Players[playerId].PlayerController));
     }
 }
 
@@ -109,4 +117,5 @@ public struct PlayerDetails
     public Animator PlayerAnimator;
     public GameObject PlayerGameObject;
     public LineRenderer PlayerLineRenderer;
+    public AIController PlayerAIController;
 }

@@ -65,8 +65,18 @@ public class GameManager : MonoBehaviour
                 StartCoroutine(RoundComplete(_timeBetweenRounds));
                 break;
             case GameState.GameOver:
+                StartCoroutine(nameof(GameOver), delay);
                 break;
         }
+    }
+    IEnumerator GameOver(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        UIManager.Instance.ShowHideUIElement(UIManager.Instance.ScoreBoardUI, false);
+        // show game over screen with positions
+        UIManager.Instance.ShowHideUIElement(UIManager.Instance.GameOverUI, true);
+        UIManager.Instance.GameOverUI.GetComponent<GameOverUI>().SetGameOverDetails(_playerScores);
     }
 
     private void ShowSettingsScreen()
@@ -113,6 +123,8 @@ public class GameManager : MonoBehaviour
         else
             UpdateGameState(GameState.NextTurn);
 
+        // reset the scores
+        _playerScores = new int[2];
         UIManager.Instance.ShowHideUIElement(UIManager.Instance.ScoreBoardUI, true);
         InputManager.Instance.EnableDisableControls(true);
 

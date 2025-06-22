@@ -30,9 +30,16 @@ public class PlayerController : MonoBehaviour
     private GameObject _uIGO;
     private TMP_Text _powerText;
     private Slider _powerSlider;
+    public Slider PowerSlider { get { return _powerSlider; } }
     private TMP_Text _angleText;
     private Slider _angleSlider;
+    public Slider AngleSlider { get { return _angleSlider; } }
     private Button _launchButton;
+
+    // AI Details
+    private int _throwNumber;
+    public int ThrowNumber { get { return _throwNumber; } }
+    public float LastProjectileLandingPositionX;
 
     private void Start()
     {
@@ -68,6 +75,8 @@ public class PlayerController : MonoBehaviour
         _trajectoryLine.SetSpawnPoint(_projectileLaunchPoint);
         _initialTrajectoryLine = true;
 
+        _throwNumber = 0;
+
         UIManager.Instance.EnableDisableButton(_launchButton, false);
 
         _powerText.text = _powerSlider.value.ToString("F1");
@@ -77,6 +86,7 @@ public class PlayerController : MonoBehaviour
 
     public void LaunchProjectile()
     {
+        _throwNumber++;
         // set animation and return to idle
         PlayerManager.Instance.SetPlayerAnimation(_playerId, "Throw");
         StartCoroutine(ResetAnimation(_delayBeforeAttackAnimationReset));
@@ -125,6 +135,7 @@ public class PlayerController : MonoBehaviour
         _trajectoryLine.SetPower(_defaultForceMultiplier * power);
 
         _powerText.text = power.ToString("F1");
+        if (_playerDetails.IsCPU) _powerSlider.value = power;
     }
 
     public void UpdateAngle(float angle)
@@ -133,6 +144,7 @@ public class PlayerController : MonoBehaviour
         _trajectoryLine.SetPower(_defaultForceMultiplier * _powerSlider.value);
 
         _angleText.text = angle.ToString("F1");
+        if (_playerDetails.IsCPU) _angleSlider.value = angle;
     }
 
     private void UpdateLaunchPointAngle(float angle)
@@ -141,6 +153,7 @@ public class PlayerController : MonoBehaviour
         _projectileLaunchPoint.rotation = launchAngle;
     }
 
+    #region Input Controls
     public void StartPowerChange(float delta)
     {
         _powerDelta = delta;
@@ -174,4 +187,5 @@ public class PlayerController : MonoBehaviour
         _currentAngleIncrease += Mathf.Clamp(_currentAngleIncrease, _angleIncreaseStep, _angleIncreaseMax);
         _angleSlider.value += _angleDelta * _currentAngleIncrease * Time.deltaTime;
     }
+    #endregion
 }

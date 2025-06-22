@@ -8,6 +8,7 @@ public class UIManager : MonoBehaviour
     public GameObject StartScreenUI;
     public GameObject SettingsScreenUI;
     public GameObject ScoreBoardUI;
+    public GameObject GameOverUI;
 
     private void Awake()
     {
@@ -31,18 +32,19 @@ public class UIManager : MonoBehaviour
 
     public void ShowSettingsScreen()
     {
-        UIManager.Instance.ShowHideUIElement(UIManager.Instance.StartScreenUI, false);
+        ShowHideUIElement(StartScreenUI, false);
         GameManager.Instance.UpdateGameState(GameState.SettingsScreen);
     }
 
     public void StartGame()
     {
-        UIManager.Instance.ShowHideUIElement(UIManager.Instance.SettingsScreenUI, false);
+        ShowHideUIElement(SettingsScreenUI, false);
         GameManager.Instance.UpdateGameState(GameState.BuildLevel);
     }
 
-    public void PlayAgain()
+    public void ShowStartMenu()
     {
-
+        ShowHideUIElement(GameOverUI, false);
+        GameManager.Instance.UpdateGameState(GameState.StartScreen);
     }
 }

@@ -94,6 +94,7 @@ public class TrajectoryLine : MonoBehaviour
 
     public void ShowTrajectoryLine()
     {
+        if (PlayerManager.Instance.IsCurrentPlayerCPU) return;
         _segments = _segmentsList.ToArray();
         _lineRenderer.positionCount = _segments.Length;
         _lineRenderer.SetPositions(_segments);

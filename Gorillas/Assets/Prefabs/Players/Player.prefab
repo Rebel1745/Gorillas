@@ -123,6 +123,7 @@ GameObject:
   - component: {fileID: 4088403232203255021}
   - component: {fileID: 838280491203144005}
   - component: {fileID: -3208810610942719868}
+  - component: {fileID: -7406244390714490584}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player
@@ -168,6 +169,7 @@ MonoBehaviour:
   _powerIncreaseMax: 1
   _angleIncreaseStep: 0.1
   _angleIncreaseMax: 1
+  LastProjectileLandingPositionX: 0
 --- !u!70 &4088403232203255021
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -325,6 +327,18 @@ MonoBehaviour:
   _maxSegmentCount: 500
   _curveLength: 1
   _alwayShowTrajectory: 1
+--- !u!114 &-7406244390714490584
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4972102006553089897}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be37496cb1782294193736e2810fa04b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5942257555307697222
 GameObject:
   m_ObjectHideFlags: 0
