@@ -39,7 +39,7 @@ public class UIManager : MonoBehaviour
     public void StartGame()
     {
         ShowHideUIElement(SettingsScreenUI, false);
-        GameManager.Instance.UpdateGameState(GameState.BuildLevel);
+        GameManager.Instance.UpdateGameState(GameState.InitialiseGame);
     }
 
     public void ShowStartMenu()

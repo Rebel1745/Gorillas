@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using TMPro;
+using System;
 
 public class GameManager : MonoBehaviour
 {
@@ -26,10 +27,6 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         UpdateGameState(GameState.StartScreen);
-        _playerScores = new int[2];
-        UpdateScoreboard();
-        _currentRound = 0;
-        CurrentPlayerId = 0;
     }
 
     public void UpdateGameState(GameState newState, float delay = 0f)
@@ -44,6 +41,9 @@ public class GameManager : MonoBehaviour
                 break;
             case GameState.SettingsScreen:
                 ShowSettingsScreen();
+                break;
+            case GameState.InitialiseGame:
+                InitialiseGame();
                 break;
             case GameState.BuildLevel:
                 BuildLevel();
@@ -69,6 +69,16 @@ public class GameManager : MonoBehaviour
                 break;
         }
     }
+
+    private void InitialiseGame()
+    {
+        _playerScores = new int[2];
+        UpdateScoreboard();
+        _currentRound = 0;
+        CurrentPlayerId = 0;
+        UpdateGameState(GameState.BuildLevel);
+    }
+
     IEnumerator GameOver(float delay)
     {
         yield return new WaitForSeconds(delay);
@@ -170,6 +180,7 @@ public enum GameState
     StartScreen,
     SettingsScreen,
     PauseScreen,
+    InitialiseGame,
     BuildLevel,
     SetupPlayers,
     SetupGame,

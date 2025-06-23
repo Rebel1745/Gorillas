@@ -115,13 +115,11 @@ public class PlayerController : MonoBehaviour
 
     public IEnumerator CalculateTrajectoryLine()
     {
-        float start = Time.time;
-
         if (_initialTrajectoryLine)
             yield return new WaitForSeconds(0.5f);
 
         _initialTrajectoryLine = false;
-        UIManager.Instance.EnableDisableButton(_launchButton, true);
+        if (!_playerDetails.IsCPU) UIManager.Instance.EnableDisableButton(_launchButton, true);
         UpdatePower(_powerSlider.value);
     }
 

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class TrajectoryLine : MonoBehaviour
@@ -7,6 +8,8 @@ public class TrajectoryLine : MonoBehaviour
     [SerializeField] private float _curveLength = 5f;
 
     private Vector3[] _segments;
+    public int SegmentCount { get { return _segmentsList.Count; } }
+    public Vector3 LastSegment { get { return _segmentsList.Last(); } }
     private List<Vector3> _segmentsList = new();
     private LineRenderer _lineRenderer;
     private float _projectilePower;
@@ -37,7 +40,7 @@ public class TrajectoryLine : MonoBehaviour
         Vector3 startVelocity = _spawnPoint.right * _projectilePower;
         for (int i = 1; i < _maxSegmentCount; i++)
         {
-            float timeOffset = (i * Time.fixedDeltaTime * _curveLength);
+            float timeOffset = i * Time.fixedDeltaTime * _curveLength;
             Vector3 gravityOffset = 0.5f * Mathf.Pow(timeOffset, 2) * Physics2D.gravity;
             Vector3 newPos = startPos + startVelocity * timeOffset + gravityOffset;
             Vector3 rayDir = newPos - previousPos;
@@ -81,6 +84,7 @@ public class TrajectoryLine : MonoBehaviour
 
             if (pathComplete) break;
         }
+        _segments = _segmentsList.ToArray();
 
         if (_alwayShowTrajectory) ShowTrajectoryLine();
     }
@@ -95,7 +99,6 @@ public class TrajectoryLine : MonoBehaviour
     public void ShowTrajectoryLine()
     {
         if (PlayerManager.Instance.IsCurrentPlayerCPU) return;
-        _segments = _segmentsList.ToArray();
         _lineRenderer.positionCount = _segments.Length;
         _lineRenderer.SetPositions(_segments);
     }

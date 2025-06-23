@@ -45,11 +45,14 @@ public class InputManager : MonoBehaviour
 
     private void ShowTrajectoryLine(InputAction.CallbackContext context)
     {
-        PlayerManager.Instance.Players[PlayerManager.Instance.CurrentPlayerId].PlayerController.ShowTrajectoryLine();
+        if (GameManager.Instance.State == GameState.WaitingForLaunch && !PlayerManager.Instance.IsCurrentPlayerCPU)
+            PlayerManager.Instance.Players[PlayerManager.Instance.CurrentPlayerId].PlayerController.ShowTrajectoryLine();
     }
 
     private void UpdatePower(InputAction.CallbackContext context)
     {
+        if (GameManager.Instance.State != GameState.WaitingForLaunch || PlayerManager.Instance.IsCurrentPlayerCPU) return;
+
         if (context.canceled)
             PlayerManager.Instance.Players[PlayerManager.Instance.CurrentPlayerId].PlayerController.StopPowerChange();
         else
@@ -58,6 +61,8 @@ public class InputManager : MonoBehaviour
 
     private void UpdateAngle(InputAction.CallbackContext context)
     {
+        if (GameManager.Instance.State != GameState.WaitingForLaunch || PlayerManager.Instance.IsCurrentPlayerCPU) return;
+
         if (context.canceled)
             PlayerManager.Instance.Players[PlayerManager.Instance.CurrentPlayerId].PlayerController.StopAngleChange();
         else
@@ -66,6 +71,8 @@ public class InputManager : MonoBehaviour
 
     private void LaunchProjectile(InputAction.CallbackContext context)
     {
+        if (GameManager.Instance.State != GameState.WaitingForLaunch || PlayerManager.Instance.IsCurrentPlayerCPU) return;
+
         PlayerManager.Instance.Players[PlayerManager.Instance.CurrentPlayerId].PlayerController.LaunchProjectile();
     }
 
