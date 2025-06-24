@@ -17,11 +17,14 @@ public class AIController : MonoBehaviour
     private int _playerId;
     private int _otherPlayerId;
 
-    [SerializeField] private TrajectoryLine _trajectoryLine;
+    [SerializeField] private TrajectoryLine_old _trajectoryLine;
     private PlayerController _playerController;
 
     public IEnumerator DoAI(PlayerController pc)
     {
+        _angleSlider = pc.AngleSlider;
+        _playerController = pc;
+
         BananaTrajectorySolver bts = new();
 
         _playerId = pc.PlayerId;
@@ -31,19 +34,42 @@ public class AIController : MonoBehaviour
         Vector3 targetPlayer = PlayerManager.Instance.Players[_otherPlayerId].PlayerGameObject.transform.position;
 
         float xDiff = throwingPlayer.x - targetPlayer.x;
-        float yDiff = throwingPlayer.y - targetPlayer.y;
+        float yDiff = targetPlayer.y - throwingPlayer.y;
 
-        bts.InitialiseValues(xDiff, yDiff);
+        /*
         bts.CalculatePower(50f);
-        bts.CalculateAngle(60f);
+        bts.CalculateAngle(60f);*/
 
         yield return new WaitForSeconds(0.5f);
 
-        pc.UpdatePower(bts.CalculatePower(50f));
+        float minAngle = CalculateMinAngle();
+        Debug.Log(xDiff + " - " + yDiff + " - " + minAngle);
+        bts.InitialiseValues(xDiff, yDiff, minAngle);
+        Debug.Log(bts.CalculateLaunchValues());
+
+        //pc.UpdatePower(bts.CalculatePower(50f));
 
         yield return new WaitForSeconds(1f);
 
-        pc.LaunchProjectile();
+        //pc.LaunchProjectile();
+    }
+
+    private float CalculateMinAngle()
+    {
+        float minAngle = _angleSlider.minValue;
+        float maxAngle = _angleSlider.maxValue;
+        float currentAngle = minAngle;
+
+        int segments = _trajectoryLine.SegmentCount;
+
+        while (segments < 15)
+        {
+            currentAngle += 0.5f;
+            _playerController.UpdateAngle(currentAngle);
+            segments = _trajectoryLine.SegmentCount;
+        }
+
+        return currentAngle;
     }
 
     /*public IEnumerator DoAI(PlayerController pc)
@@ -125,24 +151,6 @@ public class AIController : MonoBehaviour
                 }
             }
         }
-    }
-
-    private float CalculateAngle()
-    {
-        float currentAngle = _angleSlider.value;
-        float minAngle = _angleSlider.minValue;
-        float maxAngle = _angleSlider.maxValue;
-
-        int segments = _trajectoryLine.SegmentCount;
-
-        while (segments < 15)
-        {
-            currentAngle += 0.5f;
-            _playerController.UpdateAngle(currentAngle);
-            segments = _trajectoryLine.SegmentCount;
-        }
-
-        return currentAngle;
     }
 
     float CalcAngle(float distance, float gravity, float velocity)

@@ -1,0 +1,114 @@
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+
+public class TrajectoryLine_old : MonoBehaviour
+{
+    [SerializeField] private int _maxSegmentCount = 50;
+    [SerializeField] private float _curveLength = 5f;
+
+    private Vector3[] _segments;
+    public int SegmentCount { get { return _segmentsList.Count; } }
+    public Vector3 LastSegment { get { return _segmentsList.Last(); } }
+    private List<Vector3> _segmentsList = new();
+    private LineRenderer _lineRenderer;
+    private float _projectilePower;
+    private Transform _spawnPoint;
+
+    [Header("Debug")]
+    [SerializeField] private bool _alwayShowTrajectory;
+
+    private void Start()
+    {
+        _lineRenderer = GetComponent<LineRenderer>();
+        _lineRenderer.positionCount = 0;
+    }
+
+    private void CalculateTrajectoryLine()
+    {
+        _segmentsList.Clear();
+
+        // set the start position of the line renderer
+        Vector3 startPos = _spawnPoint.position;
+        Vector3 previousPos = startPos;
+        bool pathComplete = false;
+        Vector3 zenith = new(0f, -Mathf.Infinity, 0f);
+
+        _segmentsList.Add(startPos);
+
+        Vector3 startVelocity = _spawnPoint.right * _projectilePower;
+        for (int i = 1; i < _maxSegmentCount; i++)
+        {
+            float timeOffset = i * Time.fixedDeltaTime * _curveLength;
+            Vector3 gravityOffset = 0.5f * Mathf.Pow(timeOffset, 2) * Physics2D.gravity;
+            Vector3 newPos = startPos + startVelocity * timeOffset + gravityOffset;
+            Vector3 rayDir = newPos - previousPos;
+            float rayDistance = Vector3.Distance(previousPos, newPos);
+            RaycastHit2D[] hits = Physics2D.CircleCastAll(previousPos, 0.01f, rayDir, rayDistance);
+            bool containsMask = false;
+
+            foreach (var hit in hits)
+            {
+                // if we hit a mask, we can keep going and ignore any ground or player hits
+                if (hit.transform.CompareTag("ExplosionMask"))
+                {
+                    containsMask = true;
+                    break;
+                }
+            }
+
+            if (!containsMask)
+            {
+                foreach (var hit in hits)
+                {
+                    // if there is no mask, we can check for other hits
+                    if (hit.transform.CompareTag("Ground") || hit.transform.CompareTag("Player"))
+                    {
+                        pathComplete = true;
+                        //newPos = hit.point;
+                    }
+                }
+            }
+
+            // if the point is at a higher Y-value than currently saved, update it so we can use it as the highest point for the camera to track
+            if (newPos.y > zenith.y)
+            {
+                zenith = newPos;
+                // add the new zenith
+                CameraManager.Instance.SetProjectileZenith(zenith);
+            }
+
+            previousPos = newPos;
+            _segmentsList.Add(newPos);
+
+            if (pathComplete) break;
+        }
+        _segments = _segmentsList.ToArray();
+
+        if (_alwayShowTrajectory) ShowTrajectoryLine();
+    }
+
+    public void SetPower(float power)
+    {
+        _projectilePower = power;
+        HideTrajectoryLine();
+        CalculateTrajectoryLine();
+    }
+
+    public void ShowTrajectoryLine()
+    {
+        //if (PlayerManager.Instance.IsCurrentPlayerCPU) return;
+        _lineRenderer.positionCount = _segments.Length;
+        _lineRenderer.SetPositions(_segments);
+    }
+
+    private void HideTrajectoryLine()
+    {
+        _lineRenderer.positionCount = 0;
+    }
+
+    public void SetSpawnPoint(Transform spawnPoint)
+    {
+        _spawnPoint = spawnPoint;
+    }
+}

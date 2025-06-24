@@ -5,92 +5,71 @@ public class BananaTrajectorySolver
     private float _gravity = 9.8f;
     private float _targetDistanceX = 10f; // Horizontal distance
     private float _targetDistanceY = 2f;  // Vertical distance
-    private float _minPower = 1f;
-    private float _maxPower = 100f;
+    private float _minPower = 5f;
+    private float _maxPower = 20f;
     private float _minAngle = 0f;
     private float _maxAngle = 90f;
     private float _tolerance = 0.01f;     // Acceptable error
 
-    public void InitialiseValues(float targetDistanceX, float targetDistanceY)
+    public void InitialiseValues(float targetDistanceX, float targetDistanceY, float minAngle)
     {
         _gravity = -Physics2D.gravity.y;
         _targetDistanceX = targetDistanceX;
         _targetDistanceY = targetDistanceY;
+        _minAngle = minAngle;
     }
 
-    public float CalculatePower(float angle)
+    public Vector2 CalculateLaunchValues()
     {
-        float angleRad = angle * Mathf.Deg2Rad;
-        float power = FindPowerUsingBinarySearch(angleRad) * 4;
-        Debug.Log($"Required power: {power:F2} at angle: " + angle + " degrees");
-        return power;
-    }
-
-    public float CalculateAngle(float power)
-    {
-        //power *= 0.25f;
-        float angle = FindAngleUsingBinarySearch(power);
-        Debug.Log($"Required angle: {angle:F2} degrees at power: {power}");
-        return angle;
-    }
-
-    private float FindPowerUsingBinarySearch(float angleRad)
-    {
-        float low = _minPower;
-        float high = _maxPower;
         float bestPower = 0f;
+        float bestAngle = 0f;
+        float epsilon = 0.1f; // Precision threshold
 
-        for (int i = 0; i < 100; i++)
+        // Binary search for angle
+        bestAngle = BinarySearchAngle(_minAngle, _maxAngle, epsilon);
+
+        // Calculate corresponding power for the found angle
+        bestPower = CalculatePower(_targetDistanceX, _targetDistanceY, _gravity, bestAngle);
+
+        return new Vector2(bestPower, bestAngle * Mathf.Rad2Deg);
+    }
+
+    private float BinarySearchAngle(float low, float high, float epsilon)
+    {
+        float angle = 0f;
+        while (high - low > epsilon)
         {
-            float mid = (low + high) / 2f;
-            float time = _targetDistanceX / (mid * Mathf.Cos(angleRad));
-            float calculatedY = mid * Mathf.Sin(angleRad) * time - 0.5f * _gravity * time * time;
-
-            if (Mathf.Abs(calculatedY - _targetDistanceY) < _tolerance)
+            float mid = (low + high) / 2;
+            float power = CalculatePower(_targetDistanceX, _targetDistanceY, _gravity, mid);
+            if (power <= _maxPower)
             {
-                bestPower = mid;
-                break;
+                angle = mid;
+                high = mid;
             }
-            else if (calculatedY < _targetDistanceY)
+            else
             {
                 low = mid;
             }
-            else
-            {
-                high = mid;
-            }
         }
-
-        return bestPower;
+        return angle;
     }
 
-    private float FindAngleUsingBinarySearch(float power)
+    private float CalculatePower(float distance, float heightDifference, float gravity, float angle)
     {
-        float lowAngle = _minAngle * Mathf.Deg2Rad;
-        float highAngle = _maxAngle * Mathf.Deg2Rad;
-        float bestAngle = 0f;
+        float angleRad = Mathf.Deg2Rad * angle;
+        float sin2A = Mathf.Sin(2 * angleRad);
+        if (sin2A == 0f) return float.PositiveInfinity;
 
-        for (int i = 0; i < 100; i++)
-        {
-            float midAngle = (lowAngle + highAngle) / 2f;
-            float time = _targetDistanceX / (power * Mathf.Cos(midAngle));
-            float calculatedY = power * Mathf.Sin(midAngle) * time - 0.5f * _gravity * time * time;
+        float power = Mathf.Sqrt((distance * gravity) / sin2A);
+        float verticalComponent = power * Mathf.Sin(angleRad);
+        float time = distance / (power * Mathf.Cos(angleRad));
+        float calculatedHeight = verticalComponent * time - 0.5f * gravity * time * time;
 
-            if (Mathf.Abs(calculatedY - _targetDistanceY) < _tolerance)
-            {
-                bestAngle = midAngle;
-                break;
-            }
-            else if (calculatedY < _targetDistanceY)
-            {
-                lowAngle = midAngle;
-            }
-            else
-            {
-                highAngle = midAngle;
-            }
-        }
+        // Adjust power to hit the target height
+        float heightError = calculatedHeight - heightDifference;
+        float correction = heightError / (gravity * time);
+        power += correction;
 
-        return Mathf.Rad2Deg * bestAngle;
+        return power;
     }
 }

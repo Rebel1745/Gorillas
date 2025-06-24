@@ -72,7 +72,7 @@ public class PlayerController : MonoBehaviour
         _angleSlider.onValueChanged.AddListener(UpdateAngle);
         _launchButton = _uIGO.transform.GetChild(6).GetComponent<Button>();
         _launchButton.onClick.AddListener(LaunchProjectile);
-        _trajectoryLine.SetSpawnPoint(_projectileLaunchPoint);
+        //_trajectoryLine.SetSpawnPoint(_projectileLaunchPoint);
         _initialTrajectoryLine = true;
 
         _throwNumber = 0;
@@ -95,7 +95,14 @@ public class PlayerController : MonoBehaviour
 
         GameObject projectile = Instantiate(_projectilePrefab, _projectileLaunchPoint.position, Quaternion.identity);
 
-        projectile.GetComponent<Rigidbody2D>().linearVelocity = _defaultForceMultiplier * _powerSlider.value * _projectileLaunchPoint.right;
+        //projectile.GetComponent<Rigidbody2D>().linearVelocity = _defaultForceMultiplier * _powerSlider.value * _projectileLaunchPoint.right;
+        float angleRad = Mathf.Deg2Rad * _angleSlider.value;
+        Vector2 force = new(
+            _defaultForceMultiplier * _powerSlider.value * Mathf.Cos(angleRad),
+            _defaultForceMultiplier * _powerSlider.value * Mathf.Sin(angleRad)
+        );
+        force.x *= _playerDetails.ThrowDirection;
+        projectile.GetComponent<Rigidbody2D>().AddForce(force, ForceMode2D.Impulse);
         projectile.GetComponent<IProjectile>().SetProjectileExplosionMaskParent(_explosionMaskParent);
 
         CameraManager.Instance.UpdateCameraForProjectile();
@@ -125,12 +132,14 @@ public class PlayerController : MonoBehaviour
 
     public void ShowTrajectoryLine()
     {
-        _trajectoryLine.ShowTrajectoryLine();
+        //_trajectoryLine.ShowTrajectoryLine();
+        _trajectoryLine.DrawTrajectoryLine();
     }
 
     public void UpdatePower(float power)
     {
-        _trajectoryLine.SetPower(_defaultForceMultiplier * power);
+        //_trajectoryLine.SetPower(_defaultForceMultiplier * power);
+        _trajectoryLine.CalculateTrajectoryLine(_angleSlider.value, _defaultForceMultiplier * power, _projectileLaunchPoint.position, _playerDetails.ThrowDirection);
 
         _powerText.text = power.ToString("F1");
         if (_playerDetails.IsCPU) _powerSlider.value = power;
@@ -139,7 +148,8 @@ public class PlayerController : MonoBehaviour
     public void UpdateAngle(float angle)
     {
         UpdateLaunchPointAngle(angle);
-        _trajectoryLine.SetPower(_defaultForceMultiplier * _powerSlider.value);
+        //_trajectoryLine.SetPower(_defaultForceMultiplier * _powerSlider.value);
+        _trajectoryLine.CalculateTrajectoryLine(angle, _defaultForceMultiplier * _powerSlider.value, _projectileLaunchPoint.position, _playerDetails.ThrowDirection);
 
         _angleText.text = angle.ToString("F1");
         if (_playerDetails.IsCPU) _angleSlider.value = angle;

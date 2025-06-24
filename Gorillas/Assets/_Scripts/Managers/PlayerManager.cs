@@ -44,6 +44,7 @@ public class PlayerManager : MonoBehaviour
         Players[0].PlayerLineRenderer = newPlayer.GetComponent<LineRenderer>();
         Players[0].PlayerController.SetPlayerDetails(0, newUI, Players[0]);
         Players[0].PlayerAIController = newPlayer.GetComponent<AIController>();
+        Players[0].ThrowDirection = 1;
 
         pc.SavePlayerDetails();
 
@@ -65,6 +66,7 @@ public class PlayerManager : MonoBehaviour
         Players[1].PlayerLineRenderer = newPlayer.GetComponent<LineRenderer>();
         Players[1].PlayerController.SetPlayerDetails(1, newUI, Players[1]);
         Players[1].PlayerAIController = newPlayer.GetComponent<AIController>();
+        Players[1].ThrowDirection = -1;
 
         pc.SavePlayerDetails();
 
@@ -118,4 +120,5 @@ public struct PlayerDetails
     public GameObject PlayerGameObject;
     public LineRenderer PlayerLineRenderer;
     public AIController PlayerAIController;
+    public int ThrowDirection; // 1 for left - right, -1 for right to left
 }

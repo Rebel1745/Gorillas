@@ -1,51 +1,54 @@
+using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 public class TrajectoryLine : MonoBehaviour
 {
-    [SerializeField] private int _maxSegmentCount = 50;
-    [SerializeField] private float _curveLength = 5f;
-
+    [SerializeField] private LineRenderer _lineRenderer;
+    private float _gravity;
+    [SerializeField] private int _maxNumPoints = 100;
+    [SerializeField] private float _timeStep = 0.1f;
     private Vector3[] _segments;
     public int SegmentCount { get { return _segmentsList.Count; } }
     public Vector3 LastSegment { get { return _segmentsList.Last(); } }
     private List<Vector3> _segmentsList = new();
-    private LineRenderer _lineRenderer;
-    private float _projectilePower;
-    private Transform _spawnPoint;
-
-    [Header("Debug")]
-    [SerializeField] private bool _alwayShowTrajectory;
 
     private void Start()
     {
         _lineRenderer = GetComponent<LineRenderer>();
         _lineRenderer.positionCount = 0;
+        _gravity = -Physics2D.gravity.y;
     }
 
-    private void CalculateTrajectoryLine()
+    public void CalculateTrajectoryLine(float angle, float power, Vector3 spawnPoint, int direction)
     {
+        float totalTime = 0f;
         _segmentsList.Clear();
 
         // set the start position of the line renderer
-        Vector3 startPos = _spawnPoint.position;
+        Vector3 startPos = spawnPoint;
         Vector3 previousPos = startPos;
         bool pathComplete = false;
-        bool containsMask = false;
         Vector3 zenith = new(0f, -Mathf.Infinity, 0f);
+        Vector3 newPos = Vector3.zero, rayDir;
+        float rayDistance = 0f;
+        RaycastHit2D[] hits;
+        bool containsMask;
 
-        _segmentsList.Add(startPos);
-
-        Vector3 startVelocity = _spawnPoint.right * _projectilePower;
-        for (int i = 1; i < _maxSegmentCount; i++)
+        for (int i = 0; i < _maxNumPoints; i++)
         {
-            float timeOffset = i * Time.fixedDeltaTime * _curveLength;
-            Vector3 gravityOffset = 0.5f * Mathf.Pow(timeOffset, 2) * Physics2D.gravity;
-            Vector3 newPos = startPos + startVelocity * timeOffset + gravityOffset;
-            Vector3 rayDir = newPos - previousPos;
-            float rayDistance = Vector3.Distance(previousPos, newPos);
-            RaycastHit2D[] hits = Physics2D.CircleCastAll(previousPos, 0.01f, rayDir, rayDistance);
+            float angleRad = Mathf.Deg2Rad * angle;
+            float vx = power * Mathf.Cos(angleRad);
+            float vy = power * Mathf.Sin(angleRad);
+
+            float x = vx * totalTime * direction;
+            float y = vy * totalTime - 0.5f * _gravity * totalTime * totalTime;
+
+            totalTime += _timeStep;
+            newPos = spawnPoint + new Vector3(x, y, 0f);
+            rayDir = newPos - previousPos;
+            rayDistance = Vector3.Distance(previousPos, newPos);
+            hits = Physics2D.CircleCastAll(previousPos, 0.01f, rayDir, rayDistance);
             containsMask = false;
 
             foreach (var hit in hits)
@@ -86,19 +89,11 @@ public class TrajectoryLine : MonoBehaviour
         }
         _segments = _segmentsList.ToArray();
 
-        if (_alwayShowTrajectory) ShowTrajectoryLine();
+        DrawTrajectoryLine();
     }
 
-    public void SetPower(float power)
+    public void DrawTrajectoryLine()
     {
-        _projectilePower = power;
-        HideTrajectoryLine();
-        CalculateTrajectoryLine();
-    }
-
-    public void ShowTrajectoryLine()
-    {
-        if (PlayerManager.Instance.IsCurrentPlayerCPU) return;
         _lineRenderer.positionCount = _segments.Length;
         _lineRenderer.SetPositions(_segments);
     }
@@ -106,10 +101,5 @@ public class TrajectoryLine : MonoBehaviour
     private void HideTrajectoryLine()
     {
         _lineRenderer.positionCount = 0;
-    }
-
-    public void SetSpawnPoint(Transform spawnPoint)
-    {
-        _spawnPoint = spawnPoint;
     }
 }
