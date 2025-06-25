@@ -2,56 +2,47 @@ using System.Collections;
 using UnityEngine.UI;
 using UnityEngine;
 using UnityEditor;
+using System;
 
 public class AIController : MonoBehaviour
 {
-    private float _minPowerMissed = 10f;
-    private float _maxPowerMissed = 100f;
-    private float _minAngleMissed = 10f;
-    private float _maxAngleMissed = 80f;
-    private Slider _powerSlider;
+    private float _minPower = 50f;
+    private float _maxPower = 100f;
+    private float _minAngle = 20f;
+    private float _maxAngle = 89f;
     private Slider _angleSlider;
-    private int _throwNumber;
-    private float _previousAttackLandingPositionX;
-    private float _otherPlayerXPos;
     private int _playerId;
     private int _otherPlayerId;
+    private Vector3 _throwingPlayer;
+    private Vector3 _targetPlayer;
+    private int _maxIterations = 20;
+    private float[] _increments = { 0.1f, 1f, 5f };
 
-    [SerializeField] private TrajectoryLine_old _trajectoryLine;
+    [SerializeField] private TrajectoryLine _trajectoryLine;
     private PlayerController _playerController;
 
-    public IEnumerator DoAI(PlayerController pc)
+    private void Initialise(PlayerController pc)
     {
-        _angleSlider = pc.AngleSlider;
         _playerController = pc;
-
-        BananaTrajectorySolver bts = new();
-
+        _angleSlider = pc.AngleSlider;
         _playerId = pc.PlayerId;
         _otherPlayerId = (_playerId + 1) % 2;
 
-        Vector3 throwingPlayer = PlayerManager.Instance.Players[_playerId].PlayerGameObject.transform.position;
-        Vector3 targetPlayer = PlayerManager.Instance.Players[_otherPlayerId].PlayerGameObject.transform.position;
+        _throwingPlayer = PlayerManager.Instance.Players[_playerId].PlayerGameObject.transform.position;
+        _targetPlayer = PlayerManager.Instance.Players[_otherPlayerId].PlayerGameObject.transform.position;
+    }
 
-        float xDiff = throwingPlayer.x - targetPlayer.x;
-        float yDiff = targetPlayer.y - throwingPlayer.y;
-
-        /*
-        bts.CalculatePower(50f);
-        bts.CalculateAngle(60f);*/
-
-        yield return new WaitForSeconds(0.5f);
-
-        float minAngle = CalculateMinAngle();
-        Debug.Log(xDiff + " - " + yDiff + " - " + minAngle);
-        bts.InitialiseValues(xDiff, yDiff, minAngle);
-        Debug.Log(bts.CalculateLaunchValues());
-
-        //pc.UpdatePower(bts.CalculatePower(50f));
+    public IEnumerator DoAI(PlayerController pc)
+    {
+        if (pc.ThrowNumber == 0)
+            Initialise(pc);
+        _minAngle = CalculateMinAngle();
+        Vector2 angleAndPower = CalculateTrajectory();
 
         yield return new WaitForSeconds(1f);
 
-        //pc.LaunchProjectile();
+        //pc.UpdateAngleAndPower(angleAndPower.x, angleAndPower.y);
+        pc.LaunchProjectile();
     }
 
     private float CalculateMinAngle()
@@ -72,97 +63,153 @@ public class AIController : MonoBehaviour
         return currentAngle;
     }
 
-    /*public IEnumerator DoAI(PlayerController pc)
+    private Vector2 CalculateTrajectory()
     {
-        _playerController = pc;
-        _powerSlider = pc.PowerSlider;
-        _angleSlider = pc.AngleSlider;
+        // start at 45 degrees if we can
+        if (_minAngle < 45f) _minAngle = 45f;
+        int iterations = 0, totalIterations = 0;
+        float bestAngle = _minAngle, bestPower = _minPower;
+        bool checkComplete = false;
+        int currentPowerIncrementIndex = 2;
+        float currentPowerIncrement = _increments[currentPowerIncrementIndex]; // always start wiht the large increment
 
-        _throwNumber = pc.ThrowNumber;
-        _previousAttackLandingPositionX = pc.LastProjectileLandingPositionX;
-
-        _playerId = pc.PlayerId;
-        _otherPlayerId = (_playerId + 1) % 2;
-        _otherPlayerXPos = PlayerManager.Instance.Players[_otherPlayerId].PlayerGameObject.transform.position.x;
-
-        float newPower, newAngle;
-
-        newPower = CalculatePower();
-        newAngle = CalculateAngle();
-        float dist = Vector2.Distance(PlayerManager.Instance.Players[0].PlayerGameObject.transform.position, PlayerManager.Instance.Players[1].PlayerGameObject.transform.position);
-        Debug.Log(dist + " - " + Physics2D.gravity.y + " - ");
-        Debug.Log(CalcAngle(dist, Mathf.Abs(Physics2D.gravity.y), 50f));
-        Debug.Log(CalcVelocity(dist, Mathf.Abs(Physics2D.gravity.y), 45f));
-
-        yield return new WaitForSeconds(0.5f);
-
-        pc.UpdatePower(newPower);
-
-        yield return new WaitForSeconds(0.5f);
-
-        pc.UpdateAngle(newAngle);
-
-        yield return new WaitForSeconds(1f);
-
-        pc.LaunchProjectile();
-    }
-
-    private float CalculatePower()
-    {
-        float currentPower = _powerSlider.value;
-        float minPower = _powerSlider.minValue;
-        float maxPower = _powerSlider.maxValue;
-
-        if (maxPower - minPower < 1.0f) minPower -= 5f;
-
-        if (_throwNumber == 0)
+        while (!checkComplete)
         {
-            // random values to start with
-            return Random.Range(minPower, maxPower);
-        }
-        else
-        {
-            // if player 1
-            if (_playerId == 0)
+            while (iterations <= _maxIterations)
             {
-                // if we landed before the target, increase the power from a minimum of the last power
-                if (_otherPlayerXPos > _previousAttackLandingPositionX)
+                //Debug.Log(bestPower + " " + bestAngle);
+                // if we hit the player with the current values, we are done, bail
+                if (CheckAngleAndPowerForHit(bestAngle, bestPower))
                 {
-                    _minPowerMissed = currentPower;
-                    return Random.Range(currentPower, _maxPowerMissed);
+                    checkComplete = true;
+                    break;
+                }
+
+                // if we missed, find out if we missed long, or short
+                if (_playerId == 0)
+                {
+                    // if we are player 1, we have overshot if the x position of the banana impact is greate than the targets' position
+                    if (_trajectoryLine.LastSegment.x > _targetPlayer.x)
+                    {
+                        // make sure we can decrease the increment
+                        if (currentPowerIncrementIndex > 0)
+                        {
+                            // if we have overshot, decrease the power by the current increment and decrease the current increment
+                            bestPower -= currentPowerIncrement;
+                            currentPowerIncrementIndex--;
+                            currentPowerIncrement = _increments[currentPowerIncrementIndex];
+                        }
+                    }
                 }
                 else
                 {
-                    _maxPowerMissed = currentPower;
-                    return Random.Range(_minPowerMissed, currentPower);
+                    // if we are player 2, we have overshot if the x position of the banana impact is less than the targets' position
+                    if (_trajectoryLine.LastSegment.x < _targetPlayer.x)
+                    {
+                        //Debug.Log(_trajectoryLine.LastSegment.x + " - " + _targetPlayer.x);
+                        // make sure we can decrease the increment
+                        if (currentPowerIncrementIndex > 0)
+                        {
+                            // if we have overshot, decrease the power by the current increment and decrease the current increment
+                            //Debug.Log("Decrease best power from " + bestPower + " to " + (bestPower - currentPowerIncrement));
+                            bestPower -= currentPowerIncrement;
+                            currentPowerIncrementIndex--;
+                            currentPowerIncrement = _increments[currentPowerIncrementIndex];
+                        }
+                    }
                 }
+
+                // if we have hit the max power and still cant hit the player, bail and up the angle
+                if (bestPower >= _maxPower)
+                {
+                    bestPower = _minPower;
+                    break;
+                }
+
+                //Debug.Log("Increase best power from " + bestPower + " to " + (bestPower + currentPowerIncrement));
+                // if it isnt, up the power
+                bestPower += currentPowerIncrement;
+                iterations++;
+                totalIterations++;
             }
-            else
+
+            // if we have hit the max angle and still cant hit the player, bail and throw up and error, i will write something to handle it
+            // probably a different check function that doesnt stop when it hits a building, but tries to hit the minimum number of buildings
+            if (bestAngle >= _maxAngle)
             {
-                if (_otherPlayerXPos > _previousAttackLandingPositionX)
-                {
-                    _maxPowerMissed = currentPower;
-                    return Random.Range(_minPowerMissed, currentPower);
-                }
-                else
-                {
-                    _minPowerMissed = currentPower;
-                    return Random.Range(currentPower, _maxPowerMissed);
-                }
+                Debug.LogError("Tried all angles and powers, still nothing");
+                break;
             }
+            // if we still dont hit the player with that angle and any power, up the angle
+            bestAngle += _increments[0];
+            currentPowerIncrementIndex = 2;
+            currentPowerIncrement = _increments[currentPowerIncrementIndex];
+            bestPower = _minPower;
+            iterations = 0;
+            totalIterations++;
+
+            //Debug.Log(totalIterations);
         }
+
+        return new Vector2(bestPower, bestAngle);
     }
 
-    float CalcAngle(float distance, float gravity, float velocity)
+    /*private Vector2 CalculateTrajectory()
     {
-        velocity *= 0.25f;
-        float angle = 0.5f * Mathf.Asin((gravity * distance) / (velocity * velocity));
-        return angle * Mathf.Rad2Deg;
-    }
+        Debug.Log(_minAngle);
+        // start at 45 degrees if we can
+        if (_minAngle < 45f) _minAngle = 45f;
+        int iterations = 0, totalIterations = 0;
+        float bestAngle = _minAngle, bestPower = _minPower;
+        bool checkComplete = false;
+        float currentIncreament = LARGE_INCREMENT;
 
-    float CalcVelocity(float distance, float gravity, float angle)
-    {
-        float velocity = Mathf.Sqrt((gravity * distance) / Mathf.Sin(2 * angle * Mathf.Deg2Rad));
-        return velocity;
+        while (!checkComplete)
+        {
+            while (iterations <= _maxIterations)
+            {
+                //Debug.Log($"Check angle: {bestAngle} - Check power: {bestPower}");
+                // if we hit the player with the current values, we are done, bail
+                if (CheckAngleAndPowerForHit(bestAngle, bestPower))
+                {
+                    checkComplete = true;
+                    break;
+                }
+
+                // if we have hit the max power and still cant hit the player, bail and up the angle
+                if (bestPower >= _maxPower)
+                {
+                    bestPower = _minPower;
+                    break;
+                }
+
+                // if it isnt, up the power
+                bestPower += currentIncreament;
+                iterations++;
+                totalIterations++;
+            }
+
+            // if we have hit the max angle and still cant hit the player, bail and throw up and error, i will write something to handle it
+            // probably a different check function that doesnt stop when it hits a building, but tries to hit the minimum number of buildings
+            if (bestAngle >= _maxAngle)
+            {
+                Debug.LogError("Tried all angles and powers, still nothing");
+                break;
+            }
+            // if we still dont hit the player with that angle and any power, up the angle
+            bestAngle += currentIncreament;
+            iterations = 0;
+            totalIterations++;
+
+            Debug.Log(totalIterations);
+        }
+
+        return new Vector2(bestPower, bestAngle);
     }*/
+
+    private bool CheckAngleAndPowerForHit(float angle, float power)
+    {
+        _playerController.UpdateAngleAndPower(angle, power);
+        return _trajectoryLine.HitPlayer;
+    }
 }

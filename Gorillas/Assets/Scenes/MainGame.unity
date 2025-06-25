@@ -1688,7 +1688,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   IsCurrentPlayerCPU: 0
   _playerScoreText: {fileID: 415015344}
-  _numberOfRounds: 1
+  _numberOfRounds: 21
   _timeBetweenRounds: 3
 --- !u!1 &388018361
 GameObject:

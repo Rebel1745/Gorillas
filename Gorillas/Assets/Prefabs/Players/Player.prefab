@@ -122,8 +122,8 @@ GameObject:
   - component: {fileID: 4113509715146576754}
   - component: {fileID: 4088403232203255021}
   - component: {fileID: 838280491203144005}
-  - component: {fileID: -3208810610942719868}
   - component: {fileID: -7406244390714490584}
+  - component: {fileID: -462852377826311693}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player
@@ -164,7 +164,7 @@ MonoBehaviour:
   _projectileLaunchPoint: {fileID: 5952276823503589534}
   _defaultForceMultiplier: 0.25
   _delayBeforeAttackAnimationReset: 0.5
-  _trajectoryLine: {fileID: -3208810610942719868}
+  _trajectoryLine: {fileID: -462852377826311693}
   _powerIncreaseStep: 0.1
   _powerIncreaseMax: 1
   _angleIncreaseStep: 0.1
@@ -260,8 +260,8 @@ LineRenderer:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
-        time: 0
-        value: 0.1
+        time: 0.017829895
+        value: 0.17432177
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -312,21 +312,6 @@ LineRenderer:
   m_UseWorldSpace: 1
   m_Loop: 0
   m_ApplyActiveColorSpace: 1
---- !u!114 &-3208810610942719868
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4972102006553089897}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 58f0f9da30f1eb6419165894c32d8e86, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _maxSegmentCount: 500
-  _curveLength: 1
-  _alwayShowTrajectory: 1
 --- !u!114 &-7406244390714490584
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -339,7 +324,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be37496cb1782294193736e2810fa04b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _trajectoryLine: {fileID: -3208810610942719868}
+  _trajectoryLine: {fileID: -462852377826311693}
+--- !u!114 &-462852377826311693
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4972102006553089897}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e33fa8c2787ec140a60803df4e1ceb9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _lineRenderer: {fileID: 838280491203144005}
+  _maxNumPoints: 100
+  _timeStep: 0.05
 --- !u!1 &5942257555307697222
 GameObject:
   m_ObjectHideFlags: 0

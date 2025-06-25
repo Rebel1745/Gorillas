@@ -90,6 +90,15 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""RebuildLevel"",
+                    ""type"": ""Button"",
+                    ""id"": ""60231a80-0c31-4494-928a-d08500b20b6e"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -180,6 +189,17 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""action"": ""LaunchProjectile"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""fc21898f-f790-4a8e-aad7-89115b08200b"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""RebuildLevel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -195,6 +215,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         m_Gameplay_Power = m_Gameplay.FindAction("Power", throwIfNotFound: true);
         m_Gameplay_Angle = m_Gameplay.FindAction("Angle", throwIfNotFound: true);
         m_Gameplay_LaunchProjectile = m_Gameplay.FindAction("LaunchProjectile", throwIfNotFound: true);
+        m_Gameplay_RebuildLevel = m_Gameplay.FindAction("RebuildLevel", throwIfNotFound: true);
     }
 
     ~@PlayerInput()
@@ -312,6 +333,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_Gameplay_Power;
     private readonly InputAction m_Gameplay_Angle;
     private readonly InputAction m_Gameplay_LaunchProjectile;
+    private readonly InputAction m_Gameplay_RebuildLevel;
     public struct GameplayActions
     {
         private @PlayerInput m_Wrapper;
@@ -320,6 +342,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         public InputAction @Power => m_Wrapper.m_Gameplay_Power;
         public InputAction @Angle => m_Wrapper.m_Gameplay_Angle;
         public InputAction @LaunchProjectile => m_Wrapper.m_Gameplay_LaunchProjectile;
+        public InputAction @RebuildLevel => m_Wrapper.m_Gameplay_RebuildLevel;
         public InputActionMap Get() { return m_Wrapper.m_Gameplay; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -341,6 +364,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @LaunchProjectile.started += instance.OnLaunchProjectile;
             @LaunchProjectile.performed += instance.OnLaunchProjectile;
             @LaunchProjectile.canceled += instance.OnLaunchProjectile;
+            @RebuildLevel.started += instance.OnRebuildLevel;
+            @RebuildLevel.performed += instance.OnRebuildLevel;
+            @RebuildLevel.canceled += instance.OnRebuildLevel;
         }
 
         private void UnregisterCallbacks(IGameplayActions instance)
@@ -357,6 +383,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @LaunchProjectile.started -= instance.OnLaunchProjectile;
             @LaunchProjectile.performed -= instance.OnLaunchProjectile;
             @LaunchProjectile.canceled -= instance.OnLaunchProjectile;
+            @RebuildLevel.started -= instance.OnRebuildLevel;
+            @RebuildLevel.performed -= instance.OnRebuildLevel;
+            @RebuildLevel.canceled -= instance.OnRebuildLevel;
         }
 
         public void RemoveCallbacks(IGameplayActions instance)
@@ -384,5 +413,6 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         void OnPower(InputAction.CallbackContext context);
         void OnAngle(InputAction.CallbackContext context);
         void OnLaunchProjectile(InputAction.CallbackContext context);
+        void OnRebuildLevel(InputAction.CallbackContext context);
     }
 }

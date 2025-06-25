@@ -26,6 +26,8 @@ public class InputManager : MonoBehaviour
         _inputActions.Gameplay.Angle.canceled += UpdateAngle;
 
         _inputActions.Gameplay.LaunchProjectile.started += LaunchProjectile;
+
+        _inputActions.Gameplay.RebuildLevel.started += RebuildLevel;
     }
 
     private void OnDisable()
@@ -41,6 +43,8 @@ public class InputManager : MonoBehaviour
         _inputActions.Gameplay.Angle.canceled -= UpdateAngle;
 
         _inputActions.Gameplay.LaunchProjectile.started -= LaunchProjectile;
+
+        _inputActions.Gameplay.RebuildLevel.started -= RebuildLevel;
     }
 
     private void ShowTrajectoryLine(InputAction.CallbackContext context)
@@ -74,6 +78,11 @@ public class InputManager : MonoBehaviour
         if (GameManager.Instance.State != GameState.WaitingForLaunch || PlayerManager.Instance.IsCurrentPlayerCPU) return;
 
         PlayerManager.Instance.Players[PlayerManager.Instance.CurrentPlayerId].PlayerController.LaunchProjectile();
+    }
+
+    private void RebuildLevel(InputAction.CallbackContext context)
+    {
+        GameManager.Instance.UpdateGameState(GameState.InitialiseGame);
     }
 
     public void EnableDisableControls(bool enabled)

@@ -133,8 +133,6 @@ public class GameManager : MonoBehaviour
         else
             UpdateGameState(GameState.NextTurn);
 
-        // reset the scores
-        _playerScores = new int[2];
         UIManager.Instance.ShowHideUIElement(UIManager.Instance.ScoreBoardUI, true);
         InputManager.Instance.EnableDisableControls(true);
 

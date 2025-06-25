@@ -7,8 +7,8 @@ public class BananaTrajectorySolver
     private float _targetDistanceY = 2f;  // Vertical distance
     private float _minPower = 5f;
     private float _maxPower = 20f;
-    private float _minAngle = 0f;
-    private float _maxAngle = 90f;
+    private float _minAngle = 43f;
+    private float _maxAngle = 46f;
     private float _tolerance = 0.01f;     // Acceptable error
 
     public void InitialiseValues(float targetDistanceX, float targetDistanceY, float minAngle)
@@ -27,7 +27,7 @@ public class BananaTrajectorySolver
 
         // Binary search for angle
         bestAngle = BinarySearchAngle(_minAngle, _maxAngle, epsilon);
-
+        Debug.Log(bestAngle);
         // Calculate corresponding power for the found angle
         bestPower = CalculatePower(_targetDistanceX, _targetDistanceY, _gravity, bestAngle);
 

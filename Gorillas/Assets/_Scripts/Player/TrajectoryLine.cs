@@ -12,6 +12,10 @@ public class TrajectoryLine : MonoBehaviour
     public int SegmentCount { get { return _segmentsList.Count; } }
     public Vector3 LastSegment { get { return _segmentsList.Last(); } }
     private List<Vector3> _segmentsList = new();
+    private bool _hitPlayer;
+    public bool HitPlayer { get { return _hitPlayer; } }
+    private bool _hitGround;
+    public bool HitGround { get { return _hitGround; } }
 
     private void Start()
     {
@@ -29,6 +33,8 @@ public class TrajectoryLine : MonoBehaviour
         Vector3 startPos = spawnPoint;
         Vector3 previousPos = startPos;
         bool pathComplete = false;
+        _hitGround = false;
+        _hitPlayer = false;
         Vector3 zenith = new(0f, -Mathf.Infinity, 0f);
         Vector3 newPos = Vector3.zero, rayDir;
         float rayDistance = 0f;
@@ -48,7 +54,7 @@ public class TrajectoryLine : MonoBehaviour
             newPos = spawnPoint + new Vector3(x, y, 0f);
             rayDir = newPos - previousPos;
             rayDistance = Vector3.Distance(previousPos, newPos);
-            hits = Physics2D.CircleCastAll(previousPos, 0.01f, rayDir, rayDistance);
+            hits = Physics2D.CircleCastAll(previousPos, 0.1f, rayDir, rayDistance);
             containsMask = false;
 
             foreach (var hit in hits)
@@ -66,9 +72,17 @@ public class TrajectoryLine : MonoBehaviour
                 foreach (var hit in hits)
                 {
                     // if there is no mask, we can check for other hits
-                    if (hit.transform.CompareTag("Ground") || hit.transform.CompareTag("Player"))
+                    if (hit.transform.CompareTag("Ground"))
                     {
                         pathComplete = true;
+                        _hitGround = true;
+                        //newPos = hit.point;
+                    }
+                    // if there is no mask, we can check for other hits
+                    if (hit.transform.CompareTag("Player"))
+                    {
+                        pathComplete = true;
+                        _hitPlayer = true;
                         //newPos = hit.point;
                     }
                 }
