@@ -338,6 +338,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _lineRenderer: {fileID: 838280491203144005}
+  _playerController: {fileID: 4113509715146576754}
   _maxNumPoints: 100
   _timeStep: 0.05
 --- !u!1 &5942257555307697222

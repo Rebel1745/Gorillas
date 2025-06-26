@@ -1,10 +1,12 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 public class TrajectoryLine : MonoBehaviour
 {
     [SerializeField] private LineRenderer _lineRenderer;
+    [SerializeField] private PlayerController _playerController;
     private float _gravity;
     [SerializeField] private int _maxNumPoints = 100;
     [SerializeField] private float _timeStep = 0.1f;
@@ -16,6 +18,9 @@ public class TrajectoryLine : MonoBehaviour
     public bool HitPlayer { get { return _hitPlayer; } }
     private bool _hitGround;
     public bool HitGround { get { return _hitGround; } }
+    private Vector3 _targetPosition;
+    private List<GameObject> _groundHitList = new();
+    public int GroundHitCount { get { return _groundHitList.Count; } }
 
     private void Start()
     {
@@ -24,10 +29,16 @@ public class TrajectoryLine : MonoBehaviour
         _gravity = -Physics2D.gravity.y;
     }
 
-    public void CalculateTrajectoryLine(float angle, float power, Vector3 spawnPoint, int direction)
+    // ignoreBuildingHits will not stop the line when it hits the ground (buildings), but it will create a list of the buildings hit
+    // it will register a hit on the ground, but only if the banana has already gone past the target player
+    public void CalculateTrajectoryLine(float angle, float power, Vector3 spawnPoint, int direction, bool ignoreGroundHits = false)
     {
         float totalTime = 0f;
         _segmentsList.Clear();
+        _groundHitList.Clear();
+
+        int targetPlayerId = (_playerController.PlayerId + 1) % 2;
+        _targetPosition = PlayerManager.Instance.Players[targetPlayerId].PlayerGameObject.transform.position;
 
         // set the start position of the line renderer
         Vector3 startPos = spawnPoint;
@@ -74,9 +85,30 @@ public class TrajectoryLine : MonoBehaviour
                     // if there is no mask, we can check for other hits
                     if (hit.transform.CompareTag("Ground"))
                     {
-                        pathComplete = true;
                         _hitGround = true;
                         //newPos = hit.point;
+                        if (ignoreGroundHits)
+                        {
+                            AddBuildingToHitList(hit.transform.gameObject);
+                            if (_playerController.PlayerId == 0)
+                            {
+                                if (newPos.x > _targetPosition.x)
+                                {
+                                    pathComplete = true;
+                                }
+                            }
+                            else
+                            {
+                                if (newPos.x < _targetPosition.x)
+                                {
+                                    pathComplete = true;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            pathComplete = true;
+                        }
                     }
                     // if there is no mask, we can check for other hits
                     if (hit.transform.CompareTag("Player"))
@@ -104,6 +136,14 @@ public class TrajectoryLine : MonoBehaviour
         _segments = _segmentsList.ToArray();
 
         DrawTrajectoryLine();
+    }
+
+    private void AddBuildingToHitList(GameObject groundObject)
+    {
+        if (!_groundHitList.Contains(groundObject))
+        {
+            _groundHitList.Add(groundObject);
+        }
     }
 
     public void DrawTrajectoryLine()

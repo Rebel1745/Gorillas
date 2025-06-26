@@ -166,6 +166,17 @@ public class PlayerController : MonoBehaviour
         if (_playerDetails.IsCPU) _powerSlider.value = power;
     }
 
+    public void UpdateAngleAndPower(float angle, float power, bool ignoreGroundHits)
+    {
+        _trajectoryLine.CalculateTrajectoryLine(angle, _defaultForceMultiplier * power, _projectileLaunchPoint.position, _playerDetails.ThrowDirection, ignoreGroundHits);
+
+        _angleText.text = angle.ToString("F1");
+        if (_playerDetails.IsCPU) _angleSlider.value = angle;
+
+        _powerText.text = power.ToString("F1");
+        if (_playerDetails.IsCPU) _powerSlider.value = power;
+    }
+
     private void UpdateLaunchPointAngle(float angle)
     {
         Quaternion launchAngle = Quaternion.Euler(0f, _projectileLaunchPoint.eulerAngles.y, angle);

@@ -1,3 +1,4 @@
+using UnityEditor.Callbacks;
 using UnityEngine;
 
 public class Banana : MonoBehaviour, IProjectile
@@ -10,6 +11,7 @@ public class Banana : MonoBehaviour, IProjectile
     [SerializeField] private GameObject[] _brokenWindowSprites;
     [SerializeField] private float _explosionRadiusDamageMultiplier = 2;
     [SerializeField] private float _destroyWhenDistanceOffscreen = -20f;
+    [SerializeField] private float _rotationRate = 1f;
     private float _explosionRadius;
     private Transform _explosionTransform;
     private Rigidbody2D _rb;
@@ -35,6 +37,8 @@ public class Banana : MonoBehaviour, IProjectile
             CameraManager.Instance.SetProjectileZenith(transform.position);
             CameraManager.Instance.UpdateCameraForProjectile();
         }
+
+        transform.Rotate(0, 0, -_rotationRate * Time.deltaTime);
     }
 
     private void CheckForGroundHit()
