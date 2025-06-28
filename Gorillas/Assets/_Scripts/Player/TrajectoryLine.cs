@@ -8,6 +8,7 @@ public class TrajectoryLine : MonoBehaviour
     [SerializeField] private LineRenderer _lineRenderer;
     [SerializeField] private PlayerController _playerController;
     private float _gravity;
+    private float _mass;
     [SerializeField] private int _maxNumPoints = 100;
     [SerializeField] private float _timeStep = 0.1f;
     private Vector3[] _segments;
@@ -21,12 +22,15 @@ public class TrajectoryLine : MonoBehaviour
     private Vector3 _targetPosition;
     private List<GameObject> _groundHitList = new();
     public int GroundHitCount { get { return _groundHitList.Count; } }
+    private Rigidbody2D _projectileRB;
 
     private void Start()
     {
         _lineRenderer = GetComponent<LineRenderer>();
         _lineRenderer.positionCount = 0;
-        _gravity = -Physics2D.gravity.y;
+        _projectileRB = _playerController.ProjectilePrefab.GetComponent<Rigidbody2D>();
+        _gravity = -Physics2D.gravity.y * _projectileRB.gravityScale;
+        _mass = _projectileRB.mass;
     }
 
     // ignoreBuildingHits will not stop the line when it hits the ground (buildings), but it will create a list of the buildings hit
@@ -55,8 +59,8 @@ public class TrajectoryLine : MonoBehaviour
         for (int i = 0; i < _maxNumPoints; i++)
         {
             float angleRad = Mathf.Deg2Rad * angle;
-            float vx = power * Mathf.Cos(angleRad);
-            float vy = power * Mathf.Sin(angleRad);
+            float vx = (power / _mass) * Mathf.Cos(angleRad);
+            float vy = (power / _mass) * Mathf.Sin(angleRad);
 
             float x = vx * totalTime * direction;
             float y = vy * totalTime - 0.5f * _gravity * totalTime * totalTime;
@@ -92,14 +96,14 @@ public class TrajectoryLine : MonoBehaviour
                             AddBuildingToHitList(hit.transform.gameObject);
                             if (_playerController.PlayerId == 0)
                             {
-                                if (newPos.x > _targetPosition.x)
+                                if (rayDir.y < 0 || newPos.x > _targetPosition.x)
                                 {
                                     pathComplete = true;
                                 }
                             }
                             else
                             {
-                                if (newPos.x < _targetPosition.x)
+                                if (rayDir.y < 0 || newPos.x < _targetPosition.x)
                                 {
                                     pathComplete = true;
                                 }
@@ -114,7 +118,11 @@ public class TrajectoryLine : MonoBehaviour
                     if (hit.transform.CompareTag("Player"))
                     {
                         pathComplete = true;
-                        _hitPlayer = true;
+
+                        // if we are in the second phase of the AI calculations, only mark that we have hit the player
+                        // if we have hit the target player, not the throwing player
+                        if (!ignoreGroundHits || hit.transform.gameObject == PlayerManager.Instance.Players[targetPlayerId].PlayerGameObject)
+                            _hitPlayer = true;
                         //newPos = hit.point;
                     }
                 }
@@ -131,9 +139,14 @@ public class TrajectoryLine : MonoBehaviour
             previousPos = newPos;
             _segmentsList.Add(newPos);
 
+            // check to see if the line has gone below some depth
+            if (newPos.y < -15f) pathComplete = true;
+
             if (pathComplete) break;
         }
         _segments = _segmentsList.ToArray();
+
+        //Debug.Log($"CalculateTrajectoryLine Angle {angle} Power {power * 4} Last {LastSegment.x} Count {SegmentCount}");
 
         DrawTrajectoryLine();
     }

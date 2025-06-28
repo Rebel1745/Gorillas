@@ -324,6 +324,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be37496cb1782294193736e2810fa04b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _maxIterations: 20
   _trajectoryLine: {fileID: -462852377826311693}
 --- !u!114 &-462852377826311693
 MonoBehaviour:
@@ -339,7 +340,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _lineRenderer: {fileID: 838280491203144005}
   _playerController: {fileID: 4113509715146576754}
-  _maxNumPoints: 100
+  _maxNumPoints: 500
   _timeStep: 0.05
 --- !u!1 &5942257555307697222
 GameObject:

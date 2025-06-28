@@ -35,6 +35,7 @@ public class PlayerManager : MonoBehaviour
         // create player UI
         GameObject newUI = Instantiate(Players[0].PlayerUI, _uICanvas);
         newUI.SetActive(false);
+        newPlayer.name = pc.PlayerName;
         Players[0].Name = pc.PlayerName;
         Players[0].IsCPU = pc.isCPU;
         Players[0].PlayerGameObject = newPlayer;
@@ -57,6 +58,7 @@ public class PlayerManager : MonoBehaviour
         // create player UI
         newUI = Instantiate(Players[1].PlayerUI, _uICanvas);
         newUI.SetActive(false);
+        newPlayer.name = pc.PlayerName;
         Players[1].Name = pc.PlayerName;
         Players[1].IsCPU = pc.isCPU;
         Players[1].PlayerGameObject = newPlayer;
