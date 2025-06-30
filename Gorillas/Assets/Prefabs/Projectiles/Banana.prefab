@@ -129,6 +129,7 @@ MonoBehaviour:
   _explosionRadiusDamageMultiplier: 2
   _destroyWhenDistanceOffscreen: -20
   _rotationRate: 500
+  _explosionSFX: {fileID: 8300000, guid: 5e19efa2783b2d545a5e0290647e102a, type: 3}
 --- !u!1 &2602004527939944288
 GameObject:
   m_ObjectHideFlags: 0

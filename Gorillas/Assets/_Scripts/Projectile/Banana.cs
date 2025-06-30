@@ -12,6 +12,7 @@ public class Banana : MonoBehaviour, IProjectile
     [SerializeField] private float _explosionRadiusDamageMultiplier = 2;
     [SerializeField] private float _destroyWhenDistanceOffscreen = -20f;
     [SerializeField] private float _rotationRate = 1f;
+    [SerializeField] private AudioClip _explosionSFX;
     private float _explosionRadius;
     private Transform _explosionTransform;
     private Rigidbody2D _rb;
@@ -119,6 +120,7 @@ public class Banana : MonoBehaviour, IProjectile
         }
         CameraManager.Instance.RemoveProjectile();
         GameObject explosion = Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
+        AudioManager.Instance.PlayAudioClip(_explosionSFX, 0.95f, 1.05f);
 
         // set the x position of the landing area for the AI to use
         PlayerManager.Instance.Players[PlayerManager.Instance.CurrentPlayerId].PlayerController.LastProjectileLandingPositionX = transform.position.x;
