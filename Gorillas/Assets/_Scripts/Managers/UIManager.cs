@@ -38,6 +38,7 @@ public class UIManager : MonoBehaviour
 
     public void StartGame()
     {
+        AudioManager.Instance.StopBackgroundMusic();
         ShowHideUIElement(SettingsScreenUI, false);
         GameManager.Instance.UpdateGameState(GameState.InitialiseGame);
     }

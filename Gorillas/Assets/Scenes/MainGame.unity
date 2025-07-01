@@ -1053,7 +1053,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 2a1912527b8aad54fb18168c604400aa, type: 3}
+  m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 2a1912527b8aad54fb18168c604400aa, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
@@ -1459,7 +1459,8 @@ MonoBehaviour:
   - {fileID: 6087501927232720569, guid: 1a0841428a691fd48ae79cba51603c2a, type: 3}
   - {fileID: 7051889797630888576, guid: aa7bc64a2a8080948866be1235af4c53, type: 3}
   - {fileID: 1143275907609811923, guid: 26de4744eca3bf44cb5f232428ac6b30, type: 3}
-  _distanceBetweenPlayers: 20
+  _minimumDistanceBetweenPlayers: 7
+  _maximumDistanceBetweenPlayers: 30
   _minHeight: -13
   _maxHeight: -8
 --- !u!1 &213972691
@@ -1819,6 +1820,7 @@ MonoBehaviour:
   _playerScoreText: {fileID: 415015344}
   _numberOfRounds: 21
   _timeBetweenRounds: 3
+  _mainMenuMusic: {fileID: 8300000, guid: 4e93f9ef2018a4e4780f47efb95c28ad, type: 3}
 --- !u!1 &388018361
 GameObject:
   m_ObjectHideFlags: 0
@@ -3049,6 +3051,7 @@ MonoBehaviour:
   _winningImageSize: 150
   _losingImageSize: 100
   _losingImageOffset: -25
+  _gameOverAudio: {fileID: 0}
 --- !u!114 &724203055
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3873,6 +3876,7 @@ MonoBehaviour:
     PlayerLineRenderer: {fileID: 0}
     PlayerAIController: {fileID: 0}
     ThrowDirection: 1
+    AlwaysShowTrajectoryLine: 0
   - PlayerConfig: {fileID: 1223058969}
     Name: Player 2
     IsCPU: 0
@@ -3884,6 +3888,7 @@ MonoBehaviour:
     PlayerLineRenderer: {fileID: 0}
     PlayerAIController: {fileID: 0}
     ThrowDirection: -1
+    AlwaysShowTrajectoryLine: 0
   IsCurrentPlayerCPU: 0
 --- !u!1 &941735054
 GameObject:

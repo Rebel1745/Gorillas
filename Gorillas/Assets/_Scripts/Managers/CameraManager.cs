@@ -21,6 +21,7 @@ public class CameraManager : MonoBehaviour
     private bool _moveCamera = false;
     private bool _instantCameraMovement;
     private float _screenHeightWidthRatio;
+    private int _numberOfPlayers = 0;
 
     private void Awake()
     {
@@ -30,6 +31,7 @@ public class CameraManager : MonoBehaviour
     private void Start()
     {
         ResetCamera();
+        _numberOfPlayers = 0;
     }
 
     public void ResetCamera()
@@ -150,6 +152,7 @@ public class CameraManager : MonoBehaviour
         if (_cameraTargets.Contains(target)) return;
 
         _cameraTargets.Add(target);
+        _numberOfPlayers++;
 
         if (_cameraTargets.Count == 2)
         {
@@ -162,6 +165,7 @@ public class CameraManager : MonoBehaviour
     {
         if (_cameraTargets.Count < 2) Debug.LogError("Both players aren't here, why are we trying to remove one?");
         _cameraTargets.RemoveAt(playerId);
+        _numberOfPlayers--;
 
         SetBounds();
         _moveCamera = true;
@@ -173,6 +177,7 @@ public class CameraManager : MonoBehaviour
             _cameraTargets.Add(target);
         else if (_cameraTargets.Count == 3)
             _cameraTargets[2] = target;
+        else Debug.LogError("SetProjectileZenith() Why are we here?");
     }
 
     public void UpdateCameraForProjectile()

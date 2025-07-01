@@ -18,6 +18,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private int _numberOfRounds = 3;
     private int _currentRound;
     [SerializeField] private float _timeBetweenRounds = 3f;
+    [SerializeField] private AudioClip _mainMenuMusic;
 
     private void Awake()
     {
@@ -98,6 +99,7 @@ public class GameManager : MonoBehaviour
     {
         InputManager.Instance.EnableDisableControls(false);
         UIManager.Instance.ShowHideUIElement(UIManager.Instance.StartScreenUI, true);
+        AudioManager.Instance.PlayBackgroundMusic(_mainMenuMusic);
     }
 
     private IEnumerator RoundComplete(float delay)
@@ -147,7 +149,7 @@ public class GameManager : MonoBehaviour
         IsCurrentPlayerCPU = PlayerManager.Instance.Players[CurrentPlayerId].IsCPU;
         PlayerManager.Instance.UpdateCurrentPlayer(CurrentPlayerId);
 
-        UpdateGameState(GameState.WaitingForLaunch);
+        /*UpdateGameState(GameState.WaitingForLaunch);*/
     }
 
     private IEnumerator NextTurn(float delay)

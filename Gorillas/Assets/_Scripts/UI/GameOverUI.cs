@@ -14,6 +14,7 @@ public class GameOverUI : MonoBehaviour
     [SerializeField] private float _winningImageSize = 150f;
     [SerializeField] private float _losingImageSize = 100f;
     [SerializeField] private float _losingImageOffset = -25f;
+    [SerializeField] private AudioClip _gameOverAudio;
 
     public void SetGameOverDetails(int[] scores)
     {
@@ -44,6 +45,8 @@ public class GameOverUI : MonoBehaviour
         }
 
         _scoreText.text = scores[0] + " - " + scores[1];
+
+        AudioManager.Instance.PlayAudioClip(_gameOverAudio);
     }
 
     public void MainMenuButton()

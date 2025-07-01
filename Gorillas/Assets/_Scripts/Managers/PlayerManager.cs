@@ -123,4 +123,5 @@ public struct PlayerDetails
     public LineRenderer PlayerLineRenderer;
     public AIController PlayerAIController;
     public int ThrowDirection; // 1 for left - right, -1 for right to left
+    public bool AlwaysShowTrajectoryLine;
 }

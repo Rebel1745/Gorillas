@@ -35,6 +35,7 @@ public class AIController : MonoBehaviour
 
     public IEnumerator DoAI(PlayerController pc)
     {
+        yield return new WaitForSeconds(1f);
         if (pc.ThrowNumber == 0)
         {
             Initialise(pc);

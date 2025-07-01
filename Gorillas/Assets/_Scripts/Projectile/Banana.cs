@@ -54,11 +54,11 @@ public class Banana : MonoBehaviour, IProjectile
         {
             int playerHitId = hit.transform.GetComponent<PlayerController>().PlayerId;
             int otherPlayerId = (playerHitId + 1) % 2;
+            CreateExplosionAndDestroy();
             CameraManager.Instance.RemovePlayer(playerHitId);
             GameManager.Instance.UpdateScore(otherPlayerId);
             PlayerManager.Instance.SetPlayerAnimation(otherPlayerId, "Celebrate");
             // we directly hit a player!!
-            CreateExplosionAndDestroy();
             Destroy(hit.transform.gameObject);
 
             // Game over?
@@ -78,9 +78,9 @@ public class Banana : MonoBehaviour, IProjectile
                     int otherPlayerId = (playerHitId + 1) % 2;
                     PlayerManager.Instance.SetPlayerAnimation(otherPlayerId, "Celebrate");
                     // the explosion hit a player!
+                    CreateExplosionAndDestroy();
                     CameraManager.Instance.RemovePlayer(playerHitId);
                     GameManager.Instance.UpdateScore(otherPlayerId);
-                    CreateExplosionAndDestroy();
                     Destroy(hits[0].gameObject);
 
                     // Game over?
@@ -114,8 +114,8 @@ public class Banana : MonoBehaviour, IProjectile
         // find all of the windows in the blast radius (with multiplier)
         foreach (var h in Physics2D.OverlapCircleAll(transform.position, _explosionRadius * _explosionRadiusDamageMultiplier, _whatIsWindow))
         {
-            GameObject randomSprite = _brokenWindowSprites[UnityEngine.Random.Range(0, _brokenWindowSprites.Length)];
-            Quaternion randomRotation = Quaternion.Euler(0f, 0f, UnityEngine.Random.Range(0f, 360f));
+            GameObject randomSprite = _brokenWindowSprites[Random.Range(0, _brokenWindowSprites.Length)];
+            Quaternion randomRotation = Quaternion.Euler(0f, 0f, Random.Range(0f, 360f));
             Instantiate(randomSprite, h.transform.position, randomRotation, h.transform);
         }
         CameraManager.Instance.RemoveProjectile();

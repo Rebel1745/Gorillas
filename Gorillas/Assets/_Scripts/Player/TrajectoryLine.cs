@@ -72,6 +72,14 @@ public class TrajectoryLine : MonoBehaviour
             hits = Physics2D.CircleCastAll(previousPos, 0.1f, rayDir, rayDistance);
             containsMask = false;
 
+            // if the point is at a higher Y-value than currently saved, update it so we can use it as the highest point for the camera to track
+            if (newPos.y > zenith.y)
+            {
+                zenith = newPos;
+                // add the new zenith
+                CameraManager.Instance.SetProjectileZenith(zenith);
+            }
+
             foreach (var hit in hits)
             {
                 // if we hit a mask, we can keep going and ignore any ground or player hits
@@ -128,14 +136,6 @@ public class TrajectoryLine : MonoBehaviour
                 }
             }
 
-            // if the point is at a higher Y-value than currently saved, update it so we can use it as the highest point for the camera to track
-            if (newPos.y > zenith.y)
-            {
-                zenith = newPos;
-                // add the new zenith
-                CameraManager.Instance.SetProjectileZenith(zenith);
-            }
-
             previousPos = newPos;
             _segmentsList.Add(newPos);
 
@@ -148,7 +148,8 @@ public class TrajectoryLine : MonoBehaviour
 
         //Debug.Log($"CalculateTrajectoryLine Angle {angle} Power {power * 4} Last {LastSegment.x} Count {SegmentCount}");
 
-        DrawTrajectoryLine();
+        if (_playerController.AlwaysShowTrajectoryLine)
+            DrawTrajectoryLine();
     }
 
     private void AddBuildingToHitList(GameObject groundObject)
@@ -165,7 +166,7 @@ public class TrajectoryLine : MonoBehaviour
         _lineRenderer.SetPositions(_segments);
     }
 
-    private void HideTrajectoryLine()
+    public void HideTrajectoryLine()
     {
         _lineRenderer.positionCount = 0;
     }

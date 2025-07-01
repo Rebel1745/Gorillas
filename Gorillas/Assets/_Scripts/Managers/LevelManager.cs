@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class LevelManager : MonoBehaviour
@@ -10,7 +8,9 @@ public class LevelManager : MonoBehaviour
     [SerializeField] private Transform _levelElementHolder;
     [SerializeField] private Transform _explosionMaskHolder;
     [SerializeField] private GameObject[] _levelElements;
-    [SerializeField] private int _distanceBetweenPlayers = 10;
+    [SerializeField] private int _minimumDistanceBetweenPlayers = 7;
+    [SerializeField] private int _maximumDistanceBetweenPlayers = 30;
+    private int _distanceBetweenPlayers;
     [SerializeField] private float _minHeight;
     [SerializeField] private float _maxHeight;
     private List<LevelElementDetails> _levelElementDetailsList = new();
@@ -41,13 +41,13 @@ public class LevelManager : MonoBehaviour
         float xOffset = 0f;
         Vector3 newPos, spawnPointPos;
         GameObject newElement;
-        Color randomBuildingColour = Color.black;
+        Color randomBuildingColour;
 
         foreach (LevelElementDetails led in _levelElementDetailsList)
         {
             newPos = new(startingXPos + xOffset + (led.ElementWidth / 2), led.ElementHeight, 0f);
             newElement = Instantiate(led.ElementPrefab, newPos, Quaternion.identity, _levelElementHolder);
-            randomBuildingColour = new(UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f), 1f);
+            randomBuildingColour = new(Random.Range(0f, 1f), Random.Range(0f, 1f), Random.Range(0f, 1f), 1f);
             newElement.transform.GetChild(0).GetChild(1).GetComponent<SpriteRenderer>().color = randomBuildingColour;
             xOffset += led.ElementWidth;
 
@@ -61,6 +61,7 @@ public class LevelManager : MonoBehaviour
 
     private void ChooseElements()
     {
+        _distanceBetweenPlayers = Random.Range(_minimumDistanceBetweenPlayers, _maximumDistanceBetweenPlayers);
         _numberOfLevelElements = _distanceBetweenPlayers * 3;
         LevelElementDetails newLevelElementDetails;
         GameObject prefab;
@@ -70,9 +71,9 @@ public class LevelManager : MonoBehaviour
 
         for (int i = 0; i <= _numberOfLevelElements; i++)
         {
-            prefab = _levelElements[UnityEngine.Random.Range(0, _levelElements.Length)];
+            prefab = _levelElements[Random.Range(0, _levelElements.Length)];
             prefabWidth = prefab.transform.GetChild(0).transform.localScale.x;
-            prefabHeight = UnityEngine.Random.Range(_minHeight, _maxHeight);
+            prefabHeight = Random.Range(_minHeight, _maxHeight);
             playerSpawnPoints = prefab.GetComponent<LevelElement>().PlayerSpawnPoints;
 
             newLevelElementDetails = new LevelElementDetails
@@ -92,7 +93,7 @@ public class LevelManager : MonoBehaviour
         {
             prefab = _levelElements[0];
             prefabWidth = prefab.GetComponentInChildren<SpriteRenderer>().transform.localScale.x;
-            prefabHeight = UnityEngine.Random.Range(_minHeight, _maxHeight);
+            prefabHeight = Random.Range(_minHeight, _maxHeight);
             playerSpawnPoints = prefab.GetComponent<LevelElement>().PlayerSpawnPoints;
 
             newLevelElementDetails = new LevelElementDetails
