@@ -27,6 +27,7 @@ public class PlayerController : MonoBehaviour
     private PlayerDetails _playerDetails;
     public bool AlwaysShowTrajectoryLine { get { return _playerDetails.AlwaysShowTrajectoryLine; } }
     public bool IsCPU { get { return _playerDetails.IsCPU; } }
+    public CPU_TYPE CPUType { get { return _playerDetails.CPUType; } }
     private bool _initialTrajectoryLine;
     [SerializeField] private AudioClip _throwSFX;
 

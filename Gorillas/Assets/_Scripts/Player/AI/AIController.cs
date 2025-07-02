@@ -1,8 +1,6 @@
 using System.Collections;
 using UnityEngine.UI;
 using UnityEngine;
-using UnityEditor;
-using System;
 
 public class AIController : MonoBehaviour
 {
@@ -11,31 +9,57 @@ public class AIController : MonoBehaviour
     private float _minAngle = 20f;
     private float _currentMinAngle;
     private float _maxAngle = 89f;
-    private Slider _angleSlider;
     private int _playerId;
     private int _otherPlayerId;
     private Vector3 _throwingPlayer;
     private Vector3 _targetPlayer;
     [SerializeField] private int _maxIterations = 20;
     private readonly float[] _increments = { 0.1f, 1f, 5f };
-
     [SerializeField] private TrajectoryLine _trajectoryLine;
     private PlayerController _playerController;
+    private float _cpuVariability;
+    private float _perfectAngle;
+    private float _perfectPower;
 
     private void Initialise(PlayerController pc)
     {
         _playerController = pc;
-        _angleSlider = pc.AngleSlider;
         _playerId = pc.PlayerId;
         _otherPlayerId = (_playerId + 1) % 2;
 
         _throwingPlayer = PlayerManager.Instance.Players[_playerId].PlayerGameObject.transform.position;
         _targetPlayer = PlayerManager.Instance.Players[_otherPlayerId].PlayerGameObject.transform.position;
+
+        _cpuVariability = GetCPUVariability();
+    }
+
+    private float GetCPUVariability()
+    {
+        float variability = 0f;
+
+        switch (_playerController.CPUType)
+        {
+            case CPU_TYPE.Easy:
+                variability = 5f;
+                break;
+            case CPU_TYPE.Medium:
+                variability = 3f;
+                break;
+            case CPU_TYPE.Hard:
+                variability = 1f;
+                break;
+            case CPU_TYPE.Impossible:
+                variability = 0.5f;
+                break;
+        }
+
+        return variability;
     }
 
     public IEnumerator DoAI(PlayerController pc)
     {
         yield return new WaitForSeconds(1f);
+
         if (pc.ThrowNumber == 0)
         {
             Initialise(pc);
@@ -47,13 +71,21 @@ public class AIController : MonoBehaviour
             {
                 // we didn't find a proper result, so try something a little different
                 angleAndPower = GetMinimumGroundHitsAngleAndPower();
-                _playerController.UpdateAngleAndPower(angleAndPower.x, angleAndPower.y);
+                //_playerController.UpdateAngleAndPower(angleAndPower.x, angleAndPower.y);
             }
+
+            _perfectAngle = angleAndPower.x;
+            _perfectPower = angleAndPower.y;
         }
 
-        yield return new WaitForSeconds(1f);
+        float randomAngle = Random.Range(_perfectAngle - _cpuVariability, _perfectAngle + _cpuVariability);
+        float randomPower = Random.Range(_perfectPower - _cpuVariability, _perfectPower + _cpuVariability);
+        //Debug.Log($"PA: {_perfectAngle} RA: {randomAngle} CP: {_perfectPower} RP: {randomPower}");
+        pc.UpdateAngleAndPower(randomAngle, randomPower);
+        //pc.UpdateAngleAndPower(_perfectAngle, _perfectPower);
 
-        //pc.UpdateAngleAndPower(angleAndPower.x, angleAndPower.y);
+        yield return new WaitForSeconds(0.5f);
+
         pc.LaunchProjectile();
     }
 
@@ -149,7 +181,7 @@ public class AIController : MonoBehaviour
                 if (CheckAngleAndPowerForHit(bestAngle, bestPower))
                 {
                     checkComplete = true;
-                    break;
+                    return new Vector2(bestAngle, bestPower);
                 }
                 //Debug.Log($"CalculateTrajectory () Angle: {bestAngle}  Power: {bestPower} Hit - {_trajectoryLine.LastSegment.x} Target - {_targetPlayer.x} Segment Count {_trajectoryLine.SegmentCount}");
 
@@ -220,7 +252,7 @@ public class AIController : MonoBehaviour
             //Debug.Log(totalIterations);
         }
 
-        return new Vector2(bestPower, bestAngle);
+        return new Vector2(bestAngle, bestPower);
     }
 
     private bool CheckAngleAndPowerForHit(float angle, float power)

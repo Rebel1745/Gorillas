@@ -38,6 +38,7 @@ public class PlayerManager : MonoBehaviour
         newPlayer.name = pc.PlayerName;
         Players[0].Name = pc.PlayerName;
         Players[0].IsCPU = pc.isCPU;
+        Players[0].CPUType = (CPU_TYPE)pc.CPUType;
         Players[0].PlayerGameObject = newPlayer;
         Players[0].PlayerController = newPlayer.GetComponent<PlayerController>();
         Players[0].PlayerUI = newUI;
@@ -61,6 +62,7 @@ public class PlayerManager : MonoBehaviour
         newPlayer.name = pc.PlayerName;
         Players[1].Name = pc.PlayerName;
         Players[1].IsCPU = pc.isCPU;
+        Players[1].CPUType = (CPU_TYPE)pc.CPUType;
         Players[1].PlayerGameObject = newPlayer;
         Players[1].PlayerController = newPlayer.GetComponent<PlayerController>();
         Players[1].PlayerUI = newUI;
@@ -107,21 +109,4 @@ public class PlayerManager : MonoBehaviour
         else
             StartCoroutine(Players[playerId].PlayerAIController.DoAI(Players[playerId].PlayerController));
     }
-}
-
-[System.Serializable]
-public struct PlayerDetails
-{
-    public GameObject PlayerConfig;
-    public string Name;
-    public bool IsCPU;
-    public GameObject PlayerUI;
-    public PlayerController PlayerController;
-    public GameObject PlayerPrefab;
-    public Animator PlayerAnimator;
-    public GameObject PlayerGameObject;
-    public LineRenderer PlayerLineRenderer;
-    public AIController PlayerAIController;
-    public int ThrowDirection; // 1 for left - right, -1 for right to left
-    public bool AlwaysShowTrajectoryLine;
 }

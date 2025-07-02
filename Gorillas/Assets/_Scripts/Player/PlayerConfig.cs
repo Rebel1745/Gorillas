@@ -6,13 +6,12 @@ public class PlayerConfig : MonoBehaviour
 {
     [SerializeField] TMP_InputField playerNameInputField;
     [SerializeField] TMP_Dropdown cpuDropdown;
-    //[SerializeField] GameObject cpuTypeHolder;
-    //[SerializeField] TMP_Dropdown cpuTypeDropdown;
+    [SerializeField] GameObject cpuTypeHolder;
+    [SerializeField] TMP_Dropdown cpuTypeDropdown;
     [SerializeField] string defaultPlayerName;
-    //public Image ColourImage;
     public string PlayerName;
     public bool isCPU = false;
-    //public int CPUType = 0;
+    public int CPUType = 0;
 
     // for loading and saving PlayerPrefs
     string playerNameString;
@@ -40,19 +39,19 @@ public class PlayerConfig : MonoBehaviour
         {
             cpuDropdown.value = 0;
             isCPU = false;
-            //cpuTypeHolder.SetActive(false);
+            cpuTypeHolder.SetActive(false);
         }
         else
         {
             cpuDropdown.value = 1;
             isCPU = true;
-            //cpuTypeHolder.SetActive(true);
+            cpuTypeHolder.SetActive(true);
         }
     }
 
     void SetDefaultCPUType(int type)
     {
-        //cpuTypeDropdown.value = type;
+        cpuTypeDropdown.value = type;
     }
 
     public void SetPlayerName(string newPlayerName)
@@ -74,25 +73,25 @@ public class PlayerConfig : MonoBehaviour
         if (type == 0)
         {
             isCPU = false;
-            //cpuTypeHolder.SetActive(false);
+            cpuTypeHolder.SetActive(false);
         }
         else
         {
             isCPU = true;
-            //cpuTypeHolder.SetActive(true);
+            cpuTypeHolder.SetActive(true);
         }
     }
 
     public void SetPlayerCPUType(int type)
     {
-        //CPUType = type;
+        CPUType = type;
     }
 
     public void SavePlayerDetails()
     {
         PlayerPrefs.SetString(playerNameString, PlayerName);
         PlayerPrefs.SetString(playerCPUString, isCPU.ToString());
-        //PlayerPrefs.SetInt(playerCPUTypeString, CPUType);
+        PlayerPrefs.SetInt(playerCPUTypeString, CPUType);
     }
 
     void LoadPlayerDetails()
