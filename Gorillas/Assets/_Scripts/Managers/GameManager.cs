@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using TMPro;
-using System;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -14,11 +14,13 @@ public class GameManager : MonoBehaviour
     public int CurrentPlayerId { get; private set; }
     public bool IsCurrentPlayerCPU = false;
     private int[] _playerScores;
+    private int[] _playerMisses;
     [SerializeField] private TMP_Text _playerScoreText;
-    [SerializeField] private int _numberOfRounds = 3;
+    private int _numberOfRounds = 3;
     private int _currentRound;
     [SerializeField] private float _timeBetweenRounds = 3f;
     [SerializeField] private AudioClip _mainMenuMusic;
+    [SerializeField] private TMP_InputField _numberOfRoundsInput;
 
     private void Awake()
     {
@@ -74,6 +76,7 @@ public class GameManager : MonoBehaviour
     private void InitialiseGame()
     {
         _playerScores = new int[2];
+        _playerMisses = new int[2];
         UpdateScoreboard();
         _currentRound = 0;
         CurrentPlayerId = 0;
@@ -82,6 +85,7 @@ public class GameManager : MonoBehaviour
 
     IEnumerator GameOver(float delay)
     {
+        //Debug.Log($"{_playerMisses[0] - _playerScores[0]} - {_playerMisses[1] - _playerScores[1]}");
         yield return new WaitForSeconds(delay);
 
         UIManager.Instance.ShowHideUIElement(UIManager.Instance.ScoreBoardUI, false);
@@ -93,6 +97,8 @@ public class GameManager : MonoBehaviour
     private void ShowSettingsScreen()
     {
         UIManager.Instance.ShowHideUIElement(UIManager.Instance.SettingsScreenUI, true);
+        _numberOfRounds = PlayerPrefs.GetInt("NumberOfRounds", 9);
+        _numberOfRoundsInput.text = _numberOfRounds.ToString();
     }
 
     private void ShowStartScreen()
@@ -156,6 +162,8 @@ public class GameManager : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
 
+        _playerMisses[CurrentPlayerId]++;
+
         // advance player
         int newPlayerId = (CurrentPlayerId + 1) % 2;
         UpdateCurrentPlayerDetails(newPlayerId);
@@ -172,6 +180,12 @@ public class GameManager : MonoBehaviour
     private void UpdateScoreboard()
     {
         _playerScoreText.text = _playerScores[0].ToString() + " - " + _playerScores[1].ToString();
+    }
+
+    public void SetNumberOfRounds(string numberOfRounds)
+    {
+        _numberOfRounds = int.Parse(numberOfRounds);
+        PlayerPrefs.SetInt("NumberOfRounds", _numberOfRounds);
     }
 }
 

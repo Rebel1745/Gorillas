@@ -69,7 +69,7 @@ public class TrajectoryLine : MonoBehaviour
             newPos = spawnPoint + new Vector3(x, y, 0f);
             rayDir = newPos - previousPos;
             rayDistance = Vector3.Distance(previousPos, newPos);
-            hits = Physics2D.CircleCastAll(previousPos, 0.1f, rayDir, rayDistance);
+            hits = Physics2D.CircleCastAll(previousPos, 0.05f, rayDir, rayDistance);
             containsMask = false;
 
             // if the point is at a higher Y-value than currently saved, update it so we can use it as the highest point for the camera to track

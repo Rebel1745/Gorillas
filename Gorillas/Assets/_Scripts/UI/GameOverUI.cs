@@ -18,8 +18,22 @@ public class GameOverUI : MonoBehaviour
 
     public void SetGameOverDetails(int[] scores)
     {
+        if (scores[0] == scores[1])
+        {
+            // draw
+            _player1Image.sprite = _losingSprite;
+            _player1Image.rectTransform.sizeDelta = new(_player1Image.rectTransform.sizeDelta.x, _losingImageSize);
+            _player1Image.rectTransform.localPosition = new(_player1Image.rectTransform.localPosition.x, _losingImageOffset);
+
+            _player2Image.sprite = _losingSprite;
+            _player2Image.rectTransform.sizeDelta = new(_player2Image.rectTransform.sizeDelta.x, _losingImageSize);
+            _player2Image.rectTransform.localPosition = new(_player2Image.rectTransform.localPosition.x, _losingImageOffset);
+
+            _winnerText.text = "DRAW";
+
+        }
         // if player 1 wins
-        if (scores[0] > scores[1])
+        else if (scores[0] > scores[1])
         {
             _player1Image.sprite = _winningSprite;
             _player1Image.rectTransform.sizeDelta = new(_player1Image.rectTransform.sizeDelta.x, _winningImageSize);
@@ -29,7 +43,7 @@ public class GameOverUI : MonoBehaviour
             _player2Image.rectTransform.sizeDelta = new(_player2Image.rectTransform.sizeDelta.x, _losingImageSize);
             _player2Image.rectTransform.localPosition = new(_player2Image.rectTransform.localPosition.x, _losingImageOffset);
 
-            _winnerText.text = PlayerManager.Instance.Players[0].Name + " WINS!";
+            _winnerText.text = "!" + PlayerManager.Instance.Players[0].Name + " WINS!";
         }
         else
         {
@@ -41,7 +55,7 @@ public class GameOverUI : MonoBehaviour
             _player2Image.rectTransform.sizeDelta = new(_player2Image.rectTransform.sizeDelta.x, _winningImageSize);
             _player2Image.rectTransform.localPosition = new(_player2Image.rectTransform.localPosition.x, 0f);
 
-            _winnerText.text = PlayerManager.Instance.Players[1].Name + " WINS!";
+            _winnerText.text = "!" + PlayerManager.Instance.Players[1].Name + " WINS!";
         }
 
         _scoreText.text = scores[0] + " - " + scores[1];
