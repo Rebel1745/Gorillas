@@ -49,8 +49,8 @@ public class InputManager : MonoBehaviour
 
     private void ShowTrajectoryLine(InputAction.CallbackContext context)
     {
-        if (GameManager.Instance.State == GameState.WaitingForLaunch && !PlayerManager.Instance.IsCurrentPlayerCPU)
-            PlayerManager.Instance.Players[PlayerManager.Instance.CurrentPlayerId].PlayerController.ShowTrajectoryLine();
+        /*if (GameManager.Instance.State == GameState.WaitingForLaunch && !PlayerManager.Instance.IsCurrentPlayerCPU)
+            PlayerManager.Instance.Players[PlayerManager.Instance.CurrentPlayerId].PlayerController.ShowTrajectoryLine();*/
     }
 
     private void UpdatePower(InputAction.CallbackContext context)
@@ -82,7 +82,7 @@ public class InputManager : MonoBehaviour
 
     private void RebuildLevel(InputAction.CallbackContext context)
     {
-        GameManager.Instance.UpdateGameState(GameState.InitialiseGame);
+        //GameManager.Instance.UpdateGameState(GameState.InitialiseGame);
     }
 
     public void EnableDisableControls(bool enabled)

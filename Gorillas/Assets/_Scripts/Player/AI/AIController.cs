@@ -42,10 +42,10 @@ public class AIController : MonoBehaviour
         switch (_playerController.CPUType)
         {
             case CPU_TYPE.Easy:
-                variability = 5f;
+                variability = 7.5f;
                 break;
             case CPU_TYPE.Medium:
-                variability = 3f;
+                variability = 5f;
                 break;
             case CPU_TYPE.Hard:
                 variability = 2f;

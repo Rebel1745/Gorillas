@@ -15,6 +15,12 @@ public class AudioManager : MonoBehaviour
         if (Instance == null) Instance = this;
     }
 
+    private void Start()
+    {
+        sourceBg.volume = PlayerPrefs.GetFloat("MusicVolume", 1);
+        sourceSFX.volume = PlayerPrefs.GetFloat("sfxVolume", 1);
+    }
+
     public void PlayAudioClip(AudioClip clip, float minPitch = 1f, float maxPitch = 1f)
     {
         sourceSFX.pitch = Random.Range(minPitch, maxPitch);
@@ -34,5 +40,12 @@ public class AudioManager : MonoBehaviour
     public void SetMusicVolume(float vol)
     {
         sourceBg.volume = vol;
+        PlayerPrefs.SetFloat("MusicVolume", vol);
+    }
+
+    public void SetSFXVolume(float vol)
+    {
+        sourceSFX.volume = vol;
+        PlayerPrefs.SetFloat("sfxVolume", vol);
     }
 }

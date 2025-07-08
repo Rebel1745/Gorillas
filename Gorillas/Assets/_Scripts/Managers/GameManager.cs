@@ -21,6 +21,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float _timeBetweenRounds = 3f;
     [SerializeField] private AudioClip _mainMenuMusic;
     [SerializeField] private TMP_InputField _numberOfRoundsInput;
+    [SerializeField] private Slider _musicVolumeSlider;
+    [SerializeField] private Slider _sfxVolumeSlider;
 
     private void Awake()
     {
@@ -96,9 +98,13 @@ public class GameManager : MonoBehaviour
 
     private void ShowSettingsScreen()
     {
-        UIManager.Instance.ShowHideUIElement(UIManager.Instance.SettingsScreenUI, true);
         _numberOfRounds = PlayerPrefs.GetInt("NumberOfRounds", 9);
         _numberOfRoundsInput.text = _numberOfRounds.ToString();
+        float musicVolume = PlayerPrefs.GetFloat("MusicVolume", 1f);
+        _musicVolumeSlider.value = musicVolume;
+        float sfxVolume = PlayerPrefs.GetFloat("sfxVolume", 1f);
+        _sfxVolumeSlider.value = sfxVolume;
+        UIManager.Instance.ShowHideUIElement(UIManager.Instance.SettingsScreenUI, true);
     }
 
     private void ShowStartScreen()
