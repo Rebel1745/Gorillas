@@ -4,6 +4,7 @@ public class Banana : MonoBehaviour, IProjectile
 {
     [SerializeField] private LayerMask _whatIsGround;
     [SerializeField] private LayerMask _whatIsPlayer;
+    [SerializeField] private LayerMask _whatIsPowerup;
     [SerializeField] private LayerMask _whatIsWindow;
     [SerializeField] private GameObject _explosionSpriteMask;
     [SerializeField] private GameObject _explosionPrefab;
@@ -45,8 +46,16 @@ public class Banana : MonoBehaviour, IProjectile
     {
         _createExplosionMask = true;
 
+        // check if we hit a powerup first
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 0.01f, _whatIsPowerup);
+
+        if (hit)
+        {
+            // we hit a powerup
+        }
+
         // check if we hit a player
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 0.01f, _whatIsPlayer);
+        hit = Physics2D.Raycast(transform.position, Vector2.down, 0.01f, _whatIsPlayer);
         Collider2D[] hits;
 
         if (hit)

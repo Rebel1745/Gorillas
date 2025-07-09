@@ -8,6 +8,7 @@ public struct PlayerDetails
     public bool IsCPU;
     public CPU_TYPE CPUType;
     public GameObject PlayerUI;
+    public Transform PlayerUIPowerupHolder;
     public PlayerController PlayerController;
     public GameObject PlayerPrefab;
     public Animator PlayerAnimator;

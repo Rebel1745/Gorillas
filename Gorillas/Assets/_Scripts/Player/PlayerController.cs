@@ -2,6 +2,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using System.Collections;
+using System.Collections.Generic;
 
 public class PlayerController : MonoBehaviour
 {
@@ -66,7 +67,7 @@ public class PlayerController : MonoBehaviour
     {
         _playerId = id;
         _playerDetails = playerDetails;
-        _uIGO = uIGO;
+        _uIGO = uIGO.transform.GetChild(0).gameObject;
         _powerText = _uIGO.transform.GetChild(1).GetComponent<TMP_Text>();
         _powerSlider = _uIGO.transform.GetChild(2).GetComponent<Slider>();
         _powerSlider.value = 50f;

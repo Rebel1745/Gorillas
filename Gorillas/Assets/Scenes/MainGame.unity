@@ -6033,7 +6033,8 @@ MonoBehaviour:
     Name: Player 1
     IsCPU: 0
     CPUType: 0
-    PlayerUI: {fileID: 2133004135439833127, guid: 7db25626254609b478cf56ddd0dce287, type: 3}
+    PlayerUI: {fileID: 3845841556172374001, guid: 7db25626254609b478cf56ddd0dce287, type: 3}
+    PlayerUIPowerupHolder: {fileID: 0}
     PlayerController: {fileID: 0}
     PlayerPrefab: {fileID: 4972102006553089897, guid: b67723929e299af40b8fec6c39d135b4, type: 3}
     PlayerAnimator: {fileID: 0}
@@ -6046,7 +6047,8 @@ MonoBehaviour:
     Name: Player 2
     IsCPU: 0
     CPUType: 0
-    PlayerUI: {fileID: 7541448060516564268, guid: 7813c7fbf9eb0814e928ecb2cb330d40, type: 3}
+    PlayerUI: {fileID: 8557842398991186104, guid: 7813c7fbf9eb0814e928ecb2cb330d40, type: 3}
+    PlayerUIPowerupHolder: {fileID: 0}
     PlayerController: {fileID: 0}
     PlayerPrefab: {fileID: 4972102006553089897, guid: b67723929e299af40b8fec6c39d135b4, type: 3}
     PlayerAnimator: {fileID: 0}
