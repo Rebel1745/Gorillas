@@ -6033,7 +6033,8 @@ MonoBehaviour:
     Name: Player 1
     IsCPU: 0
     CPUType: 0
-    PlayerUI: {fileID: 3845841556172374001, guid: 7db25626254609b478cf56ddd0dce287, type: 3}
+    PlayerUIPrefab: {fileID: 3845841556172374001, guid: 7db25626254609b478cf56ddd0dce287, type: 3}
+    PlayerUI: {fileID: 0}
     PlayerUIPowerupHolder: {fileID: 0}
     PlayerController: {fileID: 0}
     PlayerPrefab: {fileID: 4972102006553089897, guid: b67723929e299af40b8fec6c39d135b4, type: 3}
@@ -6047,7 +6048,8 @@ MonoBehaviour:
     Name: Player 2
     IsCPU: 0
     CPUType: 0
-    PlayerUI: {fileID: 8557842398991186104, guid: 7813c7fbf9eb0814e928ecb2cb330d40, type: 3}
+    PlayerUIPrefab: {fileID: 8557842398991186104, guid: 7813c7fbf9eb0814e928ecb2cb330d40, type: 3}
+    PlayerUI: {fileID: 0}
     PlayerUIPowerupHolder: {fileID: 0}
     PlayerController: {fileID: 0}
     PlayerPrefab: {fileID: 4972102006553089897, guid: b67723929e299af40b8fec6c39d135b4, type: 3}
@@ -6058,6 +6060,8 @@ MonoBehaviour:
     ThrowDirection: -1
     AlwaysShowTrajectoryLine: 0
   IsCurrentPlayerCPU: 0
+  _availablePowerups:
+  - {fileID: 7830120543136791809, guid: c0f3516d05fd4004e9d360ccbb314c71, type: 3}
 --- !u!1 &915600074
 GameObject:
   m_ObjectHideFlags: 0

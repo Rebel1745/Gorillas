@@ -16,16 +16,15 @@ public class AIController : MonoBehaviour
     [SerializeField] private int _maxIterations = 20;
     private readonly float[] _increments = { 0.1f, 1f, 5f };
     [SerializeField] private TrajectoryLine _trajectoryLine;
-    private PlayerController _playerController;
+    [SerializeField] private PlayerController _playerController;
     private float _cpuVariability;
     private float _perfectAngle;
     private float _perfectPower;
     private bool _forceRecheck;
 
-    private void Initialise(PlayerController pc)
+    private void Initialise()
     {
-        _playerController = pc;
-        _playerId = pc.PlayerId;
+        _playerId = _playerController.PlayerId;
         _otherPlayerId = (_playerId + 1) % 2;
         _forceRecheck = false;
 
@@ -58,13 +57,13 @@ public class AIController : MonoBehaviour
         return variability;
     }
 
-    public IEnumerator DoAI(PlayerController pc)
+    public IEnumerator DoAI()
     {
         yield return new WaitForSeconds(1f);
 
-        if (pc.ThrowNumber == 0 || _forceRecheck)
+        if (_playerController.ThrowNumber == 0 || _forceRecheck)
         {
-            Initialise(pc);
+            Initialise();
 
             _currentMinAngle = CalculateMinAngle();
             Vector2 angleAndPower = CalculateTrajectory();
@@ -83,11 +82,11 @@ public class AIController : MonoBehaviour
         float randomAngle = Random.Range(_perfectAngle - _cpuVariability, _perfectAngle + _cpuVariability);
         float randomPower = Random.Range(_perfectPower - _cpuVariability, _perfectPower + _cpuVariability);
 
-        pc.UpdateAngleAndPower(randomAngle, randomPower);
+        _playerController.UpdateAngleAndPower(randomAngle, randomPower);
 
         yield return new WaitForSeconds(0.5f);
 
-        pc.LaunchProjectile();
+        _playerController.LaunchProjectile();
     }
 
     private Vector2 GetMinimumGroundHitsAngleAndPower()

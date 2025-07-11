@@ -1,4 +1,4 @@
-using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
@@ -11,15 +11,39 @@ public class PlayerManager : MonoBehaviour
     private int _currentPlayerId;
     public int CurrentPlayerId { get { return _currentPlayerId; } }
     public bool IsCurrentPlayerCPU;
+    [SerializeField] private GameObject[] _availablePowerups;
+    private List<GameObject>[] _playerPowerups;
+    private List<string>[] _playerPowerupNames;
+    private GameObject _player1UI;
+    private GameObject _player2UI;
+
+    // USED FOR DEBUG, DELETE WHEN NOT NEEDED
+    private List<GameObject> _player1Powerups;
+    private List<GameObject> _player2Powerups;
+    private List<string> _player1PowerupNames;
+    private List<string> _player2PowerupNames;
 
     void Awake()
     {
         if (Instance == null) Instance = this;
     }
 
+    private void Start()
+    {
+        _playerPowerups = new List<GameObject>[2];
+        _playerPowerups[0] = new();
+        _playerPowerups[1] = new();
+
+        _playerPowerupNames = new List<string>[2];
+        _playerPowerupNames[0] = new();
+        _playerPowerupNames[1] = new();
+    }
+
     public void SetupPlayers()
     {
-        RemovePlayers();
+        if (GameManager.Instance.CurrentRound == 0)
+            RemovePlayers();
+
         PlacePlayers();
 
         GameManager.Instance.UpdateGameState(GameState.SetupGame);
@@ -29,54 +53,76 @@ public class PlayerManager : MonoBehaviour
     {
         LevelManager.Instance.GetFirstAndLastSpawnPoints(out Vector3 firstSpawnPoint, out Vector3 lastSpawnPoint);
 
-        // create player
-        GameObject newPlayer = Instantiate(Players[0].PlayerPrefab, firstSpawnPoint, Quaternion.identity, _playerHolder);
-        PlayerConfig pc = Players[0].PlayerConfig.GetComponent<PlayerConfig>();
-        // create player UI
-        GameObject newUI = Instantiate(Players[0].PlayerUI, _uICanvas);
-        newUI.SetActive(false);
-        newPlayer.name = pc.PlayerName;
-        Players[0].Name = pc.PlayerName;
-        Players[0].IsCPU = pc.isCPU;
-        Players[0].CPUType = (CPU_TYPE)pc.CPUType;
-        Players[0].PlayerGameObject = newPlayer;
-        Players[0].PlayerController = newPlayer.GetComponent<PlayerController>();
-        Players[0].PlayerUI = newUI;
-        Players[0].PlayerUIPowerupHolder = newUI.transform.GetChild(1);
-        Players[0].PlayerAnimator = newPlayer.GetComponentInChildren<Animator>();
-        Players[0].PlayerLineRenderer = newPlayer.GetComponent<LineRenderer>();
-        Players[0].PlayerController.SetPlayerDetails(0, newUI, Players[0]);
-        Players[0].PlayerAIController = newPlayer.GetComponent<AIController>();
-        Players[0].ThrowDirection = 1;
 
-        pc.SavePlayerDetails();
+        if (GameManager.Instance.CurrentRound == 0)
+        {
+            // create player
+            GameObject newPlayer = Instantiate(Players[0].PlayerPrefab, firstSpawnPoint, Quaternion.identity, _playerHolder);
+            PlayerConfig pc = Players[0].PlayerConfig.GetComponent<PlayerConfig>();
+            // if we already have a UI, destroy it and create a new one
+            if (_player1UI != null)
+                Destroy(_player1UI);
 
-        CameraManager.Instance.AddPlayer(newPlayer.transform.position);
+            if (_player2UI != null)
+                Destroy(_player2UI);
 
-        newPlayer = Instantiate(Players[1].PlayerPrefab, lastSpawnPoint, Quaternion.identity, _playerHolder);
-        newPlayer.GetComponentInChildren<SpriteRenderer>().transform.rotation = Quaternion.Euler(0f, 180f, 0f);
-        newPlayer.transform.GetChild(1).transform.rotation = Quaternion.Euler(0f, 180f, 0f);
-        pc = Players[1].PlayerConfig.GetComponent<PlayerConfig>();
-        // create player UI
-        newUI = Instantiate(Players[1].PlayerUI, _uICanvas);
-        newUI.SetActive(false);
-        newPlayer.name = pc.PlayerName;
-        Players[1].Name = pc.PlayerName;
-        Players[1].IsCPU = pc.isCPU;
-        Players[1].CPUType = (CPU_TYPE)pc.CPUType;
-        Players[1].PlayerGameObject = newPlayer;
-        Players[1].PlayerController = newPlayer.GetComponent<PlayerController>();
-        Players[1].PlayerUI = newUI;
-        Players[1].PlayerUIPowerupHolder = newUI.transform.GetChild(1);
-        Players[1].PlayerAnimator = newPlayer.GetComponentInChildren<Animator>();
-        Players[1].PlayerLineRenderer = newPlayer.GetComponent<LineRenderer>();
-        Players[1].PlayerController.SetPlayerDetails(1, newUI, Players[1]);
-        Players[1].PlayerAIController = newPlayer.GetComponent<AIController>();
-        Players[1].ThrowDirection = -1;
+            // create new player UI
+            _player1UI = Instantiate(Players[0].PlayerUIPrefab, _uICanvas);
+            _player2UI = Instantiate(Players[1].PlayerUIPrefab, _uICanvas);
 
-        pc.SavePlayerDetails();
+            newPlayer.name = pc.PlayerName;
+            Players[0].Name = pc.PlayerName;
+            Players[0].IsCPU = pc.isCPU;
+            Players[0].CPUType = (CPU_TYPE)pc.CPUType;
+            Players[0].PlayerGameObject = newPlayer;
+            Players[0].PlayerController = newPlayer.GetComponent<PlayerController>();
+            Players[0].PlayerAnimator = newPlayer.GetComponentInChildren<Animator>();
+            Players[0].PlayerLineRenderer = newPlayer.GetComponent<LineRenderer>();
+            Players[0].PlayerAIController = newPlayer.GetComponent<AIController>();
+            Players[0].PlayerUI = _player1UI;
+            Players[0].PlayerUIPowerupHolder = _player1UI.transform.GetChild(1);
+            Players[0].ThrowDirection = 1;
+            pc.SavePlayerDetails();
+            Players[0].PlayerController.SetPlayerDetails(0, Players[0]);
 
-        CameraManager.Instance.AddPlayer(newPlayer.transform.position);
+            newPlayer = Instantiate(Players[1].PlayerPrefab, lastSpawnPoint, Quaternion.identity, _playerHolder);
+            newPlayer.GetComponentInChildren<SpriteRenderer>().transform.rotation = Quaternion.Euler(0f, 180f, 0f);
+            newPlayer.transform.GetChild(1).transform.rotation = Quaternion.Euler(0f, 180f, 0f);
+            pc = Players[1].PlayerConfig.GetComponent<PlayerConfig>();
+
+            newPlayer.name = pc.PlayerName;
+            Players[1].Name = pc.PlayerName;
+            Players[1].IsCPU = pc.isCPU;
+            Players[1].CPUType = (CPU_TYPE)pc.CPUType;
+            Players[1].PlayerGameObject = newPlayer;
+            Players[1].PlayerController = newPlayer.GetComponent<PlayerController>();
+            Players[1].PlayerAnimator = newPlayer.GetComponentInChildren<Animator>();
+            Players[1].PlayerLineRenderer = newPlayer.GetComponent<LineRenderer>();
+            Players[1].PlayerAIController = newPlayer.GetComponent<AIController>();
+            Players[1].PlayerUI = _player2UI;
+            Players[1].PlayerUIPowerupHolder = _player2UI.transform.GetChild(1);
+            Players[1].ThrowDirection = -1;
+
+            pc.SavePlayerDetails();
+            Players[1].PlayerController.SetPlayerDetails(1, Players[1]);
+        }
+        else
+        {
+            Players[0].PlayerGameObject.transform.position = firstSpawnPoint;
+            Players[0].PlayerGameObject.SetActive(true);
+
+            Players[1].PlayerGameObject.transform.position = lastSpawnPoint;
+            Players[1].PlayerGameObject.SetActive(true);
+        }
+
+
+        Players[0].PlayerUI.SetActive(false);
+        CameraManager.Instance.AddPlayer(Players[0].PlayerGameObject.transform.position);
+
+
+        Players[1].PlayerUI.SetActive(false);
+        CameraManager.Instance.AddPlayer(Players[1].PlayerGameObject.transform.position);
+
     }
 
     private void RemovePlayers()
@@ -109,6 +155,58 @@ public class PlayerManager : MonoBehaviour
         if (!IsCurrentPlayerCPU)
             Players[playerId].PlayerLineRenderer.enabled = true;
         else
-            StartCoroutine(Players[playerId].PlayerAIController.DoAI(Players[playerId].PlayerController));
+            StartCoroutine(Players[playerId].PlayerAIController.DoAI());
+    }
+
+    public void AddRandomPlayerPowerup()
+    {
+        int randomPowerupIndex = Random.Range(0, _availablePowerups.Length);
+        GameObject powerup = _availablePowerups[randomPowerupIndex];
+        string puName = powerup.name + "(Clone)";
+        List<GameObject> ppuList = _playerPowerups[CurrentPlayerId];
+        List<string> ppuNameList = _playerPowerupNames[CurrentPlayerId];
+
+        if (ppuNameList.Contains(puName))
+        {
+            ppuList[ppuNameList.IndexOf(puName)].GetComponent<Powerup>().AddPowerupUse();
+        }
+        else
+        {
+            GameObject pu = Instantiate(powerup, Players[CurrentPlayerId].PlayerUIPowerupHolder);
+            ppuList.Add(pu);
+            ppuNameList.Add(pu.name);
+            // DEBUG STUFF
+            if (CurrentPlayerId == 0)
+            {
+                _player1Powerups = ppuList;
+                _player1PowerupNames = ppuNameList;
+            }
+            else
+            {
+                _player2Powerups = ppuList;
+                _player2PowerupNames = ppuNameList;
+            }
+        }
+    }
+
+    public void RemovePlayerPowerup(GameObject powerup)
+    {
+        string puName = powerup.name;
+        List<GameObject> ppuList = _playerPowerups[CurrentPlayerId];
+        List<string> ppuNameList = _playerPowerupNames[CurrentPlayerId];
+
+        ppuList.Remove(powerup);
+        ppuNameList.Remove(puName);
+        // DEBUG STUFF
+        if (CurrentPlayerId == 0)
+        {
+            _player1Powerups = ppuList;
+            _player1PowerupNames = ppuNameList;
+        }
+        else
+        {
+            _player2Powerups = ppuList;
+            _player2PowerupNames = ppuNameList;
+        }
     }
 }

@@ -45,6 +45,7 @@ public class Banana : MonoBehaviour, IProjectile
     private void CheckForGroundHit()
     {
         _createExplosionMask = true;
+        int playerHitId, otherPlayerId;
 
         // check if we hit a powerup first
         RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 0.01f, _whatIsPowerup);
@@ -52,6 +53,8 @@ public class Banana : MonoBehaviour, IProjectile
         if (hit)
         {
             // we hit a powerup
+            PlayerManager.Instance.AddRandomPlayerPowerup();
+            Destroy(hit.collider.gameObject);
         }
 
         // check if we hit a player
@@ -60,14 +63,15 @@ public class Banana : MonoBehaviour, IProjectile
 
         if (hit)
         {
-            int playerHitId = hit.transform.GetComponent<PlayerController>().PlayerId;
-            int otherPlayerId = (playerHitId + 1) % 2;
+            playerHitId = hit.transform.GetComponent<PlayerController>().PlayerId;
+            otherPlayerId = (playerHitId + 1) % 2;
             CreateExplosionAndDestroy();
             CameraManager.Instance.RemovePlayer(playerHitId);
             GameManager.Instance.UpdateScore(otherPlayerId);
             PlayerManager.Instance.SetPlayerAnimation(otherPlayerId, "Celebrate");
             // we directly hit a player!!
-            Destroy(hit.transform.gameObject);
+            //Destroy(hit.transform.gameObject);
+            PlayerManager.Instance.Players[playerHitId].PlayerController.DestroyPlayer();
 
             // Game over?
             GameManager.Instance.UpdateGameState(GameState.RoundComplete);
@@ -82,14 +86,15 @@ public class Banana : MonoBehaviour, IProjectile
                 hits = Physics2D.OverlapCircleAll(transform.position, _explosionRadius, _whatIsPlayer);
                 if (hits.Length > 0)
                 {
-                    int playerHitId = hits[0].transform.GetComponent<PlayerController>().PlayerId;
-                    int otherPlayerId = (playerHitId + 1) % 2;
+                    playerHitId = hits[0].transform.GetComponent<PlayerController>().PlayerId;
+                    otherPlayerId = (playerHitId + 1) % 2;
                     PlayerManager.Instance.SetPlayerAnimation(otherPlayerId, "Celebrate");
                     // the explosion hit a player!
                     CreateExplosionAndDestroy();
                     CameraManager.Instance.RemovePlayer(playerHitId);
                     GameManager.Instance.UpdateScore(otherPlayerId);
-                    Destroy(hits[0].gameObject);
+                    //Destroy(hits[0].gameObject);
+                    PlayerManager.Instance.Players[playerHitId].PlayerController.DestroyPlayer();
 
                     // Game over?
                     GameManager.Instance.UpdateGameState(GameState.RoundComplete);

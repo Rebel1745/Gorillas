@@ -3,15 +3,25 @@ using UnityEngine.UI;
 
 public class Powerup : MonoBehaviour
 {
-    [SerializeField] private Button _powerupButtonGO;
+    protected int _remainingUses = 1;
+    [SerializeField] protected Button _powerupButton;
 
-    public virtual void CreatePowerupButton()
+    public virtual void UsePowerup()
     {
+        string powerupName = transform.name + "(Clone)";
+        _remainingUses--;
 
+        _powerupButton.enabled = false;
+
+        if (_remainingUses == 0)
+        {
+            PlayerManager.Instance.RemovePlayerPowerup(gameObject);
+            Destroy(gameObject);
+        }
     }
 
-    public virtual void ApplyPowerup()
+    public void AddPowerupUse()
     {
-
+        _remainingUses++;
     }
 }

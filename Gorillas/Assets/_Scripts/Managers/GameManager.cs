@@ -18,6 +18,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TMP_Text _playerScoreText;
     private int _numberOfRounds = 3;
     private int _currentRound;
+    public int CurrentRound { get { return _currentRound; } }
     [SerializeField] private float _timeBetweenRounds = 3f;
     [SerializeField] private AudioClip _mainMenuMusic;
     [SerializeField] private TMP_InputField _numberOfRoundsInput;

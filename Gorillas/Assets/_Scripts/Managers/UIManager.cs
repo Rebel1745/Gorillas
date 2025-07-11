@@ -22,7 +22,8 @@ public class UIManager : MonoBehaviour
 
     public void EnableDisableButton(Button button, bool enabled)
     {
-        button.enabled = enabled;
+        if (button != null)
+            button.enabled = enabled;
     }
 
     public void QuitGame()

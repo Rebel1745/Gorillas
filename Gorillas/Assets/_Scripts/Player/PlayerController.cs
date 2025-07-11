@@ -63,30 +63,30 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    public void SetPlayerDetails(int id, GameObject uIGO, PlayerDetails playerDetails)
+    public void SetPlayerDetails(int id, PlayerDetails playerDetails)
     {
         _playerId = id;
         _playerDetails = playerDetails;
-        _uIGO = uIGO.transform.GetChild(0).gameObject;
+        _uIGO = playerDetails.PlayerUI.transform.GetChild(0).gameObject;
         _powerText = _uIGO.transform.GetChild(1).GetComponent<TMP_Text>();
         _powerSlider = _uIGO.transform.GetChild(2).GetComponent<Slider>();
-        _powerSlider.value = 50f;
         _angleText = _uIGO.transform.GetChild(4).GetComponent<TMP_Text>();
         _angleSlider = _uIGO.transform.GetChild(5).GetComponent<Slider>();
-        _angleSlider.value = 45f;
-        _launchButton = _uIGO.transform.GetChild(6).GetComponent<Button>();
-        _launchButton.onClick.AddListener(LaunchProjectile);
         _initialTrajectoryLine = true;
 
         if (!_playerDetails.IsCPU)
         {
+            _powerSlider.value = 50f;
+            _angleSlider.value = 45f;
             _powerSlider.onValueChanged.AddListener(UpdatePower);
             _angleSlider.onValueChanged.AddListener(UpdateAngle);
+            _launchButton = _uIGO.transform.GetChild(6).GetComponent<Button>();
+            _launchButton.onClick.AddListener(LaunchProjectile);
         }
 
         _throwNumber = 0;
 
-        UIManager.Instance.EnableDisableButton(_launchButton, false);
+        EnableDisableAllUIButtons(false);
 
         _powerText.text = _powerSlider.value.ToString("F1");
         _angleText.text = _angleSlider.value.ToString("F1");
@@ -100,7 +100,7 @@ public class PlayerController : MonoBehaviour
         AudioManager.Instance.PlayAudioClip(_throwSFX, 0.95f, 1.05f);
         StartCoroutine(ResetAnimation(_delayBeforeAttackAnimationReset));
 
-        UIManager.Instance.EnableDisableButton(_launchButton, false);
+        EnableDisableAllUIButtons(false);
 
         GameObject projectile = Instantiate(_projectilePrefab, _projectileLaunchPoint.position, Quaternion.identity);
 
@@ -137,7 +137,7 @@ public class PlayerController : MonoBehaviour
         _initialTrajectoryLine = false;
         if (!_playerDetails.IsCPU)
         {
-            UIManager.Instance.EnableDisableButton(_launchButton, true);
+            EnableDisableAllUIButtons(true);
             UpdatePower(_powerSlider.value);
         }
     }
@@ -192,6 +192,23 @@ public class PlayerController : MonoBehaviour
 
         _powerText.text = power.ToString("F1");
         if (_playerDetails.IsCPU) _powerSlider.value = power;
+    }
+
+    private void EnableDisableAllUIButtons(bool enable)
+    {
+        // first sort the launch button
+        UIManager.Instance.EnableDisableButton(_launchButton, enable);
+
+        // the sort the powerup buttons
+        for (int i = 0; i < _playerDetails.PlayerUIPowerupHolder.childCount; i++)
+        {
+            UIManager.Instance.EnableDisableButton(_playerDetails.PlayerUIPowerupHolder.GetChild(i).GetComponent<Button>(), enable);
+        }
+    }
+
+    public void DestroyPlayer()
+    {
+        gameObject.SetActive(false);
     }
 
     #region Input Controls

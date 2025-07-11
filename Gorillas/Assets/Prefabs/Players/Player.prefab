@@ -327,6 +327,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _maxIterations: 20
   _trajectoryLine: {fileID: -462852377826311693}
+  _playerController: {fileID: 4113509715146576754}
 --- !u!114 &-462852377826311693
 MonoBehaviour:
   m_ObjectHideFlags: 0
