@@ -2,7 +2,6 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using System.Collections;
-using System.Collections.Generic;
 
 public class PlayerController : MonoBehaviour
 {
@@ -31,6 +30,14 @@ public class PlayerController : MonoBehaviour
     public CPU_TYPE CPUType { get { return _playerDetails.CPUType; } }
     private bool _initialTrajectoryLine;
     [SerializeField] private AudioClip _throwSFX;
+
+    // powerup stuff
+    private bool _isBigBomb = false;
+    private int _burstCount = 3;
+    private int _currentBurstNumber;
+    private float _lastLaunchTime;
+    [SerializeField] float _timeBetweenBurstFire = 0.25f;
+    bool _isBurstFiring = false;
 
     // UI Stuff
     private GameObject _uIGO;
@@ -61,6 +68,11 @@ public class PlayerController : MonoBehaviour
         {
             ChangeAngle();
         }
+
+        if (_isBurstFiring)
+        {
+            CheckBurstFire();
+        }
     }
 
     public void SetPlayerDetails(int id, PlayerDetails playerDetails)
@@ -81,7 +93,7 @@ public class PlayerController : MonoBehaviour
             _powerSlider.onValueChanged.AddListener(UpdatePower);
             _angleSlider.onValueChanged.AddListener(UpdateAngle);
             _launchButton = _uIGO.transform.GetChild(6).GetComponent<Button>();
-            _launchButton.onClick.AddListener(LaunchProjectile);
+            _launchButton.onClick.AddListener(StartLaunchProjectile);
         }
 
         _throwNumber = 0;
@@ -92,15 +104,60 @@ public class PlayerController : MonoBehaviour
         _angleText.text = _angleSlider.value.ToString("F1");
     }
 
-    public void LaunchProjectile()
+    private void CheckBurstFire()
+    {
+        if (_currentBurstNumber == _burstCount)
+        {
+            EndLaunchProjectile();
+            return;
+        }
+
+        if (Time.time >= _lastLaunchTime + _timeBetweenBurstFire)
+        {
+            _currentBurstNumber++;
+            LaunchProjectile();
+        }
+    }
+
+    private void EndLaunchProjectile()
+    {
+        _isBurstFiring = false;
+        _currentBurstNumber = 0;
+
+        CameraManager.Instance.UpdateCameraForProjectile();
+        UIManager.Instance.ShowHideUIElement(_playerDetails.PlayerUI, false);
+
+        GameManager.Instance.UpdateGameState(GameState.WaitingForDetonation);
+    }
+
+    public void StartLaunchProjectile()
     {
         _throwNumber++;
+        EnableDisableAllUIButtons(false);
+
+        HideTrajectoryLine();
+
+        if (_burstCount == 1)
+        {
+            LaunchProjectile();
+            EndLaunchProjectile();
+            return;
+        }
+
+        _currentBurstNumber = 0;
+        _isBurstFiring = true;
+    }
+
+    private void LaunchProjectile()
+    {
         // set animation and return to idle
         PlayerManager.Instance.SetPlayerAnimation(_playerId, "Throw");
         AudioManager.Instance.PlayAudioClip(_throwSFX, 0.95f, 1.05f);
-        StartCoroutine(ResetAnimation(_delayBeforeAttackAnimationReset));
 
-        EnableDisableAllUIButtons(false);
+        if (_isBurstFiring)
+            StartCoroutine(ResetAnimation(_timeBetweenBurstFire - 0.05f));
+        else
+            StartCoroutine(ResetAnimation(_delayBeforeAttackAnimationReset));
 
         GameObject projectile = Instantiate(_projectilePrefab, _projectileLaunchPoint.position, Quaternion.identity);
 
@@ -113,13 +170,16 @@ public class PlayerController : MonoBehaviour
         projectile.GetComponent<Rigidbody2D>().AddForce(force, ForceMode2D.Impulse);
         projectile.GetComponent<IProjectile>().SetProjectileExplosionMaskParent(_explosionMaskParent);
 
-        CameraManager.Instance.UpdateCameraForProjectile();
+        if (!_isBurstFiring || _currentBurstNumber == _burstCount)
+            projectile.GetComponent<IProjectile>().SetLastProjectileInBurst();
 
-        //_playerDetails.PlayerLineRenderer.enabled = false;
-        HideTrajectoryLine();
-        UIManager.Instance.ShowHideUIElement(_playerDetails.PlayerUI, false);
+        if (_isBigBomb)
+        {
+            projectile.GetComponent<IProjectile>().SetExplosionSizeMultiplier(2f);
+            _isBigBomb = false;
+        }
 
-        GameManager.Instance.UpdateGameState(GameState.WaitingForDetonation);
+        _lastLaunchTime = Time.time;
     }
 
     IEnumerator ResetAnimation(float delay)
@@ -140,16 +200,6 @@ public class PlayerController : MonoBehaviour
             EnableDisableAllUIButtons(true);
             UpdatePower(_powerSlider.value);
         }
-    }
-
-    public void ShowTrajectoryLine()
-    {
-        _trajectoryLine.DrawTrajectoryLine();
-    }
-
-    private void HideTrajectoryLine()
-    {
-        _trajectoryLine.HideTrajectoryLine();
     }
 
     public void UpdatePower(float power)
@@ -206,10 +256,39 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public void PlacePlayerAndEnable(Vector3 position)
+    {
+        _throwNumber = 0;
+        transform.position = position;
+        gameObject.SetActive(true);
+    }
+
     public void DestroyPlayer()
     {
         gameObject.SetActive(false);
     }
+
+    #region Powerup Functions
+    public void ShowTrajectoryLine()
+    {
+        _trajectoryLine.DrawTrajectoryLine();
+    }
+
+    private void HideTrajectoryLine()
+    {
+        _trajectoryLine.HideTrajectoryLine();
+    }
+
+    public void SetBigBomb()
+    {
+        _isBigBomb = true;
+    }
+
+    public void SetProjectileBurst(int number)
+    {
+        _burstCount = number;
+    }
+    #endregion
 
     #region Input Controls
     public void StartPowerChange(float delta)

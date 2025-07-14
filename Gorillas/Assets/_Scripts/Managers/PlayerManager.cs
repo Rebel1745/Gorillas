@@ -108,11 +108,9 @@ public class PlayerManager : MonoBehaviour
         }
         else
         {
-            Players[0].PlayerGameObject.transform.position = firstSpawnPoint;
-            Players[0].PlayerGameObject.SetActive(true);
+            Players[0].PlayerController.PlacePlayerAndEnable(firstSpawnPoint);
 
-            Players[1].PlayerGameObject.transform.position = lastSpawnPoint;
-            Players[1].PlayerGameObject.SetActive(true);
+            Players[1].PlayerController.PlacePlayerAndEnable(lastSpawnPoint);
         }
 
 

@@ -17,6 +17,8 @@ public class Banana : MonoBehaviour, IProjectile
     private Transform _explosionTransform;
     private Rigidbody2D _rb;
     private bool _createExplosionMask;
+    private float _explosionRadiusMultiplier = 1f;
+    private bool _isLastProjectile;
 
     private void Start()
     {
@@ -30,7 +32,11 @@ public class Banana : MonoBehaviour, IProjectile
 
         // if the banana goes too far offscreen, destroy it
         if (transform.position.y < _destroyWhenDistanceOffscreen)
+        {
             CreateExplosionAndDestroy();
+            if (_isLastProjectile)
+                GameManager.Instance.UpdateGameState(GameState.NextTurn);
+        }
 
         if (!_createExplosionMask && _rb.linearVelocityY < 0)
         {
@@ -113,7 +119,8 @@ public class Banana : MonoBehaviour, IProjectile
                         CreateExplosionAndDestroy();
 
                         // Next Players turn
-                        GameManager.Instance.UpdateGameState(GameState.NextTurn, 1f);
+                        if (_isLastProjectile && GameManager.Instance.State == GameState.WaitingForDetonation)
+                            GameManager.Instance.UpdateGameState(GameState.NextTurn, 1f);
                     }
                 }
             }
@@ -123,15 +130,20 @@ public class Banana : MonoBehaviour, IProjectile
     private void CreateExplosionAndDestroy()
     {
         // create the explosion crater with a mask
-        Instantiate(_explosionSpriteMask, transform.position, Quaternion.identity, _explosionTransform);
+        GameObject exGO = Instantiate(_explosionSpriteMask, transform.position, Quaternion.identity, _explosionTransform);
+        exGO.transform.localScale *= _explosionRadiusMultiplier;
+
         // find all of the windows in the blast radius (with multiplier)
-        foreach (var h in Physics2D.OverlapCircleAll(transform.position, _explosionRadius * _explosionRadiusDamageMultiplier, _whatIsWindow))
+        foreach (var h in Physics2D.OverlapCircleAll(transform.position, _explosionRadius * _explosionRadiusMultiplier * _explosionRadiusDamageMultiplier, _whatIsWindow))
         {
             GameObject randomSprite = _brokenWindowSprites[Random.Range(0, _brokenWindowSprites.Length)];
             Quaternion randomRotation = Quaternion.Euler(0f, 0f, Random.Range(0f, 360f));
             Instantiate(randomSprite, h.transform.position, randomRotation, h.transform);
         }
-        CameraManager.Instance.RemoveProjectile();
+
+        if (_isLastProjectile)
+            CameraManager.Instance.RemoveProjectile();
+
         GameObject explosion = Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
         AudioManager.Instance.PlayAudioClip(_explosionSFX, 0.95f, 1.05f);
 
@@ -144,6 +156,16 @@ public class Banana : MonoBehaviour, IProjectile
     public void SetProjectileExplosionMaskParent(Transform explosionMaskParent)
     {
         _explosionTransform = explosionMaskParent;
+    }
+
+    public void SetExplosionSizeMultiplier(float multiplier)
+    {
+        _explosionRadiusMultiplier = multiplier;
+    }
+
+    public void SetLastProjectileInBurst()
+    {
+        _isLastProjectile = true;
     }
 
     void OnDrawGizmos()

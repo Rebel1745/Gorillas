@@ -86,7 +86,7 @@ public class AIController : MonoBehaviour
 
         yield return new WaitForSeconds(0.5f);
 
-        _playerController.LaunchProjectile();
+        _playerController.StartLaunchProjectile();
     }
 
     private Vector2 GetMinimumGroundHitsAngleAndPower()

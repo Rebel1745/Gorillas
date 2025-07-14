@@ -77,7 +77,7 @@ public class InputManager : MonoBehaviour
     {
         if (GameManager.Instance.State != GameState.WaitingForLaunch || PlayerManager.Instance.IsCurrentPlayerCPU) return;
 
-        PlayerManager.Instance.Players[PlayerManager.Instance.CurrentPlayerId].PlayerController.LaunchProjectile();
+        PlayerManager.Instance.Players[PlayerManager.Instance.CurrentPlayerId].PlayerController.StartLaunchProjectile();
     }
 
     private void RebuildLevel(InputAction.CallbackContext context)

@@ -6062,6 +6062,7 @@ MonoBehaviour:
   IsCurrentPlayerCPU: 0
   _availablePowerups:
   - {fileID: 7830120543136791809, guid: c0f3516d05fd4004e9d360ccbb314c71, type: 3}
+  - {fileID: 7830120543136791809, guid: 207ab88f321e7c448b0c7a20ab6df122, type: 3}
 --- !u!1 &915600074
 GameObject:
   m_ObjectHideFlags: 0

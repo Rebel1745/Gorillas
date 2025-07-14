@@ -170,6 +170,7 @@ MonoBehaviour:
   _angleIncreaseStep: 0.1
   _angleIncreaseMax: 1
   _throwSFX: {fileID: 8300000, guid: 73880e6b258428a4e9e308dbeaa039a0, type: 3}
+  _timeBetweenBurstFire: 0.35
   LastProjectileLandingPositionX: 0
 --- !u!70 &4088403232203255021
 CapsuleCollider2D:
