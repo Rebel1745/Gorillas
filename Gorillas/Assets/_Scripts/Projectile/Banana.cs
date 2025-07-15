@@ -69,6 +69,14 @@ public class Banana : MonoBehaviour, IProjectile
 
         if (hit)
         {
+            // if we hit the shield, bail
+            if (hit.collider.gameObject.name == "Shield")
+            {
+                hit.transform.GetComponentInParent<PlayerController>().HideShield();
+                CreateExplosionAndDestroy();
+                return;
+            }
+
             playerHitId = hit.transform.GetComponent<PlayerController>().PlayerId;
             otherPlayerId = (playerHitId + 1) % 2;
             CreateExplosionAndDestroy();
@@ -76,7 +84,6 @@ public class Banana : MonoBehaviour, IProjectile
             GameManager.Instance.UpdateScore(otherPlayerId);
             PlayerManager.Instance.SetPlayerAnimation(otherPlayerId, "Celebrate");
             // we directly hit a player!!
-            //Destroy(hit.transform.gameObject);
             PlayerManager.Instance.Players[playerHitId].PlayerController.DestroyPlayer();
 
             // Game over?
@@ -92,6 +99,17 @@ public class Banana : MonoBehaviour, IProjectile
                 hits = Physics2D.OverlapCircleAll(transform.position, _explosionRadius, _whatIsPlayer);
                 if (hits.Length > 0)
                 {
+                    foreach (var h in hits)
+                    {
+                        // if we hit the shield, bail
+                        if (h.gameObject.name == "Shield")
+                        {
+                            h.transform.GetComponentInParent<PlayerController>().HideShield();
+                            CreateExplosionAndDestroy();
+                            return;
+                        }
+                    }
+
                     playerHitId = hits[0].transform.GetComponent<PlayerController>().PlayerId;
                     otherPlayerId = (playerHitId + 1) % 2;
                     PlayerManager.Instance.SetPlayerAnimation(otherPlayerId, "Celebrate");
@@ -99,7 +117,6 @@ public class Banana : MonoBehaviour, IProjectile
                     CreateExplosionAndDestroy();
                     CameraManager.Instance.RemovePlayer(playerHitId);
                     GameManager.Instance.UpdateScore(otherPlayerId);
-                    //Destroy(hits[0].gameObject);
                     PlayerManager.Instance.Players[playerHitId].PlayerController.DestroyPlayer();
 
                     // Game over?

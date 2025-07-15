@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Powerup_TrippleBomb : Powerup
+public class Powerup_TripleBomb : Powerup
 {
     public override void UsePowerup()
     {

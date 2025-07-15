@@ -33,11 +33,19 @@ public class PlayerController : MonoBehaviour
 
     // powerup stuff
     private bool _isBigBomb = false;
-    private int _burstCount = 3;
+    private int _burstCount = 1;
     private int _currentBurstNumber;
     private float _lastLaunchTime;
     [SerializeField] float _timeBetweenBurstFire = 0.25f;
     bool _isBurstFiring = false;
+    bool _isVariablePower = false;
+    [SerializeField] float _variablePowerAmount = 0.5f;
+    private float _variablePowerAmountPerShotOfBurst;
+    private float _currentVariablePowerAmount;
+    [SerializeField] private Transform _shieldTransform;
+    private bool _isShieldActive = false;
+    public bool IsShieldActive { get { return _isShieldActive; } }
+    [SerializeField] private Collider2D _gorillaCollider;
 
     // UI Stuff
     private GameObject _uIGO;
@@ -122,7 +130,9 @@ public class PlayerController : MonoBehaviour
     private void EndLaunchProjectile()
     {
         _isBurstFiring = false;
+        _burstCount = 1;
         _currentBurstNumber = 0;
+        _isVariablePower = false;
 
         CameraManager.Instance.UpdateCameraForProjectile();
         UIManager.Instance.ShowHideUIElement(_playerDetails.PlayerUI, false);
@@ -146,6 +156,12 @@ public class PlayerController : MonoBehaviour
 
         _currentBurstNumber = 0;
         _isBurstFiring = true;
+
+        if (_isVariablePower)
+        {
+            _variablePowerAmountPerShotOfBurst = ((_burstCount - 1) / 2f) * _variablePowerAmount;
+            _currentVariablePowerAmount = _variablePowerAmountPerShotOfBurst;
+        }
     }
 
     private void LaunchProjectile()
@@ -161,10 +177,18 @@ public class PlayerController : MonoBehaviour
 
         GameObject projectile = Instantiate(_projectilePrefab, _projectileLaunchPoint.position, Quaternion.identity);
 
+        float powerValue = _powerSlider.value;
+
+        if (_isVariablePower)
+        {
+            powerValue += _currentVariablePowerAmount;
+            _currentVariablePowerAmount -= _variablePowerAmountPerShotOfBurst;
+        }
+
         float angleRad = Mathf.Deg2Rad * _angleSlider.value;
         Vector2 force = new(
-            _defaultForceMultiplier * _powerSlider.value * Mathf.Cos(angleRad),
-            _defaultForceMultiplier * _powerSlider.value * Mathf.Sin(angleRad)
+            _defaultForceMultiplier * powerValue * Mathf.Cos(angleRad),
+            _defaultForceMultiplier * powerValue * Mathf.Sin(angleRad)
         );
         force.x *= _playerDetails.ThrowDirection;
         projectile.GetComponent<Rigidbody2D>().AddForce(force, ForceMode2D.Impulse);
@@ -287,6 +311,25 @@ public class PlayerController : MonoBehaviour
     public void SetProjectileBurst(int number)
     {
         _burstCount = number;
+    }
+
+    public void SetVariablePower()
+    {
+        _isVariablePower = true;
+    }
+
+    public void ShowShield()
+    {
+        _isShieldActive = true;
+        _shieldTransform.gameObject.SetActive(true);
+        //_gorillaCollider.enabled = false;
+    }
+
+    public void HideShield()
+    {
+        _isShieldActive = false;
+        _shieldTransform.gameObject.SetActive(false);
+        //_gorillaCollider.enabled = true;
     }
     #endregion
 

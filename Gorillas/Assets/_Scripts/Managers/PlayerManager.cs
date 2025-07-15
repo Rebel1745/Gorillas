@@ -30,6 +30,7 @@ public class PlayerManager : MonoBehaviour
 
     private void Start()
     {
+        // ALL DEBUG STUFF
         _playerPowerups = new List<GameObject>[2];
         _playerPowerups[0] = new();
         _playerPowerups[1] = new();
@@ -90,6 +91,12 @@ public class PlayerManager : MonoBehaviour
             newPlayer.transform.GetChild(1).transform.rotation = Quaternion.Euler(0f, 180f, 0f);
             pc = Players[1].PlayerConfig.GetComponent<PlayerConfig>();
 
+	    // MORE DEBUG STUFF TO DELETE LATER
+            for (int i = 0; i < 50; i++)
+            {
+                AddRandomPlayerPowerup();
+            }
+
             newPlayer.name = pc.PlayerName;
             Players[1].Name = pc.PlayerName;
             Players[1].IsCPU = pc.isCPU;
@@ -149,6 +156,10 @@ public class PlayerManager : MonoBehaviour
         IsCurrentPlayerCPU = Players[playerId].IsCPU;
         StartCoroutine(Players[playerId].PlayerController.CalculateTrajectoryLine());
         SetPlayerAnimation(playerId, "Idle");
+
+        // if we had a shield on, turn it off
+        if (Players[playerId].PlayerController.IsShieldActive)
+            Players[playerId].PlayerController.HideShield();
 
         if (!IsCurrentPlayerCPU)
             Players[playerId].PlayerLineRenderer.enabled = true;

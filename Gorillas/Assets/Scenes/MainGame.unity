@@ -6063,6 +6063,9 @@ MonoBehaviour:
   _availablePowerups:
   - {fileID: 7830120543136791809, guid: c0f3516d05fd4004e9d360ccbb314c71, type: 3}
   - {fileID: 7830120543136791809, guid: 207ab88f321e7c448b0c7a20ab6df122, type: 3}
+  - {fileID: 7830120543136791809, guid: 7d9394bcf88a7a449bbe328aece2d1a2, type: 3}
+  - {fileID: 7830120543136791809, guid: 6efe37631be0f9740b11ae44acdcc2e0, type: 3}
+  - {fileID: 7830120543136791809, guid: 2e27b7773e890994e8d61ccffd288e87, type: 3}
 --- !u!1 &915600074
 GameObject:
   m_ObjectHideFlags: 0

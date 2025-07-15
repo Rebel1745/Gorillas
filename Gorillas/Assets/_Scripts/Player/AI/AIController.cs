@@ -6,7 +6,6 @@ public class AIController : MonoBehaviour
 {
     private float _minPower = 50f;
     private float _maxPower = 100f;
-    private float _minAngle = 20f;
     private float _currentMinAngle;
     private float _maxAngle = 89f;
     private int _playerId;

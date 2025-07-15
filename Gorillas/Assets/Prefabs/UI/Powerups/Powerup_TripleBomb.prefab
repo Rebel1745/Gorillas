@@ -65,7 +65,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: TL
+  m_text: TB
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -148,9 +148,9 @@ GameObject:
   - component: {fileID: 326231732329441196}
   - component: {fileID: 545960842794217056}
   - component: {fileID: 5489453820611601028}
-  - component: {fileID: 8554356334226566865}
+  - component: {fileID: 6172541324608352257}
   m_Layer: 5
-  m_Name: Powerup_TrajectoryLine
+  m_Name: Powerup_TripleBomb
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -258,8 +258,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 8554356334226566865}
-        m_TargetAssemblyTypeName: Powerup_TrajectoryLine, Assembly-CSharp
+      - m_Target: {fileID: 6172541324608352257}
+        m_TargetAssemblyTypeName: Powerup_TripleBomb, Assembly-CSharp
         m_MethodName: UsePowerup
         m_Mode: 1
         m_Arguments:
@@ -270,7 +270,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &8554356334226566865
+--- !u!114 &6172541324608352257
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -279,7 +279,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7830120543136791809}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 706d856ea5d97e843aa686b2932f8e95, type: 3}
+  m_Script: {fileID: 11500000, guid: f0a09ae16d1d25743aab0608dd1b894e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _powerupButton: {fileID: 5489453820611601028}
