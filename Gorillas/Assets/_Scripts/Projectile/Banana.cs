@@ -19,6 +19,7 @@ public class Banana : MonoBehaviour, IProjectile
     private bool _createExplosionMask;
     private float _explosionRadiusMultiplier = 1f;
     private bool _isLastProjectile;
+    private int _projectileNumber;
 
     private void Start()
     {
@@ -38,7 +39,7 @@ public class Banana : MonoBehaviour, IProjectile
                 GameManager.Instance.UpdateGameState(GameState.NextTurn);
         }
 
-        if (!_createExplosionMask && _rb.linearVelocityY < 0)
+        if (!_createExplosionMask && _rb.linearVelocityY < 0 && _projectileNumber == 1)
         {
             // if we are moving down, change the zoom
             CameraManager.Instance.SetProjectileZenith(transform.position);
@@ -72,8 +73,11 @@ public class Banana : MonoBehaviour, IProjectile
             // if we hit the shield, bail
             if (hit.collider.gameObject.name == "Shield")
             {
-                hit.transform.GetComponentInParent<PlayerController>().HideShield();
-                CreateExplosionAndDestroy();
+                // don't destroy the shield unless it is the end of the round otherwise a triple shot would win despite the shield
+                //hit.transform.GetComponentInParent<PlayerController>().HideShield();
+                CreateExplosionAndDestroy(false);
+                if (_isLastProjectile)
+                    GameManager.Instance.UpdateGameState(GameState.NextTurn, 1f);
                 return;
             }
 
@@ -104,8 +108,10 @@ public class Banana : MonoBehaviour, IProjectile
                         // if we hit the shield, bail
                         if (h.gameObject.name == "Shield")
                         {
-                            h.transform.GetComponentInParent<PlayerController>().HideShield();
-                            CreateExplosionAndDestroy();
+                            //h.transform.GetComponentInParent<PlayerController>().HideShield();
+                            CreateExplosionAndDestroy(false);
+                            if (_isLastProjectile)
+                                GameManager.Instance.UpdateGameState(GameState.NextTurn, 1f);
                             return;
                         }
                     }
@@ -144,11 +150,14 @@ public class Banana : MonoBehaviour, IProjectile
         }
     }
 
-    private void CreateExplosionAndDestroy()
+    private void CreateExplosionAndDestroy(bool createMask = true)
     {
-        // create the explosion crater with a mask
-        GameObject exGO = Instantiate(_explosionSpriteMask, transform.position, Quaternion.identity, _explosionTransform);
-        exGO.transform.localScale *= _explosionRadiusMultiplier;
+        if (createMask)
+        {
+            // create the explosion crater with a mask
+            GameObject exGO = Instantiate(_explosionSpriteMask, transform.position, Quaternion.identity, _explosionTransform);
+            exGO.transform.localScale *= _explosionRadiusMultiplier;
+        }
 
         // find all of the windows in the blast radius (with multiplier)
         foreach (var h in Physics2D.OverlapCircleAll(transform.position, _explosionRadius * _explosionRadiusMultiplier * _explosionRadiusDamageMultiplier, _whatIsWindow))
@@ -183,6 +192,11 @@ public class Banana : MonoBehaviour, IProjectile
     public void SetLastProjectileInBurst()
     {
         _isLastProjectile = true;
+    }
+
+    public void SetProjectileNumber(int number)
+    {
+
     }
 
     void OnDrawGizmos()

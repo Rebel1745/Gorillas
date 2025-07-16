@@ -45,7 +45,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Transform _shieldTransform;
     private bool _isShieldActive = false;
     public bool IsShieldActive { get { return _isShieldActive; } }
-    [SerializeField] private Collider2D _gorillaCollider;
 
     // UI Stuff
     private GameObject _uIGO;
@@ -133,8 +132,8 @@ public class PlayerController : MonoBehaviour
         _burstCount = 1;
         _currentBurstNumber = 0;
         _isVariablePower = false;
+        _currentVariablePowerAmount = 0f;
 
-        CameraManager.Instance.UpdateCameraForProjectile();
         UIManager.Instance.ShowHideUIElement(_playerDetails.PlayerUI, false);
 
         GameManager.Instance.UpdateGameState(GameState.WaitingForDetonation);
@@ -156,12 +155,6 @@ public class PlayerController : MonoBehaviour
 
         _currentBurstNumber = 0;
         _isBurstFiring = true;
-
-        if (_isVariablePower)
-        {
-            _variablePowerAmountPerShotOfBurst = ((_burstCount - 1) / 2f) * _variablePowerAmount;
-            _currentVariablePowerAmount = _variablePowerAmountPerShotOfBurst;
-        }
     }
 
     private void LaunchProjectile()
@@ -192,14 +185,30 @@ public class PlayerController : MonoBehaviour
         );
         force.x *= _playerDetails.ThrowDirection;
         projectile.GetComponent<Rigidbody2D>().AddForce(force, ForceMode2D.Impulse);
-        projectile.GetComponent<IProjectile>().SetProjectileExplosionMaskParent(_explosionMaskParent);
+        IProjectile iProjectile = projectile.GetComponent<IProjectile>();
+        iProjectile.SetProjectileExplosionMaskParent(_explosionMaskParent);
 
-        if (!_isBurstFiring || _currentBurstNumber == _burstCount)
-            projectile.GetComponent<IProjectile>().SetLastProjectileInBurst();
+        if (_isBurstFiring)
+        {
+            // if this is the first projectile launched we can follow it
+            if (_currentBurstNumber == 1)
+                CameraManager.Instance.UpdateCameraForProjectile();
+
+            iProjectile.SetProjectileNumber(_currentBurstNumber);
+
+            if (_currentBurstNumber == _burstCount)
+                iProjectile.SetLastProjectileInBurst();
+        }
+        else
+        {
+            CameraManager.Instance.UpdateCameraForProjectile();
+            iProjectile.SetProjectileNumber(1);
+            iProjectile.SetLastProjectileInBurst();
+        }
 
         if (_isBigBomb)
         {
-            projectile.GetComponent<IProjectile>().SetExplosionSizeMultiplier(2f);
+            iProjectile.SetExplosionSizeMultiplier(2f);
             _isBigBomb = false;
         }
 
@@ -229,7 +238,7 @@ public class PlayerController : MonoBehaviour
     public void UpdatePower(float power)
     {
         _trajectoryLine.HideTrajectoryLine();
-        _trajectoryLine.CalculateTrajectoryLine(_angleSlider.value, _defaultForceMultiplier * power, _projectileLaunchPoint.position, _playerDetails.ThrowDirection);
+        _trajectoryLine.CalculateTrajectoryLine(_angleSlider.value, _defaultForceMultiplier * power + _currentVariablePowerAmount, _projectileLaunchPoint.position, _playerDetails.ThrowDirection);
 
         _powerText.text = power.ToString("F1");
         if (_playerDetails.IsCPU) _powerSlider.value = power;
@@ -238,7 +247,7 @@ public class PlayerController : MonoBehaviour
     public void UpdateAngle(float angle)
     {
         _trajectoryLine.HideTrajectoryLine();
-        _trajectoryLine.CalculateTrajectoryLine(angle, _defaultForceMultiplier * _powerSlider.value, _projectileLaunchPoint.position, _playerDetails.ThrowDirection);
+        _trajectoryLine.CalculateTrajectoryLine(angle, _defaultForceMultiplier * _powerSlider.value + _currentVariablePowerAmount, _projectileLaunchPoint.position, _playerDetails.ThrowDirection);
 
         _angleText.text = angle.ToString("F1");
         if (_playerDetails.IsCPU) _angleSlider.value = angle;
@@ -247,7 +256,7 @@ public class PlayerController : MonoBehaviour
     public void UpdateAngleAndPower(float angle, float power)
     {
         _trajectoryLine.HideTrajectoryLine();
-        _trajectoryLine.CalculateTrajectoryLine(angle, _defaultForceMultiplier * power, _projectileLaunchPoint.position, _playerDetails.ThrowDirection);
+        _trajectoryLine.CalculateTrajectoryLine(angle, _defaultForceMultiplier * power + _currentVariablePowerAmount, _projectileLaunchPoint.position, _playerDetails.ThrowDirection);
 
         _angleText.text = angle.ToString("F1");
         if (_playerDetails.IsCPU) _angleSlider.value = angle;
@@ -259,7 +268,7 @@ public class PlayerController : MonoBehaviour
     public void UpdateAngleAndPower(float angle, float power, bool ignoreGroundHits)
     {
         _trajectoryLine.HideTrajectoryLine();
-        _trajectoryLine.CalculateTrajectoryLine(angle, _defaultForceMultiplier * power, _projectileLaunchPoint.position, _playerDetails.ThrowDirection, ignoreGroundHits);
+        _trajectoryLine.CalculateTrajectoryLine(angle, _defaultForceMultiplier * power + _currentVariablePowerAmount, _projectileLaunchPoint.position, _playerDetails.ThrowDirection, ignoreGroundHits);
 
         _angleText.text = angle.ToString("F1");
         if (_playerDetails.IsCPU) _angleSlider.value = angle;
@@ -316,6 +325,8 @@ public class PlayerController : MonoBehaviour
     public void SetVariablePower()
     {
         _isVariablePower = true;
+        _variablePowerAmountPerShotOfBurst = (_burstCount - 1) / 2f * _variablePowerAmount;
+        _currentVariablePowerAmount = _variablePowerAmountPerShotOfBurst;
     }
 
     public void ShowShield()

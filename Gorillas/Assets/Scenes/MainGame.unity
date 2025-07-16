@@ -3055,7 +3055,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.007843138, g: 0.12941177, b: 0.32156864, a: 1}
+  m_BackGroundColor: {r: 0.26762193, g: 0.38832766, b: 0.5849056, a: 1}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -4356,7 +4356,7 @@ MonoBehaviour:
   _winningImageSize: 150
   _losingImageSize: 100
   _losingImageOffset: -25
-  _gameOverAudio: {fileID: 0}
+  _gameOverAudio: {fileID: 8300000, guid: 4804af9f1a09e7d4fa6bed0c7be6ae18, type: 3}
 --- !u!114 &724203055
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -91,7 +91,7 @@ public class PlayerManager : MonoBehaviour
             newPlayer.transform.GetChild(1).transform.rotation = Quaternion.Euler(0f, 180f, 0f);
             pc = Players[1].PlayerConfig.GetComponent<PlayerConfig>();
 
-	    // MORE DEBUG STUFF TO DELETE LATER
+            // MORE DEBUG STUFF TO DELETE LATER
             for (int i = 0; i < 50; i++)
             {
                 AddRandomPlayerPowerup();
@@ -123,10 +123,14 @@ public class PlayerManager : MonoBehaviour
 
         Players[0].PlayerUI.SetActive(false);
         CameraManager.Instance.AddPlayer(Players[0].PlayerGameObject.transform.position);
+        if (Players[0].PlayerController.IsShieldActive)
+            Players[0].PlayerController.HideShield();
 
 
         Players[1].PlayerUI.SetActive(false);
         CameraManager.Instance.AddPlayer(Players[1].PlayerGameObject.transform.position);
+        if (Players[1].PlayerController.IsShieldActive)
+            Players[1].PlayerController.HideShield();
 
     }
 
