@@ -60,7 +60,7 @@ public class Banana : MonoBehaviour, IProjectile
         if (hit)
         {
             // we hit a powerup
-            PlayerManager.Instance.AddRandomPlayerPowerup();
+            PlayerManager.Instance.AddRandomPlayerPowerup(PlayerManager.Instance.CurrentPlayerId);
             Destroy(hit.collider.gameObject);
         }
 

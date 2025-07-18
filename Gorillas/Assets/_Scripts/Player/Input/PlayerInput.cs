@@ -56,15 +56,6 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             ""id"": ""91b269f6-31ad-4b00-b406-cb391bb78170"",
             ""actions"": [
                 {
-                    ""name"": ""ShowTrajectoryLine"",
-                    ""type"": ""Button"",
-                    ""id"": ""5202f892-ab10-40a0-8b4c-ad584beaa2ca"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
                     ""name"": ""Power"",
                     ""type"": ""Value"",
                     ""id"": ""c6ecf3f6-6449-490b-9bd5-d6faa207e94b"",
@@ -90,29 +81,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""RebuildLevel"",
-                    ""type"": ""Button"",
-                    ""id"": ""60231a80-0c31-4494-928a-d08500b20b6e"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
-                {
-                    ""name"": """",
-                    ""id"": ""d64dcb81-dbef-494b-97b1-d314cc0f332e"",
-                    ""path"": ""<Keyboard>/l"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""ShowTrajectoryLine"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
                 {
                     ""name"": ""1D Axis"",
                     ""id"": ""89ea7e88-ee88-4dc1-b8dc-c4acb68ea989"",
@@ -189,15 +160,116 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""action"": ""LaunchProjectile"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
+            ""name"": ""MovementPowerup"",
+            ""id"": ""60c7eb73-362c-4ce3-8247-6a4571a01e1b"",
+            ""actions"": [
+                {
+                    ""name"": ""Direction"",
+                    ""type"": ""Button"",
+                    ""id"": ""55338e73-f7f0-4e24-abcd-42ff5893d9e8"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 },
                 {
-                    ""name"": """",
-                    ""id"": ""fc21898f-f790-4a8e-aad7-89115b08200b"",
-                    ""path"": ""<Keyboard>/r"",
+                    ""name"": ""Confirm"",
+                    ""type"": ""Button"",
+                    ""id"": ""cc55d63c-8fee-4463-84b3-0544d5db2410"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Cancel"",
+                    ""type"": ""Button"",
+                    ""id"": ""772e1fbd-b75b-4077-8e81-0c392b685de4"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": ""1D Axis"",
+                    ""id"": ""3fa47278-b917-4901-889e-bdb0f5f1b26c"",
+                    ""path"": ""1DAxis"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""RebuildLevel"",
+                    ""action"": ""Direction"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""5d82cc86-6d38-4a86-b679-ac8416c93b0e"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Direction"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""4bb58ce8-d48a-44fa-9545-8f6a236248a4"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Direction"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ff331b47-37f0-4a19-94ed-7ce2de4f202b"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Confirm"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b2fd615d-24ee-42e3-8f64-cc1b10ca9708"",
+                    ""path"": ""<Keyboard>/numpadEnter"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Confirm"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f52f7ed8-dd31-4b86-8035-7248bd7fd9ed"",
+                    ""path"": ""<Keyboard>/enter"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Confirm"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ad8b4103-2043-4516-94fb-93e07d95c328"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Cancel"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -211,17 +283,21 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         m_UI_Newaction = m_UI.FindAction("New action", throwIfNotFound: true);
         // Gameplay
         m_Gameplay = asset.FindActionMap("Gameplay", throwIfNotFound: true);
-        m_Gameplay_ShowTrajectoryLine = m_Gameplay.FindAction("ShowTrajectoryLine", throwIfNotFound: true);
         m_Gameplay_Power = m_Gameplay.FindAction("Power", throwIfNotFound: true);
         m_Gameplay_Angle = m_Gameplay.FindAction("Angle", throwIfNotFound: true);
         m_Gameplay_LaunchProjectile = m_Gameplay.FindAction("LaunchProjectile", throwIfNotFound: true);
-        m_Gameplay_RebuildLevel = m_Gameplay.FindAction("RebuildLevel", throwIfNotFound: true);
+        // MovementPowerup
+        m_MovementPowerup = asset.FindActionMap("MovementPowerup", throwIfNotFound: true);
+        m_MovementPowerup_Direction = m_MovementPowerup.FindAction("Direction", throwIfNotFound: true);
+        m_MovementPowerup_Confirm = m_MovementPowerup.FindAction("Confirm", throwIfNotFound: true);
+        m_MovementPowerup_Cancel = m_MovementPowerup.FindAction("Cancel", throwIfNotFound: true);
     }
 
     ~@PlayerInput()
     {
         UnityEngine.Debug.Assert(!m_UI.enabled, "This will cause a leak and performance issues, PlayerInput.UI.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_Gameplay.enabled, "This will cause a leak and performance issues, PlayerInput.Gameplay.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_MovementPowerup.enabled, "This will cause a leak and performance issues, PlayerInput.MovementPowerup.Disable() has not been called.");
     }
 
     public void Dispose()
@@ -329,20 +405,16 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
     // Gameplay
     private readonly InputActionMap m_Gameplay;
     private List<IGameplayActions> m_GameplayActionsCallbackInterfaces = new List<IGameplayActions>();
-    private readonly InputAction m_Gameplay_ShowTrajectoryLine;
     private readonly InputAction m_Gameplay_Power;
     private readonly InputAction m_Gameplay_Angle;
     private readonly InputAction m_Gameplay_LaunchProjectile;
-    private readonly InputAction m_Gameplay_RebuildLevel;
     public struct GameplayActions
     {
         private @PlayerInput m_Wrapper;
         public GameplayActions(@PlayerInput wrapper) { m_Wrapper = wrapper; }
-        public InputAction @ShowTrajectoryLine => m_Wrapper.m_Gameplay_ShowTrajectoryLine;
         public InputAction @Power => m_Wrapper.m_Gameplay_Power;
         public InputAction @Angle => m_Wrapper.m_Gameplay_Angle;
         public InputAction @LaunchProjectile => m_Wrapper.m_Gameplay_LaunchProjectile;
-        public InputAction @RebuildLevel => m_Wrapper.m_Gameplay_RebuildLevel;
         public InputActionMap Get() { return m_Wrapper.m_Gameplay; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -352,9 +424,6 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         {
             if (instance == null || m_Wrapper.m_GameplayActionsCallbackInterfaces.Contains(instance)) return;
             m_Wrapper.m_GameplayActionsCallbackInterfaces.Add(instance);
-            @ShowTrajectoryLine.started += instance.OnShowTrajectoryLine;
-            @ShowTrajectoryLine.performed += instance.OnShowTrajectoryLine;
-            @ShowTrajectoryLine.canceled += instance.OnShowTrajectoryLine;
             @Power.started += instance.OnPower;
             @Power.performed += instance.OnPower;
             @Power.canceled += instance.OnPower;
@@ -364,16 +433,10 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @LaunchProjectile.started += instance.OnLaunchProjectile;
             @LaunchProjectile.performed += instance.OnLaunchProjectile;
             @LaunchProjectile.canceled += instance.OnLaunchProjectile;
-            @RebuildLevel.started += instance.OnRebuildLevel;
-            @RebuildLevel.performed += instance.OnRebuildLevel;
-            @RebuildLevel.canceled += instance.OnRebuildLevel;
         }
 
         private void UnregisterCallbacks(IGameplayActions instance)
         {
-            @ShowTrajectoryLine.started -= instance.OnShowTrajectoryLine;
-            @ShowTrajectoryLine.performed -= instance.OnShowTrajectoryLine;
-            @ShowTrajectoryLine.canceled -= instance.OnShowTrajectoryLine;
             @Power.started -= instance.OnPower;
             @Power.performed -= instance.OnPower;
             @Power.canceled -= instance.OnPower;
@@ -383,9 +446,6 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @LaunchProjectile.started -= instance.OnLaunchProjectile;
             @LaunchProjectile.performed -= instance.OnLaunchProjectile;
             @LaunchProjectile.canceled -= instance.OnLaunchProjectile;
-            @RebuildLevel.started -= instance.OnRebuildLevel;
-            @RebuildLevel.performed -= instance.OnRebuildLevel;
-            @RebuildLevel.canceled -= instance.OnRebuildLevel;
         }
 
         public void RemoveCallbacks(IGameplayActions instance)
@@ -403,16 +463,82 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         }
     }
     public GameplayActions @Gameplay => new GameplayActions(this);
+
+    // MovementPowerup
+    private readonly InputActionMap m_MovementPowerup;
+    private List<IMovementPowerupActions> m_MovementPowerupActionsCallbackInterfaces = new List<IMovementPowerupActions>();
+    private readonly InputAction m_MovementPowerup_Direction;
+    private readonly InputAction m_MovementPowerup_Confirm;
+    private readonly InputAction m_MovementPowerup_Cancel;
+    public struct MovementPowerupActions
+    {
+        private @PlayerInput m_Wrapper;
+        public MovementPowerupActions(@PlayerInput wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Direction => m_Wrapper.m_MovementPowerup_Direction;
+        public InputAction @Confirm => m_Wrapper.m_MovementPowerup_Confirm;
+        public InputAction @Cancel => m_Wrapper.m_MovementPowerup_Cancel;
+        public InputActionMap Get() { return m_Wrapper.m_MovementPowerup; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(MovementPowerupActions set) { return set.Get(); }
+        public void AddCallbacks(IMovementPowerupActions instance)
+        {
+            if (instance == null || m_Wrapper.m_MovementPowerupActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_MovementPowerupActionsCallbackInterfaces.Add(instance);
+            @Direction.started += instance.OnDirection;
+            @Direction.performed += instance.OnDirection;
+            @Direction.canceled += instance.OnDirection;
+            @Confirm.started += instance.OnConfirm;
+            @Confirm.performed += instance.OnConfirm;
+            @Confirm.canceled += instance.OnConfirm;
+            @Cancel.started += instance.OnCancel;
+            @Cancel.performed += instance.OnCancel;
+            @Cancel.canceled += instance.OnCancel;
+        }
+
+        private void UnregisterCallbacks(IMovementPowerupActions instance)
+        {
+            @Direction.started -= instance.OnDirection;
+            @Direction.performed -= instance.OnDirection;
+            @Direction.canceled -= instance.OnDirection;
+            @Confirm.started -= instance.OnConfirm;
+            @Confirm.performed -= instance.OnConfirm;
+            @Confirm.canceled -= instance.OnConfirm;
+            @Cancel.started -= instance.OnCancel;
+            @Cancel.performed -= instance.OnCancel;
+            @Cancel.canceled -= instance.OnCancel;
+        }
+
+        public void RemoveCallbacks(IMovementPowerupActions instance)
+        {
+            if (m_Wrapper.m_MovementPowerupActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(IMovementPowerupActions instance)
+        {
+            foreach (var item in m_Wrapper.m_MovementPowerupActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_MovementPowerupActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public MovementPowerupActions @MovementPowerup => new MovementPowerupActions(this);
     public interface IUIActions
     {
         void OnNewaction(InputAction.CallbackContext context);
     }
     public interface IGameplayActions
     {
-        void OnShowTrajectoryLine(InputAction.CallbackContext context);
         void OnPower(InputAction.CallbackContext context);
         void OnAngle(InputAction.CallbackContext context);
         void OnLaunchProjectile(InputAction.CallbackContext context);
-        void OnRebuildLevel(InputAction.CallbackContext context);
+    }
+    public interface IMovementPowerupActions
+    {
+        void OnDirection(InputAction.CallbackContext context);
+        void OnConfirm(InputAction.CallbackContext context);
+        void OnCancel(InputAction.CallbackContext context);
     }
 }

@@ -52,8 +52,7 @@ public class PlayerManager : MonoBehaviour
 
     private void PlacePlayers()
     {
-        LevelManager.Instance.GetFirstAndLastSpawnPoints(out Vector3 firstSpawnPoint, out Vector3 lastSpawnPoint);
-
+        LevelManager.Instance.GetFirstAndLastSpawnPoints(out Vector3 firstSpawnPoint, out Vector3 lastSpawnPoint, out int firstSpawnPointIndex, out int lastSpawnPointIndex);
 
         if (GameManager.Instance.CurrentRound == 0)
         {
@@ -83,6 +82,7 @@ public class PlayerManager : MonoBehaviour
             Players[0].PlayerUI = _player1UI;
             Players[0].PlayerUIPowerupHolder = _player1UI.transform.GetChild(1);
             Players[0].ThrowDirection = 1;
+            Players[0].SpawnPointIndex = firstSpawnPointIndex;
             pc.SavePlayerDetails();
             Players[0].PlayerController.SetPlayerDetails(0, Players[0]);
 
@@ -94,7 +94,7 @@ public class PlayerManager : MonoBehaviour
             // MORE DEBUG STUFF TO DELETE LATER
             for (int i = 0; i < 50; i++)
             {
-                AddRandomPlayerPowerup();
+                AddRandomPlayerPowerup(0);
             }
 
             newPlayer.name = pc.PlayerName;
@@ -109,6 +109,7 @@ public class PlayerManager : MonoBehaviour
             Players[1].PlayerUI = _player2UI;
             Players[1].PlayerUIPowerupHolder = _player2UI.transform.GetChild(1);
             Players[1].ThrowDirection = -1;
+            Players[1].SpawnPointIndex = lastSpawnPointIndex;
 
             pc.SavePlayerDetails();
             Players[1].PlayerController.SetPlayerDetails(1, Players[1]);
@@ -118,6 +119,12 @@ public class PlayerManager : MonoBehaviour
             Players[0].PlayerController.PlacePlayerAndEnable(firstSpawnPoint);
 
             Players[1].PlayerController.PlacePlayerAndEnable(lastSpawnPoint);
+        }
+
+        // MORE DEBUG STUFF TO DELETE LATER
+        for (int i = 0; i < 50; i++)
+        {
+            AddRandomPlayerPowerup(1);
         }
 
 
@@ -169,15 +176,17 @@ public class PlayerManager : MonoBehaviour
             Players[playerId].PlayerLineRenderer.enabled = true;
         else
             StartCoroutine(Players[playerId].PlayerAIController.DoAI());
+
+        GameManager.Instance.UpdateGameState(GameState.WaitingForLaunch);
     }
 
-    public void AddRandomPlayerPowerup()
+    public void AddRandomPlayerPowerup(int playerId)
     {
         int randomPowerupIndex = Random.Range(0, _availablePowerups.Length);
         GameObject powerup = _availablePowerups[randomPowerupIndex];
         string puName = powerup.name + "(Clone)";
-        List<GameObject> ppuList = _playerPowerups[CurrentPlayerId];
-        List<string> ppuNameList = _playerPowerupNames[CurrentPlayerId];
+        List<GameObject> ppuList = _playerPowerups[playerId];
+        List<string> ppuNameList = _playerPowerupNames[playerId];
 
         if (ppuNameList.Contains(puName))
         {
@@ -185,11 +194,11 @@ public class PlayerManager : MonoBehaviour
         }
         else
         {
-            GameObject pu = Instantiate(powerup, Players[CurrentPlayerId].PlayerUIPowerupHolder);
+            GameObject pu = Instantiate(powerup, Players[playerId].PlayerUIPowerupHolder);
             ppuList.Add(pu);
             ppuNameList.Add(pu.name);
             // DEBUG STUFF
-            if (CurrentPlayerId == 0)
+            if (playerId == 0)
             {
                 _player1Powerups = ppuList;
                 _player1PowerupNames = ppuNameList;

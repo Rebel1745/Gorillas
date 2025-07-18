@@ -45,6 +45,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Transform _shieldTransform;
     private bool _isShieldActive = false;
     public bool IsShieldActive { get { return _isShieldActive; } }
+    private int _movementDistance;
 
     // UI Stuff
     private GameObject _uIGO;
@@ -341,6 +342,20 @@ public class PlayerController : MonoBehaviour
         _isShieldActive = false;
         _shieldTransform.gameObject.SetActive(false);
         //_gorillaCollider.enabled = true;
+    }
+
+    public void ShowHideMovementPowerupIndicators(bool show)
+    {
+        ShowHideMovementPowerupIndicators(_movementDistance, show);
+    }
+
+    public void ShowHideMovementPowerupIndicators(int distance, bool show)
+    {
+        _movementDistance = distance;
+        int firstIndex = Mathf.Min(_playerDetails.SpawnPointIndex - distance, _playerDetails.SpawnPointIndex + distance);
+        int lastIndex = Mathf.Max(_playerDetails.SpawnPointIndex - distance, _playerDetails.SpawnPointIndex + distance);
+
+        LevelManager.Instance.ShowHideSpawnPointArrowsBetweenIndexes(firstIndex, _playerDetails.SpawnPointIndex, lastIndex, show);
     }
     #endregion
 

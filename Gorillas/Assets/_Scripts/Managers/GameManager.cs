@@ -64,6 +64,9 @@ public class GameManager : MonoBehaviour
                 break;
             case GameState.WaitingForDetonation:
                 break;
+            case GameState.WaitingForMovement:
+                WaitingForMovement();
+                break;
             case GameState.NextTurn:
                 StartCoroutine(nameof(NextTurn), delay);
                 break;
@@ -74,6 +77,13 @@ public class GameManager : MonoBehaviour
                 StartCoroutine(nameof(GameOver), delay);
                 break;
         }
+    }
+
+    private void WaitingForMovement()
+    {
+        int maximumMovementDistance = 3; //Random.Range(0, 4);
+        PlayerManager.Instance.Players[CurrentPlayerId].PlayerController.ShowHideMovementPowerupIndicators(maximumMovementDistance, true);
+        InputManager.Instance.EnableDisableMovementPowerupControls(true);
     }
 
     private void InitialiseGame()
@@ -110,7 +120,8 @@ public class GameManager : MonoBehaviour
 
     private void ShowStartScreen()
     {
-        InputManager.Instance.EnableDisableControls(false);
+        //InputManager.Instance.EnableDisableControls(false);
+        InputManager.Instance.EnableDisableUIControls(true);
         UIManager.Instance.ShowHideUIElement(UIManager.Instance.StartScreenUI, true);
         AudioManager.Instance.PlayBackgroundMusic(_mainMenuMusic);
     }
@@ -149,8 +160,8 @@ public class GameManager : MonoBehaviour
             UpdateGameState(GameState.NextTurn);
 
         UIManager.Instance.ShowHideUIElement(UIManager.Instance.ScoreBoardUI, true);
-        InputManager.Instance.EnableDisableControls(true);
-
+        //InputManager.Instance.EnableDisableControls(true);
+        InputManager.Instance.EnableDisableGameplayControls(true);
     }
 
     private void UpdateCurrentPlayerDetails(int newPlayerId)
@@ -161,8 +172,6 @@ public class GameManager : MonoBehaviour
         CurrentPlayerId = newPlayerId;
         IsCurrentPlayerCPU = PlayerManager.Instance.Players[CurrentPlayerId].IsCPU;
         PlayerManager.Instance.UpdateCurrentPlayer(CurrentPlayerId);
-
-        /*UpdateGameState(GameState.WaitingForLaunch);*/
     }
 
     private IEnumerator NextTurn(float delay)
@@ -175,7 +184,7 @@ public class GameManager : MonoBehaviour
         int newPlayerId = (CurrentPlayerId + 1) % 2;
         UpdateCurrentPlayerDetails(newPlayerId);
 
-        UpdateGameState(GameState.WaitingForLaunch);
+        //UpdateGameState(GameState.WaitingForLaunch);
     }
 
     public void UpdateScore(int playerId)
@@ -207,6 +216,7 @@ public enum GameState
     SetupGame,
     WaitingForLaunch,
     WaitingForDetonation,
+    WaitingForMovement,
     NextTurn,
     RoundComplete,
     GameOver

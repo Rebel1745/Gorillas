@@ -18,6 +18,7 @@ public struct PlayerDetails
     public AIController PlayerAIController;
     public int ThrowDirection; // 1 for left - right, -1 for right to left
     public bool AlwaysShowTrajectoryLine;
+    public int SpawnPointIndex;
 }
 
 public enum CPU_TYPE

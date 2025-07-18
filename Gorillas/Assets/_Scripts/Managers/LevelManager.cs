@@ -18,6 +18,7 @@ public class LevelManager : MonoBehaviour
     private float _totalElementWidth = 0f;
     public float TotalElementWidth { get { return _totalElementWidth; } }
     private List<Vector3> _playerSpawnPointList = new();
+    private List<GameObject> _playerSpawnPointArrows = new();
 
     private void Awake()
     {
@@ -39,7 +40,7 @@ public class LevelManager : MonoBehaviour
     {
         float startingXPos = -_totalElementWidth / 2.0f;
         float xOffset = 0f;
-        Vector3 newPos, spawnPointPos;
+        Vector3 newPos;
         GameObject newElement;
         Color randomBuildingColour;
 
@@ -51,10 +52,12 @@ public class LevelManager : MonoBehaviour
             newElement.transform.GetChild(0).GetChild(1).GetComponent<SpriteRenderer>().color = randomBuildingColour;
             xOffset += led.ElementWidth;
 
-            foreach (Transform t in led.PlayerSpawnPoints)
+            // spawn points are the second child of the building (first is GFX)
+            for (int i = 0; i < newElement.transform.GetChild(1).childCount; i++)
             {
-                spawnPointPos = newPos + t.position;
-                _playerSpawnPointList.Add(spawnPointPos);
+                _playerSpawnPointList.Add(newElement.transform.GetChild(1).GetChild(i).transform.position);
+                // first child of the spawn point is the arrow
+                _playerSpawnPointArrows.Add(newElement.transform.GetChild(1).GetChild(i).GetChild(0).gameObject);
             }
         }
     }
@@ -67,21 +70,18 @@ public class LevelManager : MonoBehaviour
         GameObject prefab;
         float prefabWidth;
         float prefabHeight;
-        Transform[] playerSpawnPoints;
 
         for (int i = 0; i <= _numberOfLevelElements; i++)
         {
             prefab = _levelElements[Random.Range(0, _levelElements.Length)];
             prefabWidth = prefab.transform.GetChild(0).transform.localScale.x;
             prefabHeight = Random.Range(_minHeight, _maxHeight);
-            playerSpawnPoints = prefab.GetComponent<LevelElement>().PlayerSpawnPoints;
 
             newLevelElementDetails = new LevelElementDetails
             {
                 ElementPrefab = prefab,
                 ElementWidth = prefabWidth,
-                ElementHeight = prefabHeight,
-                PlayerSpawnPoints = playerSpawnPoints
+                ElementHeight = prefabHeight
             };
 
             _levelElementDetailsList.Add(newLevelElementDetails);
@@ -94,14 +94,12 @@ public class LevelManager : MonoBehaviour
             prefab = _levelElements[0];
             prefabWidth = prefab.GetComponentInChildren<SpriteRenderer>().transform.localScale.x;
             prefabHeight = Random.Range(_minHeight, _maxHeight);
-            playerSpawnPoints = prefab.GetComponent<LevelElement>().PlayerSpawnPoints;
 
             newLevelElementDetails = new LevelElementDetails
             {
                 ElementPrefab = prefab,
                 ElementWidth = prefabWidth,
-                ElementHeight = prefabHeight,
-                PlayerSpawnPoints = playerSpawnPoints
+                ElementHeight = prefabHeight
             };
 
             _levelElementDetailsList.Add(newLevelElementDetails);
@@ -133,13 +131,22 @@ public class LevelManager : MonoBehaviour
         return _playerSpawnPointList[index];
     }
 
-    public void GetFirstAndLastSpawnPoints(out Vector3 firstSpawnPoint, out Vector3 lastSpawnPoint)
+    public void ShowHideSpawnPointArrowsBetweenIndexes(int firstIndex, int currentIndex, int lastIndex, bool show)
     {
-        int firstIndex = (_playerSpawnPointList.Count / 2) - (_distanceBetweenPlayers / 2);
-        int lastIndex = (_playerSpawnPointList.Count / 2) + (_distanceBetweenPlayers / 2);
+        for (int i = firstIndex; i <= lastIndex; i++)
+        {
+            if (i != currentIndex)
+                _playerSpawnPointArrows[i].SetActive(show);
+        }
+    }
 
-        firstSpawnPoint = GetSpawnPointAtIndex(firstIndex);
-        lastSpawnPoint = GetSpawnPointAtIndex(lastIndex);
+    public void GetFirstAndLastSpawnPoints(out Vector3 firstSpawnPoint, out Vector3 lastSpawnPoint, out int firstSpawnPointIndex, out int lastSpawnPointIndex)
+    {
+        firstSpawnPointIndex = (_playerSpawnPointList.Count / 2) - (_distanceBetweenPlayers / 2);
+        lastSpawnPointIndex = (_playerSpawnPointList.Count / 2) + (_distanceBetweenPlayers / 2);
+
+        firstSpawnPoint = GetSpawnPointAtIndex(firstSpawnPointIndex);
+        lastSpawnPoint = GetSpawnPointAtIndex(lastSpawnPointIndex);
     }
 }
 
@@ -148,5 +155,4 @@ public struct LevelElementDetails
     public GameObject ElementPrefab;
     public float ElementWidth;
     public float ElementHeight;
-    public Transform[] PlayerSpawnPoints;
 }

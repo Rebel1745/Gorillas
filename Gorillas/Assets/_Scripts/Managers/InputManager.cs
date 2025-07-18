@@ -15,9 +15,6 @@ public class InputManager : MonoBehaviour
     private void OnEnable()
     {
         _inputActions = new PlayerInput();
-        _inputActions.Gameplay.Enable();
-
-        _inputActions.Gameplay.ShowTrajectoryLine.started += ShowTrajectoryLine;
 
         _inputActions.Gameplay.Power.started += UpdatePower;
         _inputActions.Gameplay.Power.canceled += UpdatePower;
@@ -27,15 +24,13 @@ public class InputManager : MonoBehaviour
 
         _inputActions.Gameplay.LaunchProjectile.started += LaunchProjectile;
 
-        _inputActions.Gameplay.RebuildLevel.started += RebuildLevel;
+        _inputActions.MovementPowerup.Direction.started += MovementPowerupDirection;
+        _inputActions.MovementPowerup.Confirm.started += MovementPowerupConfirm;
+        _inputActions.MovementPowerup.Cancel.started += MovementPowerupCancel;
     }
 
     private void OnDisable()
     {
-        _inputActions.Gameplay.Disable();
-
-        _inputActions.Gameplay.ShowTrajectoryLine.started -= ShowTrajectoryLine;
-
         _inputActions.Gameplay.Power.started -= UpdatePower;
         _inputActions.Gameplay.Power.canceled -= UpdatePower;
 
@@ -44,13 +39,9 @@ public class InputManager : MonoBehaviour
 
         _inputActions.Gameplay.LaunchProjectile.started -= LaunchProjectile;
 
-        _inputActions.Gameplay.RebuildLevel.started -= RebuildLevel;
-    }
-
-    private void ShowTrajectoryLine(InputAction.CallbackContext context)
-    {
-        /*if (GameManager.Instance.State == GameState.WaitingForLaunch && !PlayerManager.Instance.IsCurrentPlayerCPU)
-            PlayerManager.Instance.Players[PlayerManager.Instance.CurrentPlayerId].PlayerController.ShowTrajectoryLine();*/
+        _inputActions.MovementPowerup.Direction.started -= MovementPowerupDirection;
+        _inputActions.MovementPowerup.Confirm.started -= MovementPowerupConfirm;
+        _inputActions.MovementPowerup.Cancel.started -= MovementPowerupCancel;
     }
 
     private void UpdatePower(InputAction.CallbackContext context)
@@ -80,16 +71,42 @@ public class InputManager : MonoBehaviour
         PlayerManager.Instance.Players[PlayerManager.Instance.CurrentPlayerId].PlayerController.StartLaunchProjectile();
     }
 
-    private void RebuildLevel(InputAction.CallbackContext context)
+    private void MovementPowerupConfirm(InputAction.CallbackContext context)
     {
-        //GameManager.Instance.UpdateGameState(GameState.InitialiseGame);
+        Debug.Log("Confirm");
     }
 
-    public void EnableDisableControls(bool enabled)
+    private void MovementPowerupDirection(InputAction.CallbackContext context)
+    {
+        Debug.Log("Direction");
+    }
+
+    private void MovementPowerupCancel(InputAction.CallbackContext context)
+    {
+        PlayerManager.Instance.Players[PlayerManager.Instance.CurrentPlayerId].PlayerController.ShowHideMovementPowerupIndicators(false);
+    }
+
+    public void EnableDisableUIControls(bool enabled)
+    {
+        if (enabled)
+            _inputActions.UI.Enable();
+        else
+            _inputActions.UI.Disable();
+    }
+
+    public void EnableDisableGameplayControls(bool enabled)
     {
         if (enabled)
             _inputActions.Gameplay.Enable();
         else
             _inputActions.Gameplay.Disable();
+    }
+
+    public void EnableDisableMovementPowerupControls(bool enabled)
+    {
+        if (enabled)
+            _inputActions.MovementPowerup.Enable();
+        else
+            _inputActions.MovementPowerup.Disable();
     }
 }
