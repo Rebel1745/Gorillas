@@ -41,7 +41,7 @@ public class TrajectoryLine : MonoBehaviour
         _segmentsList.Clear();
         _groundHitList.Clear();
 
-        int targetPlayerId = (_playerController.PlayerId + 1) % 2;
+        int targetPlayerId = GameManager.Instance.OtherPlayerId;
         _targetPosition = PlayerManager.Instance.Players[targetPlayerId].PlayerGameObject.transform.position;
 
         // set the start position of the line renderer

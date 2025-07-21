@@ -58,6 +58,7 @@ public class LevelManager : MonoBehaviour
                 _playerSpawnPointList.Add(newElement.transform.GetChild(1).GetChild(i).transform.position);
                 // first child of the spawn point is the arrow
                 _playerSpawnPointArrows.Add(newElement.transform.GetChild(1).GetChild(i).GetChild(0).gameObject);
+                _playerSpawnPointArrows[_playerSpawnPointArrows.Count - 1].GetComponentInChildren<MovePlayerArrow>().SetArrowIndex(_playerSpawnPointArrows.Count - 1);
             }
         }
     }

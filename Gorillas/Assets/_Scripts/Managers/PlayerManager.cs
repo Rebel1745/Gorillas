@@ -110,7 +110,6 @@ public class PlayerManager : MonoBehaviour
             Players[1].PlayerUIPowerupHolder = _player2UI.transform.GetChild(1);
             Players[1].ThrowDirection = -1;
             Players[1].SpawnPointIndex = lastSpawnPointIndex;
-
             pc.SavePlayerDetails();
             Players[1].PlayerController.SetPlayerDetails(1, Players[1]);
         }

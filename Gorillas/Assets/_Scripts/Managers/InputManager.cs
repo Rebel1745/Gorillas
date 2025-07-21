@@ -73,7 +73,7 @@ public class InputManager : MonoBehaviour
 
     private void MovementPowerupConfirm(InputAction.CallbackContext context)
     {
-        Debug.Log("Confirm");
+        PlayerManager.Instance.Players[PlayerManager.Instance.CurrentPlayerId].PlayerController.ConfirmMovementPowerupPosition();
     }
 
     private void MovementPowerupDirection(InputAction.CallbackContext context)
@@ -83,7 +83,7 @@ public class InputManager : MonoBehaviour
 
     private void MovementPowerupCancel(InputAction.CallbackContext context)
     {
-        PlayerManager.Instance.Players[PlayerManager.Instance.CurrentPlayerId].PlayerController.ShowHideMovementPowerupIndicators(false);
+        PlayerManager.Instance.Players[PlayerManager.Instance.CurrentPlayerId].PlayerController.CancelMovementPowerupPosition();
     }
 
     public void EnableDisableUIControls(bool enabled)

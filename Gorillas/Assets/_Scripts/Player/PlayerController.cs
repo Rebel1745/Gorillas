@@ -56,6 +56,7 @@ public class PlayerController : MonoBehaviour
     private Slider _angleSlider;
     public Slider AngleSlider { get { return _angleSlider; } }
     private Button _launchButton;
+    private int _currentArrowIndex = -1;
 
     // AI Details
     private int _throwNumber;
@@ -356,6 +357,46 @@ public class PlayerController : MonoBehaviour
         int lastIndex = Mathf.Max(_playerDetails.SpawnPointIndex - distance, _playerDetails.SpawnPointIndex + distance);
 
         LevelManager.Instance.ShowHideSpawnPointArrowsBetweenIndexes(firstIndex, _playerDetails.SpawnPointIndex, lastIndex, show);
+    }
+
+    public void SetPlayerMovementSprite(int arrowIndex)
+    {
+        if (_currentArrowIndex != arrowIndex)
+        {
+            _currentArrowIndex = arrowIndex;
+            Vector3 spawnPointPosition = LevelManager.Instance.GetSpawnPointAtIndex(arrowIndex);
+
+            if (_playerDetails.PlayerMovementSpriteGO == null)
+            {
+                _playerDetails.PlayerMovementSpriteGO = Instantiate(_playerDetails.PlayerMovementSpritePrefab, transform);
+            }
+
+            _playerDetails.PlayerMovementSpriteGO.transform.position = spawnPointPosition;
+            _playerDetails.PlayerMovementSpriteGO.SetActive(true);
+        }
+    }
+
+    public void HidePlayerMovementSprite()
+    {
+        _playerDetails.PlayerMovementSpriteGO.SetActive(false);
+        _currentArrowIndex = -1;
+    }
+
+    public void ConfirmMovementPowerupPosition()
+    {
+        if (_currentArrowIndex == -1) return;
+
+        ShowHideMovementPowerupIndicators(_movementDistance, false);
+        transform.position = LevelManager.Instance.GetSpawnPointAtIndex(_currentArrowIndex);
+        _playerDetails.SpawnPointIndex = _currentArrowIndex;
+        HidePlayerMovementSprite();
+        StartCoroutine(CalculateTrajectoryLine());
+    }
+
+    public void CancelMovementPowerupPosition()
+    {
+        ShowHideMovementPowerupIndicators(false);
+        HidePlayerMovementSprite();
     }
     #endregion
 

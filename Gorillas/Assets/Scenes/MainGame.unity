@@ -6045,6 +6045,8 @@ MonoBehaviour:
     ThrowDirection: 1
     AlwaysShowTrajectoryLine: 0
     SpawnPointIndex: 0
+    PlayerMovementSpritePrefab: {fileID: 294256564965136985, guid: 29671c34c30d3074b85ceabbcfedbeb9, type: 3}
+    PlayerMovementSpriteGO: {fileID: 0}
   - PlayerConfig: {fileID: 1223058969}
     Name: Player 2
     IsCPU: 0
@@ -6061,6 +6063,8 @@ MonoBehaviour:
     ThrowDirection: -1
     AlwaysShowTrajectoryLine: 0
     SpawnPointIndex: 0
+    PlayerMovementSpritePrefab: {fileID: 4992264888891436138, guid: 1244d392621e58f4cb09d5d43f6bc980, type: 3}
+    PlayerMovementSpriteGO: {fileID: 0}
   IsCurrentPlayerCPU: 0
   _availablePowerups:
   - {fileID: 7830120543136791809, guid: c0f3516d05fd4004e9d360ccbb314c71, type: 3}

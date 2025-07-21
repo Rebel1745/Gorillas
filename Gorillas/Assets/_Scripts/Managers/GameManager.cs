@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Current Player Info")]
     public int CurrentPlayerId { get; private set; }
+    public int OtherPlayerId { get { return (CurrentPlayerId + 1) % 2; } }
     public bool IsCurrentPlayerCPU = false;
     private int[] _playerScores;
     private int[] _playerMisses;
@@ -181,7 +182,7 @@ public class GameManager : MonoBehaviour
         _playerMisses[CurrentPlayerId]++;
 
         // advance player
-        int newPlayerId = (CurrentPlayerId + 1) % 2;
+        int newPlayerId = OtherPlayerId;
         UpdateCurrentPlayerDetails(newPlayerId);
 
         //UpdateGameState(GameState.WaitingForLaunch);

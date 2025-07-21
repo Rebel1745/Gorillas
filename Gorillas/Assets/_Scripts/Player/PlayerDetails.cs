@@ -19,6 +19,8 @@ public struct PlayerDetails
     public int ThrowDirection; // 1 for left - right, -1 for right to left
     public bool AlwaysShowTrajectoryLine;
     public int SpawnPointIndex;
+    public GameObject PlayerMovementSpritePrefab;
+    public GameObject PlayerMovementSpriteGO;
 }
 
 public enum CPU_TYPE
