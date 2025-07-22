@@ -13,6 +13,8 @@ public class CameraManager : MonoBehaviour
     private const float ADDITIONAL_Y_OFFSET = 0.5f; // just to add a little space above the banana trajectory
     [SerializeField] private float _minZoom = 5f;
     [SerializeField] private float _maxZoom = 10f;
+    private float _zoomTarget = 0f;
+    private Vector3 _cameraTargetPosition = Vector3.zero;
     private Vector3 _moveVelocity;
     private float _zoomVelocity;
     [SerializeField] private float _zoomSmoothTime = 0.5f;
@@ -21,7 +23,6 @@ public class CameraManager : MonoBehaviour
     private bool _moveCamera = false;
     private bool _instantCameraMovement;
     private float _screenHeightWidthRatio;
-    private int _numberOfPlayers = 0;
 
     private void Awake()
     {
@@ -31,7 +32,6 @@ public class CameraManager : MonoBehaviour
     private void Start()
     {
         ResetCamera();
-        _numberOfPlayers = 0;
     }
 
     public void ResetCamera()
@@ -56,51 +56,50 @@ public class CameraManager : MonoBehaviour
         if (!_moveCamera) return;
 
         ZoomCamera(_zoomSmoothTime);
-        MoveCamera();
+        MoveCamera(_moveSmoothTime);
+        CheckIfCameraShouldStillMove();
+    }
+
+    private void CheckIfCameraShouldStillMove()
+    {
+        // if we reach our prefered zoom, stop moving the camera
+        if (Mathf.Abs(_camera.orthographicSize - _zoomTarget) < 0.01f && Vector3.Distance(_cameraTargetPosition, transform.position) < 0.1f)
+        {
+            _moveCamera = false;
+            _zoomVelocity = 0F;
+            _moveVelocity = Vector3.zero;
+        }
     }
 
     private void ZoomCamera(float smoothTime)
     {
-        float zoom = Mathf.Max(GetBoundsSize().x / 2f / _screenHeightWidthRatio, (GetBoundsSize().y + _cameraOffset.y) / 2.0f + ADDITIONAL_Y_OFFSET);
-        zoom = Mathf.Clamp(zoom, _minZoom, _maxZoom);
+        _zoomTarget = Mathf.Max(GetBoundsSize().x / 2f / _screenHeightWidthRatio, (GetBoundsSize().y + _cameraOffset.y) / 2.0f + ADDITIONAL_Y_OFFSET);
+        _zoomTarget = Mathf.Clamp(_zoomTarget, _minZoom, _maxZoom);
 
         if (_cameraTargets.Count == 1) smoothTime *= 2;
 
         if (_instantCameraMovement)
         {
-            _camera.orthographicSize = zoom;
+            _camera.orthographicSize = _zoomTarget;
             _instantCameraMovement = false;
         }
         else
         {
-            _camera.orthographicSize = Mathf.SmoothDamp(_camera.orthographicSize, zoom, ref _zoomVelocity, smoothTime);
-        }
-
-        // if we reach our prefered zoom, stop moving the camera
-        if (Mathf.Abs(_camera.orthographicSize - zoom) < 0.01f)
-        {
-            _moveCamera = false;
-            _zoomVelocity = 0F;
+            _camera.orthographicSize = Mathf.SmoothDamp(_camera.orthographicSize, _zoomTarget, ref _zoomVelocity, smoothTime);
         }
     }
 
     // moving the camera doesn't need a smooth time becuase it should remain in the same Y position
-    private void MoveCamera()
+    private void MoveCamera(float smoothTime)
     {
         float camXPos = 0f;
 
         if (_cameraTargets.Count == 1) camXPos = GetCenterPoint().x;
+        if (_cameraTargets.Count > 1) camXPos = (_cameraTargets[0].x + _cameraTargets[1].x) / 2f;
 
-        Vector3 newPos = new(camXPos, _camera.orthographicSize + GetLowestPlayer() - _cameraOffset.y, _cameraOffset.z);
+        _cameraTargetPosition = new(camXPos, _camera.orthographicSize + GetLowestPlayer() - _cameraOffset.y, _cameraOffset.z);
 
-        if (_cameraTargets.Count != 1)
-        {
-            _camera.transform.position = newPos;
-        }
-        else
-        {
-            _camera.transform.position = Vector3.SmoothDamp(_camera.transform.position, newPos, ref _moveVelocity, _moveSmoothTime);
-        }
+        _camera.transform.position = Vector3.SmoothDamp(_camera.transform.position, _cameraTargetPosition, ref _moveVelocity, smoothTime);
     }
 
     private Vector3 GetCenterPoint()
@@ -128,7 +127,7 @@ public class CameraManager : MonoBehaviour
 
     private Vector3 GetBoundsSize()
     {
-        if ((_cameraTargets.Count == 1)) return _cameraTargets[0];
+        if (_cameraTargets.Count == 1) return _cameraTargets[0];
 
         // adjust the size to take into account the offset
         Vector3 ajustedSize = new(_cameraBounds.size.x + _cameraOffset.x / 2, _cameraBounds.size.y, _cameraBounds.size.z);
@@ -152,9 +151,8 @@ public class CameraManager : MonoBehaviour
         if (_cameraTargets.Contains(target)) return;
 
         _cameraTargets.Add(target);
-        _numberOfPlayers++;
 
-        if (_cameraTargets.Count == 2)
+        if (_cameraTargets.Count > 1)
         {
             SetBounds();
             _moveCamera = true;
@@ -165,7 +163,6 @@ public class CameraManager : MonoBehaviour
     {
         if (_cameraTargets.Count < 2) Debug.LogError("Both players aren't here, why are we trying to remove one?");
         _cameraTargets.RemoveAt(playerId);
-        _numberOfPlayers--;
 
         SetBounds();
         _moveCamera = true;
@@ -192,6 +189,14 @@ public class CameraManager : MonoBehaviour
         // the projectile is always the last element, remove it
         _cameraTargets.RemoveAt(_cameraTargets.Count - 1);
 
+        SetBounds();
+        _moveCamera = true;
+    }
+
+    // used for when the player movement powerup is initiated and the camera needs to view possible movement positions
+    public void UpdatePlayerPosition(int playerId, Vector3 position)
+    {
+        _cameraTargets[playerId] = position;
         SetBounds();
         _moveCamera = true;
     }

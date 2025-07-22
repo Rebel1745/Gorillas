@@ -115,9 +115,9 @@ public class PlayerManager : MonoBehaviour
         }
         else
         {
-            Players[0].PlayerController.PlacePlayerAndEnable(firstSpawnPoint);
+            Players[0].PlayerController.PlacePlayerAndEnable(firstSpawnPoint, firstSpawnPointIndex);
 
-            Players[1].PlayerController.PlacePlayerAndEnable(lastSpawnPoint);
+            Players[1].PlayerController.PlacePlayerAndEnable(lastSpawnPoint, lastSpawnPointIndex);
         }
 
         // MORE DEBUG STUFF TO DELETE LATER

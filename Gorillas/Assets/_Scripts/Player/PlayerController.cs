@@ -291,10 +291,11 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    public void PlacePlayerAndEnable(Vector3 position)
+    public void PlacePlayerAndEnable(Vector3 position, int spawnPointIndex)
     {
         _throwNumber = 0;
         transform.position = position;
+        _playerDetails.SpawnPointIndex = spawnPointIndex;
         gameObject.SetActive(true);
     }
 
@@ -352,11 +353,38 @@ public class PlayerController : MonoBehaviour
 
     public void ShowHideMovementPowerupIndicators(int distance, bool show)
     {
+        float lowestY = 999;
+        float currentY;
+        float lowestPlayerY;
+        Vector3 newCameraPosition;
+
         _movementDistance = distance;
+
+        // figure out the span of the arrows / spawn points
         int firstIndex = Mathf.Min(_playerDetails.SpawnPointIndex - distance, _playerDetails.SpawnPointIndex + distance);
         int lastIndex = Mathf.Max(_playerDetails.SpawnPointIndex - distance, _playerDetails.SpawnPointIndex + distance);
 
+        // show the arrows on screen
         LevelManager.Instance.ShowHideSpawnPointArrowsBetweenIndexes(firstIndex, _playerDetails.SpawnPointIndex, lastIndex, show);
+
+        // figure out the lowest spawn point (or player if it is lower)
+        for (int i = firstIndex; i <= lastIndex; i++)
+        {
+            currentY = LevelManager.Instance.GetSpawnPointAtIndex(i).y;
+            if (currentY < lowestY)
+                lowestY = currentY;
+        }
+
+        // we have the lowest Y of the spawn points, now get the lowest player
+        lowestPlayerY = Mathf.Min(PlayerManager.Instance.Players[0].PlayerGameObject.transform.position.y, PlayerManager.Instance.Players[1].PlayerGameObject.transform.position.y);
+        lowestY = Mathf.Min(lowestY, lowestPlayerY);
+
+        if (_playerId == 0)
+            newCameraPosition = new(LevelManager.Instance.GetSpawnPointAtIndex(firstIndex).x, lowestY);
+        else
+            newCameraPosition = new(LevelManager.Instance.GetSpawnPointAtIndex(lastIndex).x, lowestY);
+
+        CameraManager.Instance.UpdatePlayerPosition(_playerId, newCameraPosition);
     }
 
     public void SetPlayerMovementSprite(int arrowIndex)
@@ -391,12 +419,14 @@ public class PlayerController : MonoBehaviour
         _playerDetails.SpawnPointIndex = _currentArrowIndex;
         HidePlayerMovementSprite();
         StartCoroutine(CalculateTrajectoryLine());
+        CameraManager.Instance.UpdatePlayerPosition(_playerId, transform.position);
     }
 
     public void CancelMovementPowerupPosition()
     {
         ShowHideMovementPowerupIndicators(false);
         HidePlayerMovementSprite();
+        CameraManager.Instance.UpdatePlayerPosition(_playerId, transform.position);
     }
     #endregion
 
