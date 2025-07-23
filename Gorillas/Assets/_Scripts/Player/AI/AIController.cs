@@ -252,4 +252,9 @@ public class AIController : MonoBehaviour
             return _trajectoryLine.GroundHitCount;
         else return -1;
     }
+
+    public void ForceRecalculatePerfectShot()
+    {
+        _forceRecheck = true;
+    }
 }

@@ -145,6 +145,7 @@ public class PlayerController : MonoBehaviour
     {
         _throwNumber++;
         EnableDisableAllUIButtons(false);
+        ShowHideMovementPowerupIndicators(false);
 
         HideTrajectoryLine();
 
@@ -296,6 +297,9 @@ public class PlayerController : MonoBehaviour
         _throwNumber = 0;
         transform.position = position;
         _playerDetails.SpawnPointIndex = spawnPointIndex;
+        PlayerManager.Instance.Players[_playerId].SpawnPointIndex = spawnPointIndex;
+        if (_playerDetails.IsCPU)
+            _playerDetails.PlayerAIController.ForceRecalculatePerfectShot();
         gameObject.SetActive(true);
     }
 
@@ -361,8 +365,21 @@ public class PlayerController : MonoBehaviour
         _movementDistance = distance;
 
         // figure out the span of the arrows / spawn points
-        int firstIndex = Mathf.Min(_playerDetails.SpawnPointIndex - distance, _playerDetails.SpawnPointIndex + distance);
-        int lastIndex = Mathf.Max(_playerDetails.SpawnPointIndex - distance, _playerDetails.SpawnPointIndex + distance);
+        int firstIndex = _playerDetails.SpawnPointIndex - distance;
+        int lastIndex = _playerDetails.SpawnPointIndex + distance;
+
+        // check whether player 1's last index is not too close to player 2
+        if (_playerId == 0)
+        {
+            if (PlayerManager.Instance.Players[1].SpawnPointIndex - LevelManager.Instance.MinimumDistanceBetweenPlayers < lastIndex)
+                lastIndex = PlayerManager.Instance.Players[1].SpawnPointIndex - LevelManager.Instance.MinimumDistanceBetweenPlayers;
+        }
+        else
+        {
+            // check whether player 2's first index is not too close to player 1
+            if (PlayerManager.Instance.Players[0].SpawnPointIndex + LevelManager.Instance.MinimumDistanceBetweenPlayers > firstIndex)
+                firstIndex = PlayerManager.Instance.Players[0].SpawnPointIndex + LevelManager.Instance.MinimumDistanceBetweenPlayers;
+        }
 
         // show the arrows on screen
         LevelManager.Instance.ShowHideSpawnPointArrowsBetweenIndexes(firstIndex, _playerDetails.SpawnPointIndex, lastIndex, show);
@@ -406,7 +423,8 @@ public class PlayerController : MonoBehaviour
 
     public void HidePlayerMovementSprite()
     {
-        _playerDetails.PlayerMovementSpriteGO.SetActive(false);
+        if (_playerDetails.PlayerMovementSpriteGO != null)
+            _playerDetails.PlayerMovementSpriteGO.SetActive(false);
         _currentArrowIndex = -1;
     }
 
@@ -417,9 +435,17 @@ public class PlayerController : MonoBehaviour
         ShowHideMovementPowerupIndicators(_movementDistance, false);
         transform.position = LevelManager.Instance.GetSpawnPointAtIndex(_currentArrowIndex);
         _playerDetails.SpawnPointIndex = _currentArrowIndex;
+        PlayerManager.Instance.Players[_playerId].SpawnPointIndex = _currentArrowIndex;
         HidePlayerMovementSprite();
         StartCoroutine(CalculateTrajectoryLine());
         CameraManager.Instance.UpdatePlayerPosition(_playerId, transform.position);
+        InputManager.Instance.EnableDisableGameplayControls(true);
+
+        // if we have moved, tell the other player to recalculate the trajectory if they are CPU
+        if (PlayerManager.Instance.Players[GameManager.Instance.OtherPlayerId].IsCPU)
+            PlayerManager.Instance.Players[GameManager.Instance.OtherPlayerId].PlayerAIController.ForceRecalculatePerfectShot();
+
+        GameManager.Instance.UpdateGameState(GameState.WaitingForLaunch);
     }
 
     public void CancelMovementPowerupPosition()
@@ -427,6 +453,7 @@ public class PlayerController : MonoBehaviour
         ShowHideMovementPowerupIndicators(false);
         HidePlayerMovementSprite();
         CameraManager.Instance.UpdatePlayerPosition(_playerId, transform.position);
+        GameManager.Instance.UpdateGameState(GameState.WaitingForLaunch);
     }
     #endregion
 

@@ -84,12 +84,17 @@ public class InputManager : MonoBehaviour
     private void MovementPowerupCancel(InputAction.CallbackContext context)
     {
         PlayerManager.Instance.Players[PlayerManager.Instance.CurrentPlayerId].PlayerController.CancelMovementPowerupPosition();
+        EnableDisableGameplayControls(true);
     }
 
     public void EnableDisableUIControls(bool enabled)
     {
         if (enabled)
+        {
+            _inputActions.Gameplay.Disable();
+            _inputActions.MovementPowerup.Disable();
             _inputActions.UI.Enable();
+        }
         else
             _inputActions.UI.Disable();
     }
@@ -97,7 +102,11 @@ public class InputManager : MonoBehaviour
     public void EnableDisableGameplayControls(bool enabled)
     {
         if (enabled)
+        {
+            _inputActions.UI.Disable();
+            _inputActions.MovementPowerup.Disable();
             _inputActions.Gameplay.Enable();
+        }
         else
             _inputActions.Gameplay.Disable();
     }
@@ -105,7 +114,11 @@ public class InputManager : MonoBehaviour
     public void EnableDisableMovementPowerupControls(bool enabled)
     {
         if (enabled)
+        {
+            _inputActions.UI.Disable();
+            _inputActions.Gameplay.Disable();
             _inputActions.MovementPowerup.Enable();
+        }
         else
             _inputActions.MovementPowerup.Disable();
     }

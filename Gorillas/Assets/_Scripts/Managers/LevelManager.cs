@@ -9,6 +9,7 @@ public class LevelManager : MonoBehaviour
     [SerializeField] private Transform _explosionMaskHolder;
     [SerializeField] private GameObject[] _levelElements;
     [SerializeField] private int _minimumDistanceBetweenPlayers = 7;
+    public int MinimumDistanceBetweenPlayers { get { return _minimumDistanceBetweenPlayers; } }
     [SerializeField] private int _maximumDistanceBetweenPlayers = 30;
     private int _distanceBetweenPlayers;
     [SerializeField] private float _minHeight;
@@ -144,8 +145,8 @@ public class LevelManager : MonoBehaviour
 
     public void GetFirstAndLastSpawnPoints(out Vector3 firstSpawnPoint, out Vector3 lastSpawnPoint, out int firstSpawnPointIndex, out int lastSpawnPointIndex)
     {
-        firstSpawnPointIndex = (_playerSpawnPointList.Count / 2) - (_distanceBetweenPlayers / 2);
-        lastSpawnPointIndex = (_playerSpawnPointList.Count / 2) + (_distanceBetweenPlayers / 2);
+        firstSpawnPointIndex = (_playerSpawnPointList.Count / 2) - Mathf.CeilToInt(_distanceBetweenPlayers / 2f);
+        lastSpawnPointIndex = (_playerSpawnPointList.Count / 2) + Mathf.FloorToInt(_distanceBetweenPlayers / 2f);
 
         firstSpawnPoint = GetSpawnPointAtIndex(firstSpawnPointIndex);
         lastSpawnPoint = GetSpawnPointAtIndex(lastSpawnPointIndex);
