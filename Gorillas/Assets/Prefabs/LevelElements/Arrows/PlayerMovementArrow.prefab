@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 4856776898638109867}
   - component: {fileID: -1884494461837372764}
   m_Layer: 0
-  m_Name: Arrow
+  m_Name: PlayerMovementArrow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

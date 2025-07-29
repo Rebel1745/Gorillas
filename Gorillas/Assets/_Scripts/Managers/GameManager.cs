@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using System;
 
 public class GameManager : MonoBehaviour
 {
@@ -68,6 +69,9 @@ public class GameManager : MonoBehaviour
             case GameState.WaitingForMovement:
                 WaitingForMovement();
                 break;
+            case GameState.WaitingForBuildingMovement:
+                WaitingForBuildingMovement();
+                break;
             case GameState.NextTurn:
                 StartCoroutine(nameof(NextTurn), delay);
                 break;
@@ -78,6 +82,11 @@ public class GameManager : MonoBehaviour
                 StartCoroutine(nameof(GameOver), delay);
                 break;
         }
+    }
+
+    private void WaitingForBuildingMovement()
+    {
+        InputManager.Instance.EnableDisableBuildingMovementControls(true);
     }
 
     private void WaitingForMovement()
@@ -218,6 +227,7 @@ public enum GameState
     WaitingForLaunch,
     WaitingForDetonation,
     WaitingForMovement,
+    WaitingForBuildingMovement,
     NextTurn,
     RoundComplete,
     GameOver

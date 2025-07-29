@@ -1805,9 +1805,9 @@ MonoBehaviour:
   - {fileID: 7051889797630888576, guid: aa7bc64a2a8080948866be1235af4c53, type: 3}
   - {fileID: 1143275907609811923, guid: 26de4744eca3bf44cb5f232428ac6b30, type: 3}
   _minimumDistanceBetweenPlayers: 7
-  _maximumDistanceBetweenPlayers: 10
-  _minHeight: -13
-  _maxHeight: -8
+  _maximumDistanceBetweenPlayers: 30
+  _minimumBuildingHeight: -13
+  _maximumBuildingHeight: -8
 --- !u!1 &213972691
 GameObject:
   m_ObjectHideFlags: 0
@@ -6073,6 +6073,7 @@ MonoBehaviour:
   - {fileID: 7830120543136791809, guid: 6efe37631be0f9740b11ae44acdcc2e0, type: 3}
   - {fileID: 7830120543136791809, guid: 2e27b7773e890994e8d61ccffd288e87, type: 3}
   - {fileID: 7830120543136791809, guid: aaea9205ec760f942923337eb1b6a0db, type: 3}
+  - {fileID: 7830120543136791809, guid: 06c04475c89953b4f8ee7c212ebb301e, type: 3}
 --- !u!1 &915600074
 GameObject:
   m_ObjectHideFlags: 0

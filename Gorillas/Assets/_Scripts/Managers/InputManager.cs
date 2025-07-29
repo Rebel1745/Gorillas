@@ -1,4 +1,5 @@
 using System;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -27,6 +28,11 @@ public class InputManager : MonoBehaviour
         _inputActions.MovementPowerup.Direction.started += MovementPowerupDirection;
         _inputActions.MovementPowerup.Confirm.started += MovementPowerupConfirm;
         _inputActions.MovementPowerup.Cancel.started += MovementPowerupCancel;
+
+        _inputActions.BuildingMovement.Direction.started += StartLevelElementMovement;
+        _inputActions.BuildingMovement.Direction.canceled += StopLevelElementMovement;
+        _inputActions.BuildingMovement.Confirm.started += BuildingMovementConfirm;
+        _inputActions.BuildingMovement.Cancel.started += BuildingMovementCancel;
     }
 
     private void OnDisable()
@@ -42,6 +48,11 @@ public class InputManager : MonoBehaviour
         _inputActions.MovementPowerup.Direction.started -= MovementPowerupDirection;
         _inputActions.MovementPowerup.Confirm.started -= MovementPowerupConfirm;
         _inputActions.MovementPowerup.Cancel.started -= MovementPowerupCancel;
+
+        _inputActions.BuildingMovement.Direction.started -= StartLevelElementMovement;
+        _inputActions.BuildingMovement.Direction.canceled -= StopLevelElementMovement;
+        _inputActions.BuildingMovement.Confirm.started -= BuildingMovementConfirm;
+        _inputActions.BuildingMovement.Cancel.started -= BuildingMovementCancel;
     }
 
     private void UpdatePower(InputAction.CallbackContext context)
@@ -87,12 +98,34 @@ public class InputManager : MonoBehaviour
         EnableDisableGameplayControls(true);
     }
 
+    private void BuildingMovementConfirm(InputAction.CallbackContext context)
+    {
+        //PlayerManager.Instance.Players[PlayerManager.Instance.CurrentPlayerId].PlayerController.ConfirmBuildingMovementPosition();
+    }
+
+    private void StartLevelElementMovement(InputAction.CallbackContext context)
+    {
+        LevelManager.Instance.StartLevelElementMovement(context.ReadValue<float>());
+    }
+
+    private void StopLevelElementMovement(InputAction.CallbackContext context)
+    {
+        LevelManager.Instance.StopLevelElementMovement();
+    }
+
+    private void BuildingMovementCancel(InputAction.CallbackContext context)
+    {
+        LevelManager.Instance.EnableDisableBuildingMovementColliders(false);
+        EnableDisableGameplayControls(true);
+    }
+
     public void EnableDisableUIControls(bool enabled)
     {
         if (enabled)
         {
             _inputActions.Gameplay.Disable();
             _inputActions.MovementPowerup.Disable();
+            _inputActions.BuildingMovement.Disable();
             _inputActions.UI.Enable();
         }
         else
@@ -105,6 +138,7 @@ public class InputManager : MonoBehaviour
         {
             _inputActions.UI.Disable();
             _inputActions.MovementPowerup.Disable();
+            _inputActions.BuildingMovement.Disable();
             _inputActions.Gameplay.Enable();
         }
         else
@@ -117,9 +151,23 @@ public class InputManager : MonoBehaviour
         {
             _inputActions.UI.Disable();
             _inputActions.Gameplay.Disable();
+            _inputActions.BuildingMovement.Disable();
             _inputActions.MovementPowerup.Enable();
         }
         else
             _inputActions.MovementPowerup.Disable();
+    }
+
+    public void EnableDisableBuildingMovementControls(bool enabled)
+    {
+        if (enabled)
+        {
+            _inputActions.UI.Disable();
+            _inputActions.Gameplay.Disable();
+            _inputActions.MovementPowerup.Disable();
+            _inputActions.BuildingMovement.Enable();
+        }
+        else
+            _inputActions.BuildingMovement.Disable();
     }
 }

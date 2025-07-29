@@ -296,6 +296,140 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""BuildingMovement"",
+            ""id"": ""140736a0-5e19-464f-b54c-20d5eaabd770"",
+            ""actions"": [
+                {
+                    ""name"": ""Direction"",
+                    ""type"": ""Button"",
+                    ""id"": ""dbf679e1-3551-43b6-b6c0-14b5f4c25269"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Confirm"",
+                    ""type"": ""Button"",
+                    ""id"": ""f7ae99a2-a0b1-46de-be35-07755b144ec7"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Cancel"",
+                    ""type"": ""Button"",
+                    ""id"": ""2fdd2ec9-e8d5-4360-a67e-7e06f46b8436"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""0c5551f6-8636-4305-8b2c-b78a9765d078"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Confirm"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6fca2aa7-b926-4c8b-b36d-17686998e584"",
+                    ""path"": ""<Keyboard>/numpadEnter"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Confirm"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""79570848-c7de-410e-80ab-96173a3ca06e"",
+                    ""path"": ""<Keyboard>/enter"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Confirm"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ec7628e2-a6ea-450e-81b0-8a74bb94134b"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Confirm"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c94da513-72ac-45a9-b7f1-79fc642fd90d"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Cancel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""924efc03-8d2f-4e03-860b-c19994b107a8"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Cancel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""1D Axis"",
+                    ""id"": ""1a87ceec-d4c1-4198-b631-32f6aa779f00"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Direction"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""a0ca7a25-35e1-43a2-b081-c12583b5bb05"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Direction"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""ba35b9e4-7e52-47c8-9754-c9ce0af23edb"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Direction"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -313,6 +447,11 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         m_MovementPowerup_Direction = m_MovementPowerup.FindAction("Direction", throwIfNotFound: true);
         m_MovementPowerup_Confirm = m_MovementPowerup.FindAction("Confirm", throwIfNotFound: true);
         m_MovementPowerup_Cancel = m_MovementPowerup.FindAction("Cancel", throwIfNotFound: true);
+        // BuildingMovement
+        m_BuildingMovement = asset.FindActionMap("BuildingMovement", throwIfNotFound: true);
+        m_BuildingMovement_Direction = m_BuildingMovement.FindAction("Direction", throwIfNotFound: true);
+        m_BuildingMovement_Confirm = m_BuildingMovement.FindAction("Confirm", throwIfNotFound: true);
+        m_BuildingMovement_Cancel = m_BuildingMovement.FindAction("Cancel", throwIfNotFound: true);
     }
 
     ~@PlayerInput()
@@ -320,6 +459,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         UnityEngine.Debug.Assert(!m_UI.enabled, "This will cause a leak and performance issues, PlayerInput.UI.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_Gameplay.enabled, "This will cause a leak and performance issues, PlayerInput.Gameplay.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_MovementPowerup.enabled, "This will cause a leak and performance issues, PlayerInput.MovementPowerup.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_BuildingMovement.enabled, "This will cause a leak and performance issues, PlayerInput.BuildingMovement.Disable() has not been called.");
     }
 
     public void Dispose()
@@ -547,6 +687,68 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         }
     }
     public MovementPowerupActions @MovementPowerup => new MovementPowerupActions(this);
+
+    // BuildingMovement
+    private readonly InputActionMap m_BuildingMovement;
+    private List<IBuildingMovementActions> m_BuildingMovementActionsCallbackInterfaces = new List<IBuildingMovementActions>();
+    private readonly InputAction m_BuildingMovement_Direction;
+    private readonly InputAction m_BuildingMovement_Confirm;
+    private readonly InputAction m_BuildingMovement_Cancel;
+    public struct BuildingMovementActions
+    {
+        private @PlayerInput m_Wrapper;
+        public BuildingMovementActions(@PlayerInput wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Direction => m_Wrapper.m_BuildingMovement_Direction;
+        public InputAction @Confirm => m_Wrapper.m_BuildingMovement_Confirm;
+        public InputAction @Cancel => m_Wrapper.m_BuildingMovement_Cancel;
+        public InputActionMap Get() { return m_Wrapper.m_BuildingMovement; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(BuildingMovementActions set) { return set.Get(); }
+        public void AddCallbacks(IBuildingMovementActions instance)
+        {
+            if (instance == null || m_Wrapper.m_BuildingMovementActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_BuildingMovementActionsCallbackInterfaces.Add(instance);
+            @Direction.started += instance.OnDirection;
+            @Direction.performed += instance.OnDirection;
+            @Direction.canceled += instance.OnDirection;
+            @Confirm.started += instance.OnConfirm;
+            @Confirm.performed += instance.OnConfirm;
+            @Confirm.canceled += instance.OnConfirm;
+            @Cancel.started += instance.OnCancel;
+            @Cancel.performed += instance.OnCancel;
+            @Cancel.canceled += instance.OnCancel;
+        }
+
+        private void UnregisterCallbacks(IBuildingMovementActions instance)
+        {
+            @Direction.started -= instance.OnDirection;
+            @Direction.performed -= instance.OnDirection;
+            @Direction.canceled -= instance.OnDirection;
+            @Confirm.started -= instance.OnConfirm;
+            @Confirm.performed -= instance.OnConfirm;
+            @Confirm.canceled -= instance.OnConfirm;
+            @Cancel.started -= instance.OnCancel;
+            @Cancel.performed -= instance.OnCancel;
+            @Cancel.canceled -= instance.OnCancel;
+        }
+
+        public void RemoveCallbacks(IBuildingMovementActions instance)
+        {
+            if (m_Wrapper.m_BuildingMovementActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(IBuildingMovementActions instance)
+        {
+            foreach (var item in m_Wrapper.m_BuildingMovementActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_BuildingMovementActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public BuildingMovementActions @BuildingMovement => new BuildingMovementActions(this);
     public interface IUIActions
     {
         void OnNewaction(InputAction.CallbackContext context);
@@ -558,6 +760,12 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         void OnLaunchProjectile(InputAction.CallbackContext context);
     }
     public interface IMovementPowerupActions
+    {
+        void OnDirection(InputAction.CallbackContext context);
+        void OnConfirm(InputAction.CallbackContext context);
+        void OnCancel(InputAction.CallbackContext context);
+    }
+    public interface IBuildingMovementActions
     {
         void OnDirection(InputAction.CallbackContext context);
         void OnConfirm(InputAction.CallbackContext context);

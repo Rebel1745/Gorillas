@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public class LevelManager : MonoBehaviour
@@ -12,18 +13,29 @@ public class LevelManager : MonoBehaviour
     public int MinimumDistanceBetweenPlayers { get { return _minimumDistanceBetweenPlayers; } }
     [SerializeField] private int _maximumDistanceBetweenPlayers = 30;
     private int _distanceBetweenPlayers;
-    [SerializeField] private float _minHeight;
-    [SerializeField] private float _maxHeight;
+    [SerializeField] private float _minimumBuildingHeight;
+    [SerializeField] private float _maximumBuildingHeight;
     private List<LevelElementDetails> _levelElementDetailsList = new();
     private int _numberOfLevelElements;
     private float _totalElementWidth = 0f;
     public float TotalElementWidth { get { return _totalElementWidth; } }
     private List<Vector3> _playerSpawnPointList = new();
     private List<GameObject> _playerSpawnPointArrows = new();
+    private List<GameObject> _levelElementGOs = new();
+    private GameObject _levelElementToMove = null;
+    private bool _moveLevelElement = false;
+    private float _moveLevelElementByValue = 0f;
+    private Dictionary<int, int> _spawnPointToGameObjectIndexes = new();
 
     private void Awake()
     {
         if (Instance == null) Instance = this;
+    }
+
+    private void Update()
+    {
+        if (_moveLevelElement)
+            MoveLevelElement();
     }
 
     public void BuildLevel()
@@ -44,6 +56,7 @@ public class LevelManager : MonoBehaviour
         Vector3 newPos;
         GameObject newElement;
         Color randomBuildingColour;
+        int ledIndex = 0;
 
         foreach (LevelElementDetails led in _levelElementDetailsList)
         {
@@ -60,7 +73,14 @@ public class LevelManager : MonoBehaviour
                 // first child of the spawn point is the arrow
                 _playerSpawnPointArrows.Add(newElement.transform.GetChild(1).GetChild(i).GetChild(0).gameObject);
                 _playerSpawnPointArrows[_playerSpawnPointArrows.Count - 1].GetComponentInChildren<MovePlayerArrow>().SetArrowIndex(_playerSpawnPointArrows.Count - 1);
+                _spawnPointToGameObjectIndexes.Add(_playerSpawnPointArrows.Count - 1, ledIndex);
             }
+
+            // building movement collider is the third child of the building
+            newElement.transform.GetChild(2).GetChild(0).GetComponent<MoveBuildingArrow>().SetArrowIndex(ledIndex);
+            _levelElementGOs.Add(newElement);
+
+            ledIndex++;
         }
     }
 
@@ -77,7 +97,7 @@ public class LevelManager : MonoBehaviour
         {
             prefab = _levelElements[Random.Range(0, _levelElements.Length)];
             prefabWidth = prefab.transform.GetChild(0).transform.localScale.x;
-            prefabHeight = Random.Range(_minHeight, _maxHeight);
+            prefabHeight = Random.Range(_minimumBuildingHeight, _maximumBuildingHeight);
 
             newLevelElementDetails = new LevelElementDetails
             {
@@ -95,7 +115,7 @@ public class LevelManager : MonoBehaviour
         {
             prefab = _levelElements[0];
             prefabWidth = prefab.GetComponentInChildren<SpriteRenderer>().transform.localScale.x;
-            prefabHeight = Random.Range(_minHeight, _maxHeight);
+            prefabHeight = Random.Range(_minimumBuildingHeight, _maximumBuildingHeight);
 
             newLevelElementDetails = new LevelElementDetails
             {
@@ -114,6 +134,7 @@ public class LevelManager : MonoBehaviour
         _levelElementDetailsList.Clear();
         _playerSpawnPointList.Clear();
         _playerSpawnPointArrows.Clear();
+        _levelElementGOs.Clear();
         _totalElementWidth = 0;
 
         // destroy the level elements
@@ -150,6 +171,43 @@ public class LevelManager : MonoBehaviour
 
         firstSpawnPoint = GetSpawnPointAtIndex(firstSpawnPointIndex);
         lastSpawnPoint = GetSpawnPointAtIndex(lastSpawnPointIndex);
+    }
+
+    public void EnableDisableBuildingMovementColliders(bool enable)
+    {
+        int firstIndex = _spawnPointToGameObjectIndexes[PlayerManager.Instance.Players[0].SpawnPointIndex] + 1;
+        int lastIndex = _spawnPointToGameObjectIndexes[PlayerManager.Instance.Players[1].SpawnPointIndex] - 1;
+
+        for (int i = firstIndex; i <= lastIndex; i++)
+        {
+            _levelElementGOs[i].transform.GetChild(2).GetChild(0).gameObject.SetActive(enable);
+        }
+    }
+
+    public void SetLevelElementMovementIndex(int index)
+    {
+        if (index == -1) _levelElementToMove = null;
+        else _levelElementToMove = _levelElementGOs[index];
+    }
+
+    public void StartLevelElementMovement(float value)
+    {
+        _moveLevelElement = true;
+        _moveLevelElementByValue = value; // * 0.1f;
+    }
+
+    public void StopLevelElementMovement()
+    {
+        _moveLevelElement = false;
+        _moveLevelElementByValue = 0f;
+    }
+
+    private void MoveLevelElement()
+    {
+        if (_levelElementToMove == null) return;
+
+        float yValue = Mathf.Clamp(_levelElementToMove.transform.position.y + _moveLevelElementByValue * Time.deltaTime, _minimumBuildingHeight - 1, _maximumBuildingHeight + 1);
+        _levelElementToMove.transform.position = new(_levelElementToMove.transform.position.x, yValue, _levelElementToMove.transform.position.z);
     }
 }
 
