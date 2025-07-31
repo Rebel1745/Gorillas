@@ -32,6 +32,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private AudioClip _throwSFX;
 
     // powerup stuff
+    private GameObject _tooltipPanel;
+    private TMP_Text _tooltipTitle;
+    private TMP_Text _tooltipText;
     private bool _isBigBomb = false;
     private int _burstCount = 1;
     private int _currentBurstNumber;
@@ -103,6 +106,10 @@ public class PlayerController : MonoBehaviour
             _angleSlider.onValueChanged.AddListener(UpdateAngle);
             _launchButton = _uIGO.transform.GetChild(6).GetComponent<Button>();
             _launchButton.onClick.AddListener(StartLaunchProjectile);
+            // tooltip stuff
+            _tooltipPanel = playerDetails.PlayerUI.transform.GetChild(2).gameObject;
+            _tooltipTitle = _tooltipPanel.transform.GetChild(0).GetComponent<TMP_Text>();
+            _tooltipText = _tooltipPanel.transform.GetChild(1).GetComponent<TMP_Text>();
         }
 
         _throwNumber = 0;
@@ -236,6 +243,11 @@ public class PlayerController : MonoBehaviour
             EnableDisableAllUIButtons(true);
             UpdatePower(_powerSlider.value);
         }
+    }
+
+    private void RecalculateTrajectoryLine()
+    {
+        UpdatePower(_powerSlider.value);
     }
 
     public void UpdatePower(float power)
@@ -421,6 +433,16 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public void MovePlayerMovementSpriteWithInput(float input)
+    {
+        if (_currentArrowIndex == -1) _currentArrowIndex = _playerDetails.SpawnPointIndex;
+
+        int newArrowIndex = _currentArrowIndex;
+        newArrowIndex = Mathf.Clamp(newArrowIndex + (int)input, _playerDetails.SpawnPointIndex - _movementDistance, _playerDetails.SpawnPointIndex + _movementDistance);
+
+        SetPlayerMovementSprite(newArrowIndex);
+    }
+
     public void HidePlayerMovementSprite()
     {
         if (_playerDetails.PlayerMovementSpriteGO != null)
@@ -437,7 +459,7 @@ public class PlayerController : MonoBehaviour
         _playerDetails.SpawnPointIndex = _currentArrowIndex;
         PlayerManager.Instance.Players[_playerId].SpawnPointIndex = _currentArrowIndex;
         HidePlayerMovementSprite();
-        StartCoroutine(CalculateTrajectoryLine());
+        RecalculateTrajectoryLine();
         CameraManager.Instance.UpdatePlayerPosition(_playerId, transform.position);
         InputManager.Instance.EnableDisableGameplayControls(true);
 
@@ -452,8 +474,21 @@ public class PlayerController : MonoBehaviour
     {
         ShowHideMovementPowerupIndicators(false);
         HidePlayerMovementSprite();
+        InputManager.Instance.EnableDisableCurrentPowerupButton(true);
         CameraManager.Instance.UpdatePlayerPosition(_playerId, transform.position);
         GameManager.Instance.UpdateGameState(GameState.WaitingForLaunch);
+    }
+
+    public void ShowTooltip(string title, string tooltip)
+    {
+        _tooltipPanel.SetActive(true);
+        _tooltipTitle.text = title;
+        _tooltipText.text = tooltip;
+    }
+
+    public void HideTooltip()
+    {
+        _tooltipPanel.SetActive(false);
     }
     #endregion
 

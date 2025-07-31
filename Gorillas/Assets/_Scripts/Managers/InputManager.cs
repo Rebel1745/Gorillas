@@ -1,12 +1,15 @@
 using System;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class InputManager : MonoBehaviour
 {
     public static InputManager Instance { get; private set; }
     private PlayerInput _inputActions;
+    private Button _currentPowerupButton;
 
     private void Awake()
     {
@@ -89,7 +92,7 @@ public class InputManager : MonoBehaviour
 
     private void MovementPowerupDirection(InputAction.CallbackContext context)
     {
-        Debug.Log("Direction");
+        PlayerManager.Instance.Players[PlayerManager.Instance.CurrentPlayerId].PlayerController.MovePlayerMovementSpriteWithInput(context.ReadValue<float>());
     }
 
     private void MovementPowerupCancel(InputAction.CallbackContext context)
@@ -116,7 +119,18 @@ public class InputManager : MonoBehaviour
     private void BuildingMovementCancel(InputAction.CallbackContext context)
     {
         LevelManager.Instance.EnableDisableBuildingMovementColliders(false);
+        EnableDisableCurrentPowerupButton(true);
         EnableDisableGameplayControls(true);
+    }
+
+    public void SetCurrentPowerupButton(Button button)
+    {
+        _currentPowerupButton = button;
+    }
+
+    public void EnableDisableCurrentPowerupButton(bool enable)
+    {
+        UIManager.Instance.EnableDisableButton(_currentPowerupButton, enable);
     }
 
     public void EnableDisableUIControls(bool enabled)
