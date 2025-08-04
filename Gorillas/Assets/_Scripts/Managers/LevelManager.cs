@@ -135,6 +135,7 @@ public class LevelManager : MonoBehaviour
         _playerSpawnPointList.Clear();
         _playerSpawnPointArrows.Clear();
         _levelElementGOs.Clear();
+        _spawnPointToGameObjectIndexes.Clear();
         _totalElementWidth = 0;
 
         // destroy the level elements

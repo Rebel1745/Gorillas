@@ -87,6 +87,10 @@ public class Banana : MonoBehaviour, IProjectile
             CameraManager.Instance.RemovePlayer(playerHitId);
             GameManager.Instance.UpdateScore(otherPlayerId);
             PlayerManager.Instance.SetPlayerAnimation(otherPlayerId, "Celebrate");
+
+            // give the player that was hit a free powerup
+            PlayerManager.Instance.AddRandomPlayerPowerup(playerHitId);
+
             // we directly hit a player!!
             PlayerManager.Instance.Players[playerHitId].PlayerController.DestroyPlayer();
 
@@ -119,13 +123,16 @@ public class Banana : MonoBehaviour, IProjectile
                     playerHitId = hits[0].transform.GetComponent<PlayerController>().PlayerId;
                     otherPlayerId = (playerHitId + 1) % 2;
                     PlayerManager.Instance.SetPlayerAnimation(otherPlayerId, "Celebrate");
+
+                    // give the player that was hit a free powerup
+                    PlayerManager.Instance.AddRandomPlayerPowerup(playerHitId);
+
                     // the explosion hit a player!
                     CreateExplosionAndDestroy();
                     CameraManager.Instance.RemovePlayer(playerHitId);
                     GameManager.Instance.UpdateScore(otherPlayerId);
                     PlayerManager.Instance.Players[playerHitId].PlayerController.DestroyPlayer();
 
-                    // Game over?
                     GameManager.Instance.UpdateGameState(GameState.RoundComplete);
                 }
                 else
