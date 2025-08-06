@@ -92,8 +92,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 48
-  m_fontSizeBase: 48
+  m_fontSize: 40
+  m_fontSizeBase: 40
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -286,3 +286,6 @@ MonoBehaviour:
   _powerupTitle: Triple Bomb
   _powerupText: Throw three bombs on the same trajectory. Great for quickly making
     a path through buildings
+  _defaultColour: {r: 0.6627451, g: 0.6627451, b: 0.6627451, a: 1}
+  _inUseColour: {r: 0.39215687, g: 0.78431374, b: 0.39215687, a: 1}
+  _usedColour: {r: 0.78431374, g: 0.39215687, b: 0.39215687, a: 1}

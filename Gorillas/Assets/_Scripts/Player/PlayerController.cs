@@ -300,7 +300,7 @@ public class PlayerController : MonoBehaviour
         // the sort the powerup buttons
         for (int i = 0; i < _playerDetails.PlayerUIPowerupHolder.childCount; i++)
         {
-            UIManager.Instance.EnableDisableButton(_playerDetails.PlayerUIPowerupHolder.GetChild(i).GetComponent<Button>(), enable);
+            _playerDetails.PlayerUIPowerupHolder.GetChild(i).GetComponent<Powerup>().EnableDisableButton(true);
         }
     }
 
@@ -331,9 +331,9 @@ public class PlayerController : MonoBehaviour
         _trajectoryLine.HideTrajectoryLine();
     }
 
-    public void SetBigBomb()
+    public void SetBigBomb(bool isBigBomb)
     {
-        _isBigBomb = true;
+        _isBigBomb = isBigBomb;
     }
 
     public void SetProjectileBurst(int number)
@@ -348,18 +348,15 @@ public class PlayerController : MonoBehaviour
         _currentVariablePowerAmount = _variablePowerAmountPerShotOfBurst;
     }
 
-    public void ShowShield()
+    public void ResetVariablePower()
     {
-        _isShieldActive = true;
-        _shieldTransform.gameObject.SetActive(true);
-        //_gorillaCollider.enabled = false;
+        _isVariablePower = false;
     }
 
-    public void HideShield()
+    public void ShowHideShield(bool show)
     {
-        _isShieldActive = false;
-        _shieldTransform.gameObject.SetActive(false);
-        //_gorillaCollider.enabled = true;
+        _isShieldActive = show;
+        _shieldTransform.gameObject.SetActive(show);
     }
 
     public void ShowHideMovementPowerupIndicators(bool show)

@@ -8,20 +8,50 @@ public class Powerup : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     [SerializeField] protected Button _powerupButton;
     [SerializeField] protected string _powerupTitle;
     [SerializeField] protected string _powerupText;
+    [SerializeField] protected Color _defaultColour = new(169, 169, 169);
+    [SerializeField] protected Color _inUseColour = new(100, 200, 100);
+    [SerializeField] protected Color _usedColour = new(200, 100, 100);
+    protected bool _powerupEnabled = false;
 
     public virtual void UsePowerup()
     {
-        InputManager.Instance.SetCurrentPowerupButton(_powerupButton);
-        string powerupName = transform.name + "(Clone)";
-        _remainingUses--;
+        _powerupEnabled = !_powerupEnabled;
 
-        _powerupButton.enabled = false;
+        InputManager.Instance.SetCurrentPowerupButton(_powerupButton);
+
+        if (_powerupEnabled)
+            _remainingUses--;
+        else
+            _remainingUses++;
+    }
+
+    public void EnableDisableButton()
+    {
+        EnableDisableButton(!_powerupButton.enabled);
+    }
+
+    public void EnableDisableButton(bool enabled)
+    {
+        _powerupButton.enabled = enabled;
+        _powerupEnabled = !enabled;
+
+        if (enabled)
+        {
+            _powerupButton.image.color = _defaultColour;
+        }
+        else
+        {
+            _powerupButton.image.color = _usedColour;
+        }
 
         if (_remainingUses == 0)
-        {
-            PlayerManager.Instance.RemovePlayerPowerup(gameObject);
-            Destroy(gameObject);
-        }
+            RemoveButton();
+    }
+
+    protected void RemoveButton()
+    {
+        PlayerManager.Instance.RemovePlayerPowerup(gameObject);
+        Destroy(gameObject);
     }
 
     public void AddPowerupUse()

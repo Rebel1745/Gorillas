@@ -130,13 +130,13 @@ public class PlayerManager : MonoBehaviour
         Players[0].PlayerUI.SetActive(false);
         CameraManager.Instance.AddPlayer(Players[0].PlayerGameObject.transform.position);
         if (Players[0].PlayerController.IsShieldActive)
-            Players[0].PlayerController.HideShield();
+            Players[0].PlayerController.ShowHideShield(false);
 
 
         Players[1].PlayerUI.SetActive(false);
         CameraManager.Instance.AddPlayer(Players[1].PlayerGameObject.transform.position);
         if (Players[1].PlayerController.IsShieldActive)
-            Players[1].PlayerController.HideShield();
+            Players[1].PlayerController.ShowHideShield(false);
 
     }
 
@@ -164,18 +164,18 @@ public class PlayerManager : MonoBehaviour
         _currentPlayerId = playerId;
         UIManager.Instance.ShowHideUIElement(Players[playerId].PlayerUI, true);
         IsCurrentPlayerCPU = Players[playerId].IsCPU;
-        StartCoroutine(Players[playerId].PlayerController.CalculateTrajectoryLine());
         SetPlayerAnimation(playerId, "Idle");
 
         // if we had a shield on, turn it off
         if (Players[playerId].PlayerController.IsShieldActive)
-            Players[playerId].PlayerController.HideShield();
+            Players[playerId].PlayerController.ShowHideShield(false);
 
         if (!IsCurrentPlayerCPU)
             Players[playerId].PlayerLineRenderer.enabled = true;
         else
             StartCoroutine(Players[playerId].PlayerAIController.DoAI());
 
+        StartCoroutine(Players[playerId].PlayerController.CalculateTrajectoryLine());
         GameManager.Instance.UpdateGameState(GameState.WaitingForLaunch);
     }
 
@@ -208,6 +208,19 @@ public class PlayerManager : MonoBehaviour
                 _player2PowerupNames = ppuNameList;
             }
         }
+    }
+
+    public GameObject GetPlayerPowerup(int playerId, string powerupName)
+    {
+        List<GameObject> ppuList = _playerPowerups[playerId];
+        List<string> ppuNameList = _playerPowerupNames[playerId];
+        string puName = powerupName + "(Clone)";
+
+        if (ppuNameList.Contains(puName))
+        {
+            return ppuList[ppuNameList.IndexOf(puName)];
+        }
+        else return null;
     }
 
     public void RemovePlayerPowerup(GameObject powerup)
