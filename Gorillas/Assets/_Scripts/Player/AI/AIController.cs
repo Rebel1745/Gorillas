@@ -21,6 +21,15 @@ public class AIController : MonoBehaviour
     private float _perfectPower;
     private bool _forceRecheck;
 
+    // Powerups
+    private bool _powerupUsed = false;
+    private GameObject _bigBombPowerup;
+    private GameObject _movePlayerPowerup;
+    private GameObject _shieldPowerup;
+    private GameObject _trajectoryLinePowerup;
+    private GameObject _tripleBombPowerup;
+    private GameObject _scatterBombPowerup;
+
     private void Initialise()
     {
         _playerId = _playerController.PlayerId;
@@ -58,11 +67,52 @@ public class AIController : MonoBehaviour
 
     public IEnumerator DoAI()
     {
+        CheckPlayerPowerups();
         yield return new WaitForSeconds(1f);
 
         if (_playerController.ThrowNumber == 0 || _forceRecheck)
         {
             Initialise();
+
+            // do the initial calculation
+            _playerController.RecalculateTrajectoryLine();
+
+            if (_trajectoryLine.SegmentCount < 15 && _movePlayerPowerup)
+            {
+                // we are right next to a building, let's move
+                // enable the powerup
+                _movePlayerPowerup.GetComponent<Powerup>().UsePowerup();
+                yield return new WaitForSeconds(1f);
+                // find the highest point
+                int highestIndex = -1;
+                float highestYPos = Mathf.NegativeInfinity;
+                foreach (int i in LevelManager.Instance.CPUActiveSpawnPointIndexList)
+                {
+                    if (LevelManager.Instance.GetSpawnPointAtIndex(i).y > highestYPos)
+                    {
+                        highestYPos = LevelManager.Instance.GetSpawnPointAtIndex(i).y;
+                        highestIndex = i;
+                    }
+                }
+
+                // move to the highest point
+                if (highestIndex != Mathf.NegativeInfinity)
+                {
+                    // find out how far to move
+                    int indexDifference = highestIndex - PlayerManager.Instance.Players[_playerId].SpawnPointIndex;
+                    for (int i = 0; i < Mathf.Abs(indexDifference); i++)
+                    {
+                        // incrementally move
+                        _playerController.MovePlayerMovementSpriteWithInput(Mathf.Sign(indexDifference));
+                        yield return new WaitForSeconds(0.75f);
+                    }
+                    // confim the position we have moved to
+                    _playerController.ConfirmMovementPowerupPosition();
+                }
+                // or bail out
+                else
+                    _movePlayerPowerup.GetComponent<Powerup>().UsePowerup();
+            }
 
             _currentMinAngle = CalculateMinAngle();
             Vector2 angleAndPower = CalculateTrajectory();
@@ -72,6 +122,13 @@ public class AIController : MonoBehaviour
                 // we didn't find a proper result, so try something a little different
                 angleAndPower = GetMinimumGroundHitsAngleAndPower();
                 _forceRecheck = true;
+
+                // if we are in this situation it means we have a building in the way, see if we have a triple bomb to use
+                if (_tripleBombPowerup)
+                {
+                    _tripleBombPowerup.GetComponent<Powerup>().UsePowerup();
+                    _powerupUsed = true;
+                }
             }
 
             _perfectAngle = angleAndPower.x;
@@ -83,9 +140,116 @@ public class AIController : MonoBehaviour
 
         _playerController.UpdateAngleAndPower(randomAngle, randomPower);
 
-        yield return new WaitForSeconds(0.5f);
+        #region Powerup Checks
+        #region Trajectory Line
+        // if we have a trajectory line, use it
+        if (_trajectoryLinePowerup)
+        {
+            _trajectoryLinePowerup.GetComponent<Powerup>().UsePowerup();
+
+            // if we hit the player, skip the recalculation
+            if (!_trajectoryLine.HitPlayer)
+            {
+                // the AI now 'knows' where the banana will land, if it falls short, make the minimum power the current power and re-estimate
+                if ((_playerId == 0 && _trajectoryLine.LastSegment.x < _targetPlayer.x) || (_playerId == 1 && _trajectoryLine.LastSegment.x > _targetPlayer.x))
+                {
+                    randomPower = Random.Range(randomPower, _perfectAngle + _cpuVariability);
+                }
+                // if the trajectory line shows we will go long, make the maximum power the current power and re-estimate
+                if ((_playerId == 0 && _trajectoryLine.LastSegment.x > _targetPlayer.x) || (_playerId == 1 && _trajectoryLine.LastSegment.x < _targetPlayer.x))
+                {
+                    randomPower = Random.Range(_perfectAngle - _cpuVariability, randomPower);
+                }
+            }
+            else
+                _powerupUsed = true;
+
+            yield return new WaitForSeconds(1f);
+
+            _playerController.UpdateAngleAndPower(randomAngle, randomPower);
+        }
+        #endregion
+        #region Shield
+        if (_shieldPowerup)
+        {
+            float rand = Random.Range(0f, 1f); //Debug.Log("Shield: " + rand);
+            // if we have the powerup use it if we guess right in a 50/50
+            if (rand > 0.5f) _shieldPowerup.GetComponent<Powerup>().UsePowerup();
+            else if (_playerController.ThrowNumber > 0)
+            {
+                // if we missed the 50/50, check to see if the last throw from the player is close to us
+                // if it is, shield, if not, don't
+                float lastLandingPositionX = PlayerManager.Instance.Players[_otherPlayerId].PlayerController.LastProjectileLandingPositionX;
+
+                if (Mathf.Abs(lastLandingPositionX - transform.position.x) < 2f)
+                    _shieldPowerup.GetComponent<Powerup>().UsePowerup();
+            }
+        }
+        #endregion
+        #region Big Bomb
+        if (_bigBombPowerup && !_powerupUsed)
+        {
+            float rand = Random.Range(0f, 1f); //Debug.Log(" Big Bomb: " + rand);
+            // if we have the powerup use it if we guess right in a 50/50
+            if (rand > 0.5f)
+            {
+                _bigBombPowerup.GetComponent<Powerup>().UsePowerup();
+                _powerupUsed = true;
+            }
+            else if (_playerController.ThrowNumber > 0)
+            {
+                // if we missed the 50/50, check to see if the last throw from the player is close to us
+                // if it is, shield, if not, don't
+                float lastLandingPositionX = PlayerManager.Instance.Players[_otherPlayerId].PlayerController.LastProjectileLandingPositionX;
+
+                if (Mathf.Abs(lastLandingPositionX - transform.position.x) < 2f)
+                {
+                    _bigBombPowerup.GetComponent<Powerup>().UsePowerup();
+                    _powerupUsed = true;
+                }
+            }
+        }
+        #endregion
+        #region Scatter Bomb
+        if (_scatterBombPowerup && !_powerupUsed)
+        {
+            float rand = Random.Range(0f, 1f); //Debug.Log("Scatter bomb: " + rand);
+            // if we have the powerup use it if we guess right in a 50/50
+            if (rand > 0.5f)
+            {
+                _scatterBombPowerup.GetComponent<Powerup>().UsePowerup();
+                _powerupUsed = true;
+            }
+            else if (_playerController.ThrowNumber > 0)
+            {
+                // if we missed the 50/50, check to see if the last throw from the player is close to us
+                // if it is, shield, if not, don't
+                float lastLandingPositionX = PlayerManager.Instance.Players[_otherPlayerId].PlayerController.LastProjectileLandingPositionX;
+
+                if (Mathf.Abs(lastLandingPositionX - transform.position.x) < 2f)
+                {
+                    _scatterBombPowerup.GetComponent<Powerup>().UsePowerup();
+                    _powerupUsed = true;
+                }
+            }
+        }
+        #endregion
+        #endregion
+
+        yield return new WaitForSeconds(0.75f);
 
         _playerController.StartLaunchProjectile();
+    }
+
+    private void CheckPlayerPowerups()
+    {
+        _powerupUsed = false;
+        _bigBombPowerup = PlayerManager.Instance.GetPlayerPowerup(PlayerManager.Instance.CurrentPlayerId, "Powerup_BigBomb");
+        _movePlayerPowerup = PlayerManager.Instance.GetPlayerPowerup(PlayerManager.Instance.CurrentPlayerId, "Powerup_MovePlayer");
+        _shieldPowerup = PlayerManager.Instance.GetPlayerPowerup(PlayerManager.Instance.CurrentPlayerId, "Powerup_Shield");
+        _trajectoryLinePowerup = PlayerManager.Instance.GetPlayerPowerup(PlayerManager.Instance.CurrentPlayerId, "Powerup_TrajectoryLine");
+        _tripleBombPowerup = PlayerManager.Instance.GetPlayerPowerup(PlayerManager.Instance.CurrentPlayerId, "Powerup_TripleBomb");
+        _scatterBombPowerup = PlayerManager.Instance.GetPlayerPowerup(PlayerManager.Instance.CurrentPlayerId, "Powerup_TripleBombVariablePower");
     }
 
     private Vector2 GetMinimumGroundHitsAngleAndPower()

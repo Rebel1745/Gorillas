@@ -7,6 +7,7 @@ public class Powerup_TripleBombVariablePower : Powerup
         base.UsePowerup();
 
         GameObject tripleBomb = PlayerManager.Instance.GetPlayerPowerup(PlayerManager.Instance.CurrentPlayerId, "Powerup_TripleBomb");
+        GameObject bigBomb = PlayerManager.Instance.GetPlayerPowerup(PlayerManager.Instance.CurrentPlayerId, "Powerup_BigBomb");
 
         if (_powerupEnabled)
         {
@@ -14,6 +15,7 @@ public class Powerup_TripleBombVariablePower : Powerup
             PlayerManager.Instance.Players[PlayerManager.Instance.CurrentPlayerId].PlayerController.SetVariablePower();
             _powerupButton.image.color = _inUseColour;
             if (tripleBomb) tripleBomb.GetComponent<Powerup>().EnableDisableButton(false);
+            if (bigBomb) bigBomb.GetComponent<Powerup>().EnableDisableButton(false);
         }
         else
         {
@@ -21,6 +23,7 @@ public class Powerup_TripleBombVariablePower : Powerup
             PlayerManager.Instance.Players[PlayerManager.Instance.CurrentPlayerId].PlayerController.ResetVariablePower();
             _powerupButton.image.color = _defaultColour;
             if (tripleBomb) tripleBomb.GetComponent<Powerup>().EnableDisableButton(true);
+            if (bigBomb) bigBomb.GetComponent<Powerup>().EnableDisableButton(true);
         }
     }
 }

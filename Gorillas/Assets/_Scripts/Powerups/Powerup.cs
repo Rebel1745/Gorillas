@@ -61,10 +61,18 @@ public class Powerup : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        PlayerManager.Instance.Players[PlayerManager.Instance.CurrentPlayerId].PlayerController.ShowTooltip(_powerupTitle, _powerupText);
+        if (_powerupButton.enabled)
+            PlayerManager.Instance.Players[PlayerManager.Instance.CurrentPlayerId].PlayerController.ShowTooltip(_powerupTitle, _powerupText);
+        else
+            HideTooltip();
     }
 
     public void OnPointerExit(PointerEventData eventData)
+    {
+        HideTooltip();
+    }
+
+    private void HideTooltip()
     {
         PlayerManager.Instance.Players[PlayerManager.Instance.CurrentPlayerId].PlayerController.HideTooltip();
     }

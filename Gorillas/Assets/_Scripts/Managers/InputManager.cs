@@ -130,7 +130,7 @@ public class InputManager : MonoBehaviour
 
     public void EnableDisableCurrentPowerupButton(bool enable)
     {
-        UIManager.Instance.EnableDisableButton(_currentPowerupButton, enable);
+        _currentPowerupButton.GetComponent<Powerup>().EnableDisableButton(false);
     }
 
     public void EnableDisableUIControls(bool enabled)

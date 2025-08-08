@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using NUnit.Framework;
 using UnityEngine;
 
 public class LevelManager : MonoBehaviour
@@ -26,6 +27,8 @@ public class LevelManager : MonoBehaviour
     private bool _moveLevelElement = false;
     private float _moveLevelElementByValue = 0f;
     private Dictionary<int, int> _spawnPointToGameObjectIndexes = new();
+    private List<int> _cpuActiveSpawnPointIndexList = new();
+    public List<int> CPUActiveSpawnPointIndexList { get { return _cpuActiveSpawnPointIndexList; } }
 
     private void Awake()
     {
@@ -158,10 +161,14 @@ public class LevelManager : MonoBehaviour
 
     public void ShowHideSpawnPointArrowsBetweenIndexes(int firstIndex, int currentIndex, int lastIndex, bool show)
     {
+        _cpuActiveSpawnPointIndexList.Clear();
+
         for (int i = firstIndex; i <= lastIndex; i++)
         {
-            if (i != currentIndex)
-                _playerSpawnPointArrows[i].SetActive(show);
+            if (i == currentIndex) continue;
+
+            _playerSpawnPointArrows[i].SetActive(show);
+            _cpuActiveSpawnPointIndexList.Add(i);
         }
     }
 

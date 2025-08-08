@@ -11,6 +11,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float _defaultForceMultiplier = 10f;
     [SerializeField] private float _delayBeforeAttackAnimationReset;
     [SerializeField] private TrajectoryLine _trajectoryLine;
+    public TrajectoryLine TrajectoryLine { get { return _trajectoryLine; } }
     [SerializeField] private float _powerIncreaseStep = 0.1f;
     [SerializeField] private float _powerIncreaseMax = 1f;
     private float _currentPowerIncrease;
@@ -46,6 +47,7 @@ public class PlayerController : MonoBehaviour
     private float _variablePowerAmountPerShotOfBurst;
     private float _currentVariablePowerAmount;
     [SerializeField] private Transform _shieldTransform;
+    private bool _showShieldNextTurn = false;
     private bool _isShieldActive = false;
     public bool IsShieldActive { get { return _isShieldActive; } }
     private int _movementDistance;
@@ -150,6 +152,8 @@ public class PlayerController : MonoBehaviour
 
     public void StartLaunchProjectile()
     {
+        PlayerManager.Instance.Players[PlayerManager.Instance.OtherPlayerId].PlayerController.CheckIfShieldShouldBeEnabled();
+
         _throwNumber++;
         EnableDisableAllUIButtons(false);
         ShowHideMovementPowerupIndicators(false);
@@ -245,7 +249,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void RecalculateTrajectoryLine()
+    public void RecalculateTrajectoryLine()
     {
         UpdatePower(_powerSlider.value);
     }
@@ -307,6 +311,7 @@ public class PlayerController : MonoBehaviour
     public void PlacePlayerAndEnable(Vector3 position, int spawnPointIndex)
     {
         _throwNumber = 0;
+        LastProjectileLandingPositionX = 0f;
         transform.position = position;
         _playerDetails.SpawnPointIndex = spawnPointIndex;
         PlayerManager.Instance.Players[_playerId].SpawnPointIndex = spawnPointIndex;
@@ -351,6 +356,18 @@ public class PlayerController : MonoBehaviour
     public void ResetVariablePower()
     {
         _isVariablePower = false;
+    }
+
+    public void SetShieldForNextTurn(bool isShield)
+    {
+        _showShieldNextTurn = isShield;
+    }
+
+    public void CheckIfShieldShouldBeEnabled()
+    {
+        ShowHideShield(_showShieldNextTurn);
+
+        _showShieldNextTurn = false;
     }
 
     public void ShowHideShield(bool show)
@@ -464,6 +481,8 @@ public class PlayerController : MonoBehaviour
         if (PlayerManager.Instance.Players[GameManager.Instance.OtherPlayerId].IsCPU)
             PlayerManager.Instance.Players[GameManager.Instance.OtherPlayerId].PlayerAIController.ForceRecalculatePerfectShot();
 
+        InputManager.Instance.EnableDisableCurrentPowerupButton(false);
+
         GameManager.Instance.UpdateGameState(GameState.WaitingForLaunch);
     }
 
@@ -478,9 +497,12 @@ public class PlayerController : MonoBehaviour
 
     public void ShowTooltip(string title, string tooltip)
     {
-        _tooltipPanel.SetActive(true);
-        _tooltipTitle.text = title;
-        _tooltipText.text = tooltip;
+        if (_tooltipPanel)
+        {
+            _tooltipPanel.SetActive(true);
+            _tooltipTitle.text = title;
+            _tooltipText.text = tooltip;
+        }
     }
 
     public void HideTooltip()

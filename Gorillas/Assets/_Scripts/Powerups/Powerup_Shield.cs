@@ -6,9 +6,15 @@ public class Powerup_Shield : Powerup
     {
         base.UsePowerup();
 
-        PlayerManager.Instance.Players[PlayerManager.Instance.CurrentPlayerId].PlayerController.ShowHideShield(_powerupEnabled);
+        int playerId = PlayerManager.Instance.CurrentPlayerId;
 
-        if (_powerupEnabled) _powerupButton.image.color = _inUseColour;
-        else _powerupButton.image.color = _defaultColour;
+        PlayerManager.Instance.Players[playerId].PlayerController.SetShieldForNextTurn(_powerupEnabled);
+
+        // if the player is CPU, don't change the colour so the player is surprised by the shield being activated when they launch their banana
+        if (!PlayerManager.Instance.Players[playerId].IsCPU)
+        {
+            if (_powerupEnabled) _powerupButton.image.color = _inUseColour;
+            else _powerupButton.image.color = _defaultColour;
+        }
     }
 }

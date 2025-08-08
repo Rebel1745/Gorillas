@@ -10,6 +10,7 @@ public class PlayerManager : MonoBehaviour
     public PlayerDetails[] Players;
     private int _currentPlayerId;
     public int CurrentPlayerId { get { return _currentPlayerId; } }
+    public int OtherPlayerId { get { return (_currentPlayerId + 1) % 2; } }
     public bool IsCurrentPlayerCPU;
     [SerializeField] private GameObject[] _availablePowerups;
     private List<GameObject>[] _playerPowerups;
