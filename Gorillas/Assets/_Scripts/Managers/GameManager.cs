@@ -16,16 +16,20 @@ public class GameManager : MonoBehaviour
     public int OtherPlayerId { get { return (CurrentPlayerId + 1) % 2; } }
     public bool IsCurrentPlayerCPU = false;
     private int[] _playerScores;
+    private int[] _gamesLostInARow;
     private int[] _playerMisses;
     [SerializeField] private TMP_Text _playerScoreText;
     private int _numberOfRounds = 3;
     private int _currentRound;
     public int CurrentRound { get { return _currentRound; } }
+    private bool _usePowerups = false;
+    public bool UsePowerups { get { return _usePowerups; } }
     [SerializeField] private float _timeBetweenRounds = 3f;
     [SerializeField] private AudioClip _mainMenuMusic;
     [SerializeField] private TMP_InputField _numberOfRoundsInput;
     [SerializeField] private Slider _musicVolumeSlider;
     [SerializeField] private Slider _sfxVolumeSlider;
+    [SerializeField] private Toggle _usePowerupsToggle;
 
     private void Awake()
     {
@@ -99,6 +103,7 @@ public class GameManager : MonoBehaviour
     private void InitialiseGame()
     {
         _playerScores = new int[2];
+        _gamesLostInARow = new int[2];
         _playerMisses = new int[2];
         UpdateScoreboard();
         _currentRound = 0;
@@ -125,6 +130,12 @@ public class GameManager : MonoBehaviour
         _musicVolumeSlider.value = musicVolume;
         float sfxVolume = PlayerPrefs.GetFloat("sfxVolume", 1f);
         _sfxVolumeSlider.value = sfxVolume;
+
+        int usePowerups = PlayerPrefs.GetInt("UsePowerups", 1);
+        if (usePowerups == 0) _usePowerups = false;
+        else _usePowerups = true;
+        _usePowerupsToggle.isOn = _usePowerups;
+
         UIManager.Instance.ShowHideUIElement(UIManager.Instance.SettingsScreenUI, true);
     }
 
@@ -199,7 +210,18 @@ public class GameManager : MonoBehaviour
 
     public void UpdateScore(int playerId)
     {
+        int otherPlayerId = (playerId + 1) % 2;
         _playerScores[playerId]++;
+        // increment games lost in a row for the other player and reset for scoring player
+        _gamesLostInARow[playerId] = 0;
+        _gamesLostInARow[otherPlayerId] += 1;
+
+        // as player has scored, give the other player random powerups based on the games lost in a row
+        for (int i = 0; i < _gamesLostInARow[otherPlayerId]; i++)
+        {
+            PlayerManager.Instance.AddRandomPlayerPowerup(otherPlayerId);
+        }
+
         UpdateScoreboard();
     }
 
@@ -212,6 +234,13 @@ public class GameManager : MonoBehaviour
     {
         _numberOfRounds = int.Parse(numberOfRounds);
         PlayerPrefs.SetInt("NumberOfRounds", _numberOfRounds);
+    }
+
+    public void SetUsePowerupsToggle(bool usePowerups)
+    {
+        _usePowerups = usePowerups;
+        if (usePowerups) PlayerPrefs.SetInt("UsePowerups", 1);
+        else PlayerPrefs.SetInt("UsePowerups", 0);
     }
 }
 

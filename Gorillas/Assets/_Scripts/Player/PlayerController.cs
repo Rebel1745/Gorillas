@@ -46,6 +46,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float _variablePowerAmount = 0.5f;
     private float _variablePowerAmountPerShotOfBurst;
     private float _currentVariablePowerAmount;
+    [SerializeField] private Collider2D _gorillaCollider;
     [SerializeField] private Transform _shieldTransform;
     private bool _showShieldNextTurn = false;
     private bool _isShieldActive = false;
@@ -374,6 +375,8 @@ public class PlayerController : MonoBehaviour
     {
         _isShieldActive = show;
         _shieldTransform.gameObject.SetActive(show);
+        _gorillaCollider.enabled = !show;
+
     }
 
     public void ShowHideMovementPowerupIndicators(bool show)
@@ -507,7 +510,8 @@ public class PlayerController : MonoBehaviour
 
     public void HideTooltip()
     {
-        _tooltipPanel.SetActive(false);
+        if (!IsCPU)
+            _tooltipPanel.SetActive(false);
     }
     #endregion
 

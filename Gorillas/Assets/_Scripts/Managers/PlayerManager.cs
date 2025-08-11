@@ -93,10 +93,10 @@ public class PlayerManager : MonoBehaviour
             pc = Players[1].PlayerConfig.GetComponent<PlayerConfig>();
 
             // MORE DEBUG STUFF TO DELETE LATER
-            for (int i = 0; i < 50; i++)
-            {
-                AddRandomPlayerPowerup(0);
-            }
+            // for (int i = 0; i < 50; i++)
+            // {
+            //     AddRandomPlayerPowerup(0);
+            // }
 
             newPlayer.name = pc.PlayerName;
             Players[1].Name = pc.PlayerName;
@@ -122,10 +122,10 @@ public class PlayerManager : MonoBehaviour
         }
 
         // MORE DEBUG STUFF TO DELETE LATER
-        for (int i = 0; i < 50; i++)
-        {
-            AddRandomPlayerPowerup(1);
-        }
+        // for (int i = 0; i < 50; i++)
+        // {
+        //     AddRandomPlayerPowerup(1);
+        // }
 
 
         Players[0].PlayerUI.SetActive(false);
@@ -182,6 +182,8 @@ public class PlayerManager : MonoBehaviour
 
     public void AddRandomPlayerPowerup(int playerId)
     {
+        if (!GameManager.Instance.UsePowerups) return;
+
         int randomPowerupIndex = Random.Range(0, _availablePowerups.Length);
         GameObject powerup = _availablePowerups[randomPowerupIndex];
         string puName = powerup.name + "(Clone)";

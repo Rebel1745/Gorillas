@@ -60,7 +60,7 @@ public class Banana : MonoBehaviour, IProjectile
         if (hit)
         {
             // we hit a powerup
-            PlayerManager.Instance.AddRandomPlayerPowerup(PlayerManager.Instance.CurrentPlayerId);
+            //PlayerManager.Instance.AddRandomPlayerPowerup(PlayerManager.Instance.CurrentPlayerId);
             Destroy(hit.collider.gameObject);
         }
 
@@ -89,7 +89,7 @@ public class Banana : MonoBehaviour, IProjectile
             PlayerManager.Instance.SetPlayerAnimation(otherPlayerId, "Celebrate");
 
             // give the player that was hit a free powerup
-            PlayerManager.Instance.AddRandomPlayerPowerup(playerHitId);
+            //PlayerManager.Instance.AddRandomPlayerPowerup(playerHitId);
 
             // we directly hit a player!!
             PlayerManager.Instance.Players[playerHitId].PlayerController.DestroyPlayer();
@@ -125,7 +125,7 @@ public class Banana : MonoBehaviour, IProjectile
                     PlayerManager.Instance.SetPlayerAnimation(otherPlayerId, "Celebrate");
 
                     // give the player that was hit a free powerup
-                    PlayerManager.Instance.AddRandomPlayerPowerup(playerHitId);
+                    //PlayerManager.Instance.AddRandomPlayerPowerup(playerHitId);
 
                     // the explosion hit a player!
                     CreateExplosionAndDestroy();
