@@ -8,9 +8,12 @@ public class UIManager : MonoBehaviour
     public static UIManager Instance { get; private set; }
 
     public GameObject StartScreenUI;
+    public GameObject GameSetupScreenUI;
     public GameObject SettingsScreenUI;
     public GameObject ScoreBoardUI;
     public GameObject GameOverUI;
+    public GameObject GameUI;
+    [SerializeField] private Button _settingsButton;
 
     private void Awake()
     {
@@ -33,16 +36,16 @@ public class UIManager : MonoBehaviour
         Application.Quit();
     }
 
-    public void ShowSettingsScreen()
+    public void ShowGameSetupScreen()
     {
         ShowHideUIElement(StartScreenUI, false);
-        GameManager.Instance.UpdateGameState(GameState.SettingsScreen);
+        GameManager.Instance.UpdateGameState(GameState.GameSetupScreen);
     }
 
     public void StartGame()
     {
         AudioManager.Instance.StopBackgroundMusic();
-        ShowHideUIElement(SettingsScreenUI, false);
+        ShowHideUIElement(GameSetupScreenUI, false);
         GameManager.Instance.UpdateGameState(GameState.InitialiseGame);
     }
 
@@ -50,5 +53,22 @@ public class UIManager : MonoBehaviour
     {
         ShowHideUIElement(GameOverUI, false);
         GameManager.Instance.UpdateGameState(GameState.StartScreen);
+    }
+
+    public void ShowHideSettingsScreen(bool show)
+    {
+        _settingsButton.gameObject.SetActive(!show);
+        if (show)
+        {
+            Time.timeScale = 0f;
+            ShowHideUIElement(SettingsScreenUI, true);
+            GameManager.Instance.UpdateGameState(GameState.SettingsScreen);
+        }
+        else
+        {
+            Time.timeScale = 1f;
+            ShowHideUIElement(SettingsScreenUI, false);
+            GameManager.Instance.RevertToPreviousState();
+        }
     }
 }

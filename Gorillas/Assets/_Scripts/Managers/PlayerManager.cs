@@ -29,18 +29,6 @@ public class PlayerManager : MonoBehaviour
         if (Instance == null) Instance = this;
     }
 
-    private void Start()
-    {
-        // ALL DEBUG STUFF
-        _playerPowerups = new List<GameObject>[2];
-        _playerPowerups[0] = new();
-        _playerPowerups[1] = new();
-
-        _playerPowerupNames = new List<string>[2];
-        _playerPowerupNames[0] = new();
-        _playerPowerupNames[1] = new();
-    }
-
     public void SetupPlayers()
     {
         if (GameManager.Instance.CurrentRound == 0)
@@ -57,6 +45,15 @@ public class PlayerManager : MonoBehaviour
 
         if (GameManager.Instance.CurrentRound == 0)
         {
+            // ALL DEBUG STUFF
+            _playerPowerups = new List<GameObject>[2];
+            _playerPowerups[0] = new();
+            _playerPowerups[1] = new();
+
+            _playerPowerupNames = new List<string>[2];
+            _playerPowerupNames[0] = new();
+            _playerPowerupNames[1] = new();
+
             // create player
             GameObject newPlayer = Instantiate(Players[0].PlayerPrefab, firstSpawnPoint, Quaternion.identity, _playerHolder);
             PlayerConfig pc = Players[0].PlayerConfig.GetComponent<PlayerConfig>();
@@ -70,6 +67,10 @@ public class PlayerManager : MonoBehaviour
             // create new player UI
             _player1UI = Instantiate(Players[0].PlayerUIPrefab, _uICanvas);
             _player2UI = Instantiate(Players[1].PlayerUIPrefab, _uICanvas);
+
+            float savedUIScale = PlayerPrefs.GetFloat("UIScale", 1f);
+            _player1UI.transform.localScale = new Vector3(savedUIScale, savedUIScale, 0);
+            _player2UI.transform.localScale = new Vector3(savedUIScale, savedUIScale, 0);
 
             newPlayer.name = pc.PlayerName;
             Players[0].Name = pc.PlayerName;
@@ -198,7 +199,9 @@ public class PlayerManager : MonoBehaviour
         {
             GameObject pu = Instantiate(powerup, Players[playerId].PlayerUIPowerupHolder);
             ppuList.Add(pu);
+            _playerPowerups[playerId] = ppuList;
             ppuNameList.Add(pu.name);
+            _playerPowerupNames[playerId] = ppuNameList;
             // DEBUG STUFF
             if (playerId == 0)
             {

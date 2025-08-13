@@ -27,9 +27,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float _timeBetweenRounds = 3f;
     [SerializeField] private AudioClip _mainMenuMusic;
     [SerializeField] private TMP_InputField _numberOfRoundsInput;
-    [SerializeField] private Slider _musicVolumeSlider;
-    [SerializeField] private Slider _sfxVolumeSlider;
     [SerializeField] private Toggle _usePowerupsToggle;
+    [SerializeField] private Color _defaultBackgroundColour;
+    public Color DefaultBackgroundColour { get { return _defaultBackgroundColour; } }
 
     private void Awake()
     {
@@ -50,6 +50,9 @@ public class GameManager : MonoBehaviour
         {
             case GameState.StartScreen:
                 ShowStartScreen();
+                break;
+            case GameState.GameSetupScreen:
+                ShowGameSetupScreen();
                 break;
             case GameState.SettingsScreen:
                 ShowSettingsScreen();
@@ -88,6 +91,17 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void RevertToPreviousState()
+    {
+        UpdateGameState(PreviousState);
+    }
+
+    private void ShowSettingsScreen()
+    {
+        UIManager.Instance.ShowHideUIElement(UIManager.Instance.StartScreenUI, false);
+        UIManager.Instance.SettingsScreenUI.GetComponent<SettingsScreenUI>().ShowSettingsScreen();
+    }
+
     private void WaitingForBuildingMovement()
     {
         InputManager.Instance.EnableDisableBuildingMovementControls(true);
@@ -122,26 +136,25 @@ public class GameManager : MonoBehaviour
         UIManager.Instance.GameOverUI.GetComponent<GameOverUI>().SetGameOverDetails(_playerScores);
     }
 
-    private void ShowSettingsScreen()
+    private void ShowGameSetupScreen()
     {
         _numberOfRounds = PlayerPrefs.GetInt("NumberOfRounds", 9);
         _numberOfRoundsInput.text = _numberOfRounds.ToString();
-        float musicVolume = PlayerPrefs.GetFloat("MusicVolume", 1f);
-        _musicVolumeSlider.value = musicVolume;
-        float sfxVolume = PlayerPrefs.GetFloat("sfxVolume", 1f);
-        _sfxVolumeSlider.value = sfxVolume;
 
         int usePowerups = PlayerPrefs.GetInt("UsePowerups", 1);
         if (usePowerups == 0) _usePowerups = false;
         else _usePowerups = true;
         _usePowerupsToggle.isOn = _usePowerups;
 
-        UIManager.Instance.ShowHideUIElement(UIManager.Instance.SettingsScreenUI, true);
+        UIManager.Instance.ShowHideUIElement(UIManager.Instance.GameSetupScreenUI, true);
     }
 
     private void ShowStartScreen()
     {
-        //InputManager.Instance.EnableDisableControls(false);
+        string savedColourString = PlayerPrefs.GetString("BackgroundColour", ColorUtility.ToHtmlStringRGBA(_defaultBackgroundColour));
+        ColorUtility.TryParseHtmlString("#" + savedColourString, out Color savedColour);
+        Camera.main.backgroundColor = savedColour;
+
         InputManager.Instance.EnableDisableUIControls(true);
         UIManager.Instance.ShowHideUIElement(UIManager.Instance.StartScreenUI, true);
         AudioManager.Instance.PlayBackgroundMusic(_mainMenuMusic);
@@ -181,6 +194,7 @@ public class GameManager : MonoBehaviour
             UpdateGameState(GameState.NextTurn);
 
         UIManager.Instance.ShowHideUIElement(UIManager.Instance.ScoreBoardUI, true);
+        UIManager.Instance.ShowHideUIElement(UIManager.Instance.GameUI, true);
         //InputManager.Instance.EnableDisableControls(true);
         InputManager.Instance.EnableDisableGameplayControls(true);
     }
@@ -248,7 +262,7 @@ public enum GameState
 {
     StartScreen,
     SettingsScreen,
-    PauseScreen,
+    GameSetupScreen,
     InitialiseGame,
     BuildLevel,
     SetupPlayers,
