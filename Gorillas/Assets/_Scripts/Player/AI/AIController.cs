@@ -236,7 +236,7 @@ public class AIController : MonoBehaviour
         #endregion
         #endregion
 
-        yield return new WaitForSeconds(0.75f);
+        yield return new WaitForSeconds(1.5f);
 
         _playerController.StartLaunchProjectile();
     }

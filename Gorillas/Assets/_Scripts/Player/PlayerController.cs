@@ -62,6 +62,8 @@ public class PlayerController : MonoBehaviour
     private Slider _angleSlider;
     public Slider AngleSlider { get { return _angleSlider; } }
     private Button _launchButton;
+    private TMP_InputField _powerInput;
+    private TMP_InputField _angleInput;
     private int _currentArrowIndex = -1;
 
     // AI Details
@@ -99,16 +101,28 @@ public class PlayerController : MonoBehaviour
         _powerSlider = _uIGO.transform.GetChild(2).GetComponent<Slider>();
         _angleText = _uIGO.transform.GetChild(4).GetComponent<TMP_Text>();
         _angleSlider = _uIGO.transform.GetChild(5).GetComponent<Slider>();
+        _powerInput = _uIGO.transform.GetChild(7).GetComponent<TMP_InputField>();
+        _angleInput = _uIGO.transform.GetChild(8).GetComponent<TMP_InputField>();
+        _launchButton = _uIGO.transform.GetChild(6).GetComponent<Button>();
         _initialTrajectoryLine = true;
 
         if (!_playerDetails.IsCPU)
         {
+            // slider stuff
             _powerSlider.value = 50f;
             _angleSlider.value = 45f;
             _powerSlider.onValueChanged.AddListener(UpdatePower);
             _angleSlider.onValueChanged.AddListener(UpdateAngle);
-            _launchButton = _uIGO.transform.GetChild(6).GetComponent<Button>();
+
+            // input field stuff
+            _powerInput.text = _powerSlider.value.ToString();
+            _angleInput.text = _angleSlider.value.ToString();
+            _powerInput.onValueChanged.AddListener(UpdatePowerInputField);
+            _angleInput.onValueChanged.AddListener(UpdateAngleInputField);
+
+            // button stuff
             _launchButton.onClick.AddListener(StartLaunchProjectile);
+
             // tooltip stuff
             _tooltipPanel = playerDetails.PlayerUI.transform.GetChild(2).gameObject;
             _tooltipTitle = _tooltipPanel.transform.GetChild(0).GetComponent<TMP_Text>();
@@ -253,6 +267,65 @@ public class PlayerController : MonoBehaviour
     public void RecalculateTrajectoryLine()
     {
         UpdatePower(_powerSlider.value);
+    }
+
+    public void SetUIType(string uiType)
+    {
+        string uiTypePref = "UIType" + PlayerId;
+        PlayerPrefs.SetString(uiTypePref, uiType);
+
+        if (IsCPU)
+        {
+            _powerText.gameObject.SetActive(true);
+            _angleText.gameObject.SetActive(true);
+            _powerSlider.gameObject.SetActive(false);
+            _angleSlider.gameObject.SetActive(false);
+            _powerInput.gameObject.SetActive(false);
+            _angleInput.gameObject.SetActive(false);
+            _launchButton.gameObject.SetActive(false);
+            return;
+        }
+
+        if (uiType == "Sliders")
+        {
+            _powerText.gameObject.SetActive(true);
+            _angleText.gameObject.SetActive(true);
+            _powerSlider.gameObject.SetActive(true);
+            _angleSlider.gameObject.SetActive(true);
+            _powerInput.gameObject.SetActive(false);
+            _angleInput.gameObject.SetActive(false);
+        }
+        else
+        {
+            _powerText.gameObject.SetActive(false);
+            _angleText.gameObject.SetActive(false);
+            _powerSlider.gameObject.SetActive(false);
+            _angleSlider.gameObject.SetActive(false);
+            _powerInput.gameObject.SetActive(true);
+            _angleInput.gameObject.SetActive(true);
+        }
+    }
+
+    public void UpdatePowerInputField(string power)
+    {
+        if (power == "") power = _powerSlider.value.ToString();
+
+        float powerInput = float.Parse(power);
+        if (powerInput > 100)
+            _powerInput.text = power[..^1];
+
+        _powerSlider.value = powerInput;
+    }
+
+    public void UpdateAngleInputField(string angle)
+    {
+        if (angle == "") angle = _angleSlider.value.ToString();
+
+        float angleInput = float.Parse(angle);
+        if (angleInput > 100)
+            _angleInput.text = angle[..^1];
+
+        _angleSlider.value = angleInput;
     }
 
     public void UpdatePower(float power)

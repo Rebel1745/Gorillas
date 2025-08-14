@@ -56,6 +56,11 @@ public class PlayerManager : MonoBehaviour
 
             // create player
             GameObject newPlayer = Instantiate(Players[0].PlayerPrefab, firstSpawnPoint, Quaternion.identity, _playerHolder);
+            string savedColourString = PlayerPrefs.GetString("PlayerOutlineColour", ColorUtility.ToHtmlStringRGBA(GameManager.Instance.DefaultPlayerOutlineColour));
+            ColorUtility.TryParseHtmlString("#" + savedColourString, out Color savedColour);
+            Material mat = newPlayer.GetComponentInChildren<SpriteRenderer>().material;
+            mat.SetColor("_SolidOutline", savedColour);
+
             PlayerConfig pc = Players[0].PlayerConfig.GetComponent<PlayerConfig>();
             // if we already have a UI, destroy it and create a new one
             if (_player1UI != null)
@@ -89,6 +94,8 @@ public class PlayerManager : MonoBehaviour
             Players[0].PlayerController.SetPlayerDetails(0, Players[0]);
 
             newPlayer = Instantiate(Players[1].PlayerPrefab, lastSpawnPoint, Quaternion.identity, _playerHolder);
+            mat = newPlayer.GetComponentInChildren<SpriteRenderer>().material;
+            mat.SetColor("_SolidOutline", savedColour);
             newPlayer.GetComponentInChildren<SpriteRenderer>().transform.rotation = Quaternion.Euler(0f, 180f, 0f);
             newPlayer.transform.GetChild(1).transform.rotation = Quaternion.Euler(0f, 180f, 0f);
             pc = Players[1].PlayerConfig.GetComponent<PlayerConfig>();
@@ -114,6 +121,11 @@ public class PlayerManager : MonoBehaviour
             Players[1].SpawnPointIndex = lastSpawnPointIndex;
             pc.SavePlayerDetails();
             Players[1].PlayerController.SetPlayerDetails(1, Players[1]);
+
+            string uiType = Players[0].IsCPU ? "Sliders" : PlayerPrefs.GetString("UIType0", "Sliders");
+            Players[0].PlayerController.SetUIType(uiType);
+            uiType = Players[1].IsCPU ? "Sliders" : PlayerPrefs.GetString("UIType0", "Sliders");
+            Players[1].PlayerController.SetUIType(uiType);
         }
         else
         {

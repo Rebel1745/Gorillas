@@ -30,6 +30,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Toggle _usePowerupsToggle;
     [SerializeField] private Color _defaultBackgroundColour;
     public Color DefaultBackgroundColour { get { return _defaultBackgroundColour; } }
+    [SerializeField] private Color _defaultPlayerOutlineColour;
+    public Color DefaultPlayerOutlineColour { get { return _defaultPlayerOutlineColour; } }
 
     private void Awake()
     {
