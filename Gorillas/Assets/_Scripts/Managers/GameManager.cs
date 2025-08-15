@@ -32,6 +32,8 @@ public class GameManager : MonoBehaviour
     public Color DefaultBackgroundColour { get { return _defaultBackgroundColour; } }
     [SerializeField] private Color _defaultPlayerOutlineColour;
     public Color DefaultPlayerOutlineColour { get { return _defaultPlayerOutlineColour; } }
+    private bool _isMobile;
+    public bool IsMobile { get { return _isMobile; } }
 
     private void Awake()
     {
@@ -153,6 +155,9 @@ public class GameManager : MonoBehaviour
 
     private void ShowStartScreen()
     {
+        // check to see if we are on mobile or computer
+        _isMobile = PlatformChecker.Instance.IsRunningOnMobile();
+
         string savedColourString = PlayerPrefs.GetString("BackgroundColour", ColorUtility.ToHtmlStringRGBA(_defaultBackgroundColour));
         ColorUtility.TryParseHtmlString("#" + savedColourString, out Color savedColour);
         Camera.main.backgroundColor = savedColour;

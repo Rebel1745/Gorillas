@@ -122,9 +122,10 @@ public class PlayerManager : MonoBehaviour
             pc.SavePlayerDetails();
             Players[1].PlayerController.SetPlayerDetails(1, Players[1]);
 
-            string uiType = Players[0].IsCPU ? "Sliders" : PlayerPrefs.GetString("UIType0", "Sliders");
+            string defaultUIType = GameManager.Instance.IsMobile ? "InputBoxes" : "Sliders";
+            string uiType = Players[0].IsCPU ? "Sliders" : PlayerPrefs.GetString("UIType0", defaultUIType);
             Players[0].PlayerController.SetUIType(uiType);
-            uiType = Players[1].IsCPU ? "Sliders" : PlayerPrefs.GetString("UIType0", "Sliders");
+            uiType = Players[1].IsCPU ? "Sliders" : PlayerPrefs.GetString("UIType1", defaultUIType);
             Players[1].PlayerController.SetUIType(uiType);
         }
         else

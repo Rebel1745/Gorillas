@@ -19,6 +19,15 @@ public class Powerup : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         _powerupEnabled = !_powerupEnabled;
 
+        // if we are on mobile, show the powerups tooltip if it is selected
+        if (GameManager.Instance.IsMobile)
+        {
+            if (_powerupEnabled)
+                PlayerManager.Instance.Players[PlayerManager.Instance.CurrentPlayerId].PlayerController.ShowTooltip(_powerupTitle, _powerupText);
+            else
+                HideTooltip();
+        }
+
         InputManager.Instance.SetCurrentPowerupButton(_powerupButton);
 
         if (_powerupEnabled)
@@ -79,6 +88,8 @@ public class Powerup : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     public void OnPointerEnter(PointerEventData eventData)
     {
+        if (GameManager.Instance.IsMobile) return;
+
         if (_powerupButton.enabled)
             PlayerManager.Instance.Players[PlayerManager.Instance.CurrentPlayerId].PlayerController.ShowTooltip(_powerupTitle, _powerupText);
         else
@@ -87,6 +98,8 @@ public class Powerup : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     public void OnPointerExit(PointerEventData eventData)
     {
+        if (GameManager.Instance.IsMobile) return;
+
         HideTooltip();
     }
 

@@ -31,14 +31,17 @@ public class SettingsScreenUI : MonoBehaviour
         float sfxVolume = PlayerPrefs.GetFloat("sfxVolume", 1f);
         _sfxVolumeSlider.value = sfxVolume;
 
-        _uiScaleSlider.value = PlayerPrefs.GetFloat("UIScale", 1f);
+        float defaultScale = 1f;
+        if (GameManager.Instance.IsMobile) defaultScale = 1.5f;
+        _uiScaleSlider.value = PlayerPrefs.GetFloat("UIScale", defaultScale);
         _uiScaleText.text = (_uiScaleSlider.value * 100).ToString("F0") + "%";
 
-        string uiTypeText = PlayerPrefs.GetString("UIType0", "Sliders");
+        string defaultUIType = GameManager.Instance.IsMobile ? "InputBoxes" : "Sliders";
+        string uiTypeText = PlayerPrefs.GetString("UIType0", defaultUIType);
         if (uiTypeText == "Sliders") _player1UITypeDropdown.value = 0;
         else _player1UITypeDropdown.value = 1;
 
-        uiTypeText = PlayerPrefs.GetString("UIType1", "Sliders");
+        uiTypeText = PlayerPrefs.GetString("UIType1", defaultUIType);
         if (uiTypeText == "Sliders") _player2UITypeDropdown.value = 0;
         else _player2UITypeDropdown.value = 1;
     }

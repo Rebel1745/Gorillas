@@ -168,6 +168,7 @@ public class PlayerController : MonoBehaviour
     public void StartLaunchProjectile()
     {
         PlayerManager.Instance.Players[PlayerManager.Instance.OtherPlayerId].PlayerController.CheckIfShieldShouldBeEnabled();
+        HideTooltip();
 
         _throwNumber++;
         EnableDisableAllUIButtons(false);
