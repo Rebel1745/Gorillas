@@ -12,6 +12,7 @@ public class PlayerConfig : MonoBehaviour
     public string PlayerName;
     public bool isCPU = false;
     public int CPUType = 0;
+    public int PlayerId;
 
     // for loading and saving PlayerPrefs
     string playerNameString;
@@ -97,7 +98,10 @@ public class PlayerConfig : MonoBehaviour
     void LoadPlayerDetails()
     {
         SetDefaultPlayerName(PlayerPrefs.GetString(playerNameString, defaultPlayerName));
-        SetDefaultCPU(PlayerPrefs.GetString(playerCPUString, "False"));
+        if (PlayerId == 0)
+            SetDefaultCPU(PlayerPrefs.GetString(playerCPUString, "False"));
+        else
+            SetDefaultCPU(PlayerPrefs.GetString(playerCPUString, "True"));
         SetDefaultCPUType(PlayerPrefs.GetInt(playerCPUTypeString, 0));
     }
 

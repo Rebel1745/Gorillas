@@ -77,6 +77,7 @@ public class PlayerManager : MonoBehaviour
             _player1UI.transform.localScale = new Vector3(savedUIScale, savedUIScale, 0);
             _player2UI.transform.localScale = new Vector3(savedUIScale, savedUIScale, 0);
 
+            pc.PlayerId = 0;
             newPlayer.name = pc.PlayerName;
             Players[0].Name = pc.PlayerName;
             Players[0].IsCPU = pc.isCPU;
@@ -106,6 +107,7 @@ public class PlayerManager : MonoBehaviour
             //     AddRandomPlayerPowerup(0);
             // }
 
+            pc.PlayerId = 1;
             newPlayer.name = pc.PlayerName;
             Players[1].Name = pc.PlayerName;
             Players[1].IsCPU = pc.isCPU;
