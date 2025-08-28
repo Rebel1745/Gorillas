@@ -92,7 +92,15 @@ public class GameManager : MonoBehaviour
             case GameState.GameOver:
                 StartCoroutine(nameof(GameOver), delay);
                 break;
+            case GameState.MultiplayerScreen:
+                ShowMultiplayerScreen();
+                break;
         }
+    }
+
+    private void ShowMultiplayerScreen()
+    {
+        UIManager.Instance.ShowHideUIElement(UIManager.Instance.MultiplayerUI, true);
     }
 
     public void RevertToPreviousState()
@@ -280,5 +288,6 @@ public enum GameState
     WaitingForBuildingMovement,
     NextTurn,
     RoundComplete,
-    GameOver
+    GameOver,
+    MultiplayerScreen
 }

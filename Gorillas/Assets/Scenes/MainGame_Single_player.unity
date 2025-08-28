@@ -12860,6 +12860,7 @@ MonoBehaviour:
   PlayerName: 
   isCPU: 0
   CPUType: 0
+  PlayerId: 0
 --- !u!224 &1223058971
 RectTransform:
   m_ObjectHideFlags: 0
@@ -18413,6 +18414,7 @@ MonoBehaviour:
   PlayerName: 
   isCPU: 0
   CPUType: 0
+  PlayerId: 0
 --- !u!224 &1945712845
 RectTransform:
   m_ObjectHideFlags: 0

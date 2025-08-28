@@ -13,6 +13,7 @@ public class UIManager : MonoBehaviour
     public GameObject ScoreBoardUI;
     public GameObject GameOverUI;
     public GameObject GameUI;
+    public GameObject MultiplayerUI;
     [SerializeField] private Button _settingsButton;
 
     private void Awake()
@@ -40,6 +41,12 @@ public class UIManager : MonoBehaviour
     {
         ShowHideUIElement(StartScreenUI, false);
         GameManager.Instance.UpdateGameState(GameState.GameSetupScreen);
+    }
+
+    public void ShowMultiplayerScreen()
+    {
+        ShowHideUIElement(StartScreenUI, false);
+        GameManager.Instance.UpdateGameState(GameState.MultiplayerScreen);
     }
 
     public void StartGame()
