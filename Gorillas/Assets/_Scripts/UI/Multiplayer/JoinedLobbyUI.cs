@@ -6,10 +6,7 @@ using UnityEngine.UI;
 
 public class LobbyUI : MonoBehaviour
 {
-
-
     public static LobbyUI Instance { get; private set; }
-
 
     [SerializeField] private Transform _playerSingleTemplate;
     [SerializeField] private Transform _container;
@@ -17,7 +14,7 @@ public class LobbyUI : MonoBehaviour
     [SerializeField] private TMP_Text _playerCountText;
     [SerializeField] private TMP_Text _usePowerupsText;
     [SerializeField] private Button _leaveLobbyButton;
-
+    [SerializeField] private Button _startGameButton;
 
     private void Awake()
     {
@@ -28,6 +25,12 @@ public class LobbyUI : MonoBehaviour
         _leaveLobbyButton.onClick.AddListener(() =>
         {
             LobbyManager.Instance.LeaveLobby();
+        });
+
+        _startGameButton.onClick.AddListener(() =>
+        {
+            LobbyManager.Instance.StartGame();
+            Hide();
         });
     }
 

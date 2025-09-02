@@ -1,10 +1,12 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
-using System;
+using Unity.Services.Lobbies.Models;
+using Unity.Netcode;
 
-public class GameManager : MonoBehaviour
+public class GameManager : NetworkBehaviour
 {
     public static GameManager Instance;
 
@@ -35,6 +37,9 @@ public class GameManager : MonoBehaviour
     private bool _isMobile;
     public bool IsMobile { get { return _isMobile; } }
 
+    // multiplayer stuff
+    private Lobby _lobby;
+
     private void Awake()
     {
         Instance = this;
@@ -43,6 +48,31 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         UpdateGameState(GameState.StartScreen);
+
+        LobbyManager.Instance.OnGameStarted += LobbyManager_StartMultiplayerGame;
+    }
+
+    private void LobbyManager_StartMultiplayerGame(object sender, LobbyManager.LobbyEventArgs e)
+    {
+        if (!IsServer) return;
+
+        _lobby = e.lobby;
+        /*foreach (Player p in _lobby.Players)
+        {
+            Debug.Log($"PlayerId: {p.Id} - Name: {p.Data[LobbyManager.Instance.Key_Player_Name].Value}");
+        }*/
+    }
+
+    public override void OnNetworkSpawn()
+    {
+        Debug.Log($"OnNetworkSpawn {NetworkManager.Singleton.LocalClientId}");
+        UIManager.Instance.ShowHideUIElement(UIManager.Instance.MultiplayerUI, false);
+
+        if (!IsServer) return;
+
+        // if the player spawned is the player, start building the level
+        UpdateGameState(GameState.InitialiseGame);
+
     }
 
     public void UpdateGameState(GameState newState, float delay = 0f)

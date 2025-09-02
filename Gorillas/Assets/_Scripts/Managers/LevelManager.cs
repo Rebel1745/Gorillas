@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using NUnit.Framework;
+using Unity.Netcode;
 using UnityEngine;
 
 public class LevelManager : MonoBehaviour
@@ -64,7 +65,9 @@ public class LevelManager : MonoBehaviour
         foreach (LevelElementDetails led in _levelElementDetailsList)
         {
             newPos = new(startingXPos + xOffset + (led.ElementWidth / 2), led.ElementHeight, 0f);
-            newElement = Instantiate(led.ElementPrefab, newPos, Quaternion.identity, _levelElementHolder);
+            newElement = Instantiate(led.ElementPrefab, newPos, Quaternion.identity);
+            newElement.GetComponent<NetworkObject>().Spawn(true);
+            newElement.transform.SetParent(_levelElementHolder);
             randomBuildingColour = new(Random.Range(0f, 1f), Random.Range(0f, 1f), Random.Range(0f, 1f), 1f);
             newElement.transform.GetChild(0).GetChild(1).GetComponent<SpriteRenderer>().color = randomBuildingColour;
             xOffset += led.ElementWidth;

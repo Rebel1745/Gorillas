@@ -12,11 +12,14 @@ public class LobbyManager : MonoBehaviour
     public static LobbyManager Instance { get; private set; }
 
     public const string KEY_PLAYER_NAME = "PlayerName";
+    public string Key_Player_Name { get { return KEY_PLAYER_NAME; } }
     public const string KEY_USE_POWERUPS = "UsePowerups";
+    public const string KEY_JOIN_CODE = "0";
     private string _playerName;
 
     public event EventHandler OnAuthenticated;
     public event EventHandler OnLeftLobby;
+    public event EventHandler<LobbyEventArgs> OnGameStarted;
     public event EventHandler<LobbyEventArgs> OnJoinedLobby;
     public event EventHandler<LobbyEventArgs> OnJoinedLobbyUpdate;
     public event EventHandler<LobbyEventArgs> OnKickedFromLobby;
@@ -122,6 +125,18 @@ public class LobbyManager : MonoBehaviour
 
                     _joinedLobby = null;
                 }
+
+                if (_joinedLobby.Data[KEY_JOIN_CODE].Value != "0")
+                {
+                    if (!IsLobbyHost())
+                    {
+                        RelayManager.Instance.JoinRelay(_joinedLobby.Data[KEY_JOIN_CODE].Value);
+                    }
+
+                    OnGameStarted?.Invoke(this, new LobbyEventArgs { lobby = _joinedLobby });
+
+                    _joinedLobby = null;
+                }
             }
         }
     }
@@ -212,7 +227,8 @@ public class LobbyManager : MonoBehaviour
             Player = player,
             IsPrivate = isPrivate,
             Data = new Dictionary<string, DataObject> {
-                { KEY_USE_POWERUPS, new DataObject(DataObject.VisibilityOptions.Public, usePowerups.ToString()) }
+                { KEY_USE_POWERUPS, new DataObject(DataObject.VisibilityOptions.Public, usePowerups.ToString()) },
+                { KEY_JOIN_CODE, new DataObject(DataObject.VisibilityOptions.Member, "0") }
             }
         };
 
@@ -287,6 +303,33 @@ public class LobbyManager : MonoBehaviour
             catch (LobbyServiceException e)
             {
                 Debug.Log(e);
+            }
+        }
+    }
+
+    public async void StartGame()
+    {
+        if (IsLobbyHost())
+        {
+            try
+            {
+                Debug.Log("StartGame");
+
+                string relayCode = await RelayManager.Instance.CreateRelay();
+
+                Lobby lobby = await LobbyService.Instance.UpdateLobbyAsync(_joinedLobby.Id, new UpdateLobbyOptions
+                {
+                    Data = new Dictionary<string, DataObject>
+                    {
+                        { KEY_JOIN_CODE, new DataObject(DataObject.VisibilityOptions.Member, relayCode) }
+                    }
+                });
+
+                _joinedLobby = lobby;
+            }
+            catch (LobbyServiceException e)
+            {
+                Debug.LogError(e);
             }
         }
     }
