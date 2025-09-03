@@ -1,7 +1,8 @@
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
-public class PlayerManager : MonoBehaviour
+public class PlayerManager : NetworkBehaviour
 {
     public static PlayerManager Instance { get; private set; }
 
@@ -29,17 +30,17 @@ public class PlayerManager : MonoBehaviour
         if (Instance == null) Instance = this;
     }
 
-    public void SetupPlayers()
+    public void SetupPlayers(string player1Name, string player2Name)
     {
         if (GameManager.Instance.CurrentRound == 0)
             RemovePlayers();
 
-        PlacePlayers();
+        PlacePlayers(player1Name, player2Name);
 
         GameManager.Instance.UpdateGameState(GameState.SetupGame);
     }
 
-    private void PlacePlayers()
+    private void PlacePlayers(string player1Name, string player2Name)
     {
         LevelManager.Instance.GetFirstAndLastSpawnPoints(out Vector3 firstSpawnPoint, out Vector3 lastSpawnPoint, out int firstSpawnPointIndex, out int lastSpawnPointIndex);
 
@@ -55,15 +56,18 @@ public class PlayerManager : MonoBehaviour
             _playerPowerupNames[1] = new();
 
             // create player
-            GameObject newPlayer = Instantiate(Players[0].PlayerPrefab, firstSpawnPoint, Quaternion.identity, _playerHolder);
+            GameObject newPlayer = Instantiate(Players[0].PlayerPrefab, firstSpawnPoint, Quaternion.identity);
+            newPlayer.GetComponent<NetworkObject>().Spawn(true);
+            newPlayer.GetComponent<NetworkObject>().TrySetParent(_playerHolder);
             string savedColourString = PlayerPrefs.GetString("PlayerOutlineColour", ColorUtility.ToHtmlStringRGBA(GameManager.Instance.DefaultPlayerOutlineColour));
             ColorUtility.TryParseHtmlString("#" + savedColourString, out Color savedColour);
             Material mat = newPlayer.GetComponentInChildren<SpriteRenderer>().material;
             mat.SetColor("_SolidOutline", savedColour);
 
             PlayerConfig pc = Players[0].PlayerConfig.GetComponent<PlayerConfig>();
+
             // if we already have a UI, destroy it and create a new one
-            if (_player1UI != null)
+            /*if (_player1UI != null)
                 Destroy(_player1UI);
 
             if (_player2UI != null)
@@ -71,14 +75,18 @@ public class PlayerManager : MonoBehaviour
 
             // create new player UI
             _player1UI = Instantiate(Players[0].PlayerUIPrefab, _uICanvas);
+            _player1UI.GetComponent<NetworkObject>().Spawn(true);
+            _player1UI.GetComponent<NetworkObject>().TrySetParent(_uICanvas);
             _player2UI = Instantiate(Players[1].PlayerUIPrefab, _uICanvas);
+            _player2UI.GetComponent<NetworkObject>().Spawn(true);
+            _player2UI.GetComponent<NetworkObject>().TrySetParent(_uICanvas);*/
 
             float savedUIScale = PlayerPrefs.GetFloat("UIScale", 1f);
-            _player1UI.transform.localScale = new Vector3(savedUIScale, savedUIScale, 0);
-            _player2UI.transform.localScale = new Vector3(savedUIScale, savedUIScale, 0);
+            Players[0].PlayerUI.transform.localScale = new Vector3(savedUIScale, savedUIScale, 0);
+            Players[1].PlayerUI.transform.localScale = new Vector3(savedUIScale, savedUIScale, 0);
 
             newPlayer.name = pc.PlayerName;
-            Players[0].Name = pc.PlayerName;
+            Players[0].Name = player1Name;
             Players[0].IsCPU = pc.isCPU;
             Players[0].CPUType = (CPU_TYPE)pc.CPUType;
             Players[0].PlayerGameObject = newPlayer;
@@ -86,14 +94,17 @@ public class PlayerManager : MonoBehaviour
             Players[0].PlayerAnimator = newPlayer.GetComponentInChildren<Animator>();
             Players[0].PlayerLineRenderer = newPlayer.GetComponent<LineRenderer>();
             Players[0].PlayerAIController = newPlayer.GetComponent<AIController>();
-            Players[0].PlayerUI = _player1UI;
-            Players[0].PlayerUIPowerupHolder = _player1UI.transform.GetChild(1);
+            //Players[0].PlayerUI = _player1UI;
+            _player1UI = Players[0].PlayerUI;
+            //Players[0].PlayerUIPowerupHolder = _player1UI.transform.GetChild(1);
             Players[0].ThrowDirection = 1;
             Players[0].SpawnPointIndex = firstSpawnPointIndex;
             pc.SavePlayerDetails();
             Players[0].PlayerController.SetPlayerDetails(0, Players[0]);
 
             newPlayer = Instantiate(Players[1].PlayerPrefab, lastSpawnPoint, Quaternion.identity, _playerHolder);
+            newPlayer.GetComponent<NetworkObject>().Spawn(true);
+            newPlayer.GetComponent<NetworkObject>().TrySetParent(_playerHolder);
             mat = newPlayer.GetComponentInChildren<SpriteRenderer>().material;
             mat.SetColor("_SolidOutline", savedColour);
             newPlayer.GetComponentInChildren<SpriteRenderer>().transform.rotation = Quaternion.Euler(0f, 180f, 0f);
@@ -107,7 +118,7 @@ public class PlayerManager : MonoBehaviour
             // }
 
             newPlayer.name = pc.PlayerName;
-            Players[1].Name = pc.PlayerName;
+            Players[1].Name = player2Name;
             Players[1].IsCPU = pc.isCPU;
             Players[1].CPUType = (CPU_TYPE)pc.CPUType;
             Players[1].PlayerGameObject = newPlayer;
@@ -115,8 +126,9 @@ public class PlayerManager : MonoBehaviour
             Players[1].PlayerAnimator = newPlayer.GetComponentInChildren<Animator>();
             Players[1].PlayerLineRenderer = newPlayer.GetComponent<LineRenderer>();
             Players[1].PlayerAIController = newPlayer.GetComponent<AIController>();
-            Players[1].PlayerUI = _player2UI;
-            Players[1].PlayerUIPowerupHolder = _player2UI.transform.GetChild(1);
+            //Players[1].PlayerUI = _player2UI;
+            _player2UI = Players[1].PlayerUI;
+            //Players[1].PlayerUIPowerupHolder = _player2UI.transform.GetChild(1);
             Players[1].ThrowDirection = -1;
             Players[1].SpawnPointIndex = lastSpawnPointIndex;
             pc.SavePlayerDetails();
@@ -176,6 +188,7 @@ public class PlayerManager : MonoBehaviour
 
     public void UpdateCurrentPlayer(int playerId)
     {
+        Debug.Log("UpdateCurrentPlayer");
         _currentPlayerId = playerId;
         UIManager.Instance.ShowHideUIElement(Players[playerId].PlayerUI, true);
         IsCurrentPlayerCPU = Players[playerId].IsCPU;
@@ -192,6 +205,7 @@ public class PlayerManager : MonoBehaviour
 
         StartCoroutine(Players[playerId].PlayerController.CalculateTrajectoryLine());
         GameManager.Instance.UpdateGameState(GameState.WaitingForLaunch);
+        Debug.Log("WaitingForLaunch");
     }
 
     public void AddRandomPlayerPowerup(int playerId)

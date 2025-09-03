@@ -1,10 +1,8 @@
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using NUnit.Framework;
 using Unity.Netcode;
 using UnityEngine;
 
-public class LevelManager : MonoBehaviour
+public class LevelManager : NetworkBehaviour
 {
     public static LevelManager Instance;
 
@@ -61,15 +59,17 @@ public class LevelManager : MonoBehaviour
         GameObject newElement;
         Color randomBuildingColour;
         int ledIndex = 0;
+        NetworkObject elementNO;
 
         foreach (LevelElementDetails led in _levelElementDetailsList)
         {
             newPos = new(startingXPos + xOffset + (led.ElementWidth / 2), led.ElementHeight, 0f);
             newElement = Instantiate(led.ElementPrefab, newPos, Quaternion.identity);
-            newElement.GetComponent<NetworkObject>().Spawn(true);
-            newElement.transform.SetParent(_levelElementHolder);
             randomBuildingColour = new(Random.Range(0f, 1f), Random.Range(0f, 1f), Random.Range(0f, 1f), 1f);
             newElement.transform.GetChild(0).GetChild(1).GetComponent<SpriteRenderer>().color = randomBuildingColour;
+            elementNO = newElement.GetComponent<NetworkObject>();
+            elementNO.Spawn(true);
+            elementNO.TrySetParent(_levelElementHolder, true);
             xOffset += led.ElementWidth;
 
             // spawn points are the second child of the building (first is GFX)
@@ -137,10 +137,16 @@ public class LevelManager : MonoBehaviour
 
     private void ClearCurrentLevel()
     {
+        // loop through all of the level element game objects and destroy
+        foreach (GameObject go in _levelElementGOs)
+        {
+            Destroy(go);
+        }
+        _levelElementGOs.Clear();
+
         _levelElementDetailsList.Clear();
         _playerSpawnPointList.Clear();
         _playerSpawnPointArrows.Clear();
-        _levelElementGOs.Clear();
         _spawnPointToGameObjectIndexes.Clear();
         _totalElementWidth = 0;
 

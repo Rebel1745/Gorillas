@@ -54,6 +54,8 @@ public class GameManager : NetworkBehaviour
 
     private void LobbyManager_StartMultiplayerGame(object sender, LobbyManager.LobbyEventArgs e)
     {
+        UIManager.Instance.ShowHideUIElement(UIManager.Instance.MultiplayerUI, false);
+
         if (!IsServer) return;
 
         _lobby = e.lobby;
@@ -61,19 +63,18 @@ public class GameManager : NetworkBehaviour
         {
             Debug.Log($"PlayerId: {p.Id} - Name: {p.Data[LobbyManager.Instance.Key_Player_Name].Value}");
         }*/
+        UpdateGameState(GameState.InitialiseGame);
     }
 
-    public override void OnNetworkSpawn()
+    /*public override void OnNetworkSpawn()
     {
-        Debug.Log($"OnNetworkSpawn {NetworkManager.Singleton.LocalClientId}");
         UIManager.Instance.ShowHideUIElement(UIManager.Instance.MultiplayerUI, false);
 
         if (!IsServer) return;
 
         // if the player spawned is the player, start building the level
         UpdateGameState(GameState.InitialiseGame);
-
-    }
+    }*/
 
     public void UpdateGameState(GameState newState, float delay = 0f)
     {
@@ -221,7 +222,7 @@ public class GameManager : NetworkBehaviour
 
     private void SetupPlayers()
     {
-        PlayerManager.Instance.SetupPlayers();
+        PlayerManager.Instance.SetupPlayers(_lobby.Players[0].Data[LobbyManager.Instance.Key_Player_Name].Value, _lobby.Players[1].Data[LobbyManager.Instance.Key_Player_Name].Value);
     }
 
     private void BuildLevel()
@@ -231,6 +232,7 @@ public class GameManager : NetworkBehaviour
 
     private void SetupGame()
     {
+        Debug.Log("SetupGame");
         // if this is the first round, move on
         if (_currentRound == 0)
             UpdateCurrentPlayerDetails(CurrentPlayerId);
@@ -246,6 +248,7 @@ public class GameManager : NetworkBehaviour
 
     private void UpdateCurrentPlayerDetails(int newPlayerId)
     {
+        Debug.Log("UpdateCurrentPlayerDetails");
         PlayerManager.Instance.UpdatePreviousPlayer(CurrentPlayerId);
 
         // update current player details
